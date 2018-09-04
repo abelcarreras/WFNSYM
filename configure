@@ -1,6 +1,7 @@
 #!/bin/sh
 
 #   Configuration script for building WFNSYM
+#   To use it requires cmake 2.6+
 #
 #   Use './configure help' to see available options
 
@@ -18,7 +19,7 @@ print_help() {
     echo " * intel       -- Intel compiler (ifort)"
     echo ""
     echo "LAPACK libraries (optional):"
-    echo " * mkl         -- Intel MKL"
+    echo " * mkl         -- Intel MKL (you may need to edit MKL path in CMakeList.txt )"
     echo "Build type (default release):"
     echo " * debug       -- Quick build few optimizations"
     echo " * release     -- Slow build many optimizations"

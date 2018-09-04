@@ -41,9 +41,10 @@ endif (Fortran_COMPILER_NAME MATCHES "gfortran.*")
 
 include_directories("${CMAKE_SOURCE_DIR}/include")
 
+# MKL library
 if(WITH_MKL)
-    message(STATUS "Use MKL library")
-    link_directories("/opt/intel/mkl/lib/")
+  message(STATUS "Use MKL library")
+  link_directories("/opt/intel/mkl/lib/")
   include_directories("/opt/intel/compilers_and_libraries/mac/include/intel64/")
 #  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -lmkl_def -lmkl_core -lmkl_lapack -lmkl_intel_thread  -lmkl_sequential -lmkl_intel_lp64 -lguide  -lpthread")
   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -lmkl_core -lmkl_intel_thread -lmkl_sequential -lmkl_intel_lp64 -lpthread")
@@ -73,7 +74,6 @@ add_executable ("WFNSYM"
                 "src/prog_main.F"
                 "src/read_routines.F"
                 "src/sym_routines.F")
-                
 
 # install executables and scripts
 install (TARGETS ${EXECUTABLES}
