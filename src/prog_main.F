@@ -72,6 +72,7 @@ c Open I/O files
 
 c Say hello!
       CALL PrintHead(iout)
+      CALL PrintHead(6)
 
       if (k.eq.0) then
          WRITE(iout,*)' '
@@ -79,6 +80,9 @@ c Say hello!
          WRITE(iout,*)' '
       else
          WRITE(iout,"('File not found')")
+         WRITE(6,*) "Warning! Input file not found"
+         WRITE(6,*) "Usage: ./WFNSYSM  input_file"
+         STOP
       end if
 
       call nextline(iunit)
