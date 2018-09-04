@@ -1,0 +1,3 @@
+export WSAUX="/Users/abel/Programes/WFNSYM/PROVA/BASES"
+../EXE/wfnsym_ifort.exe  pirrol
+../bin/WFNSYM.EXE  pirrol

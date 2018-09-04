@@ -1,0 +1,48 @@
+
+c****************************************************c
+c*       David Casanova          13/OCT/11          *c
+c*                                                  *c
+c*  This file contains general varible declaration  *c
+c****************************************************c
+
+	REAL*8,  PARAMETER ::  ANGSBOHR  =  1.889726124993590D0
+
+      INTEGER    IAxis(3),IAxis2(3),i_angl_fun(3),T0(8),dGroup,hGroup
+
+      REAL*8     RCread(3),RDipole(3),RCdens(3),VAxis(3),VAxis2(3),
+     &           RC(3),SymMat(3,3),MatId(3,3),R1(3),R2(3),
+     &           XMat0(3,3),XMat1(3,3),XMat2(3,3),XMat3(3,3),
+     &           YMat0(3,3),YMat1(3,3),YMat2(3,3)
+
+
+      CHARACTER*80   title,Basis,input,line,FMT1,FMT2,FMT3
+      CHARACTER      Group*1,SubG*3
+
+      LOGICAL   keyctrl,
+     &          MolCHK,AngCHK,AngCHK2,NAtCenCHK
+
+c Allocatable variables
+      INTEGER, ALLOCATABLE :: iZAt(:),iAng(:,:),iContr(:),iLAO(:),
+     &                          IpivA(:),IpivB(:),Icenter(:),iSymMu(:),
+     &                          IRMul(:)
+
+      REAL*8, ALLOCATABLE :: RAt(:,:),stRAt(:,:),SymGrp(:,:,:),
+     &                       ROrb(:,:),stROrb(:,:),COrb(:),Alph(:),
+     &                       CA(:),CB(:),S_AO(:),S_MOa(:),S_MOb(:),
+     &                       Xaux(:),SDiagA(:),SDiagB(:),
+     &                       WDiagA(:),WDiagB(:),WDiag(:),
+     &                       SGrpA(:),SGrpB(:),
+     &                       WOrbA(:),WOrbB(:),work(:),
+     &                       SOrbA(:),SOrbB(:),
+     &                       GrpTbl(:,:),gIRA(:,:),gIRB(:,:),
+     &                       gIRwfA(:),gIRwfB(:),gIRwf(:),csm(:),
+     &                       WOcc(:)
+
+      CHARACTER, ALLOCATABLE :: AtLab(:)*2,cLAO(:)*4,SymLab(:)*6,
+     &                          IRLab(:)*3
+
+
+      SAVE Zero,Half,One,Two,Four
+      DATA Zero,Half,One,Two,Four / 0d0,0.5d0,1d0,2d0,4d0  /
+
+
