@@ -44,6 +44,7 @@ c			             False: 3 decimals (default)
 c					 True : 5 decimals
 c--------------------------------------------------------------
       IMPLICIT REAL*8 (a-h,o-z)
+      CHARACTER ::  wfnsym_out*255
 
 c Include files
       INCLUDE 'definition_var.ins'
@@ -68,11 +69,17 @@ continue
 
 c Open I/O files
       Open(Unit=iunit,file=trim(input)//".win",status='old',iostat=k)
-      Open(Unit=iout,file=trim(input)//".wout",status='unknown')
+
+      CALL getenv("WFNSYM_OUT", wfnsym_out)
+c     Check enviroment if run in screen mode or file
+      IF (trim(wfnsym_out).eq.'SCREEN') THEN
+        iout = 6
+      ELSE
+        Open(Unit=iout,file=trim(input)//".wout",status='unknown')
+      ENDIF
 
 c Say hello!
       CALL PrintHead(iout)
-      CALL PrintHead(6)
 
       if (k.eq.0) then
          WRITE(iout,*)' '
