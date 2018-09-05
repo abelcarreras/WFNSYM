@@ -68,6 +68,7 @@ c S type functions
           iCount = iCount + 1
           DO j = 1,NC
             READ(10,*) Alph(iOrb),COrb(iOrb)
+            write(6,*) 'T', Alph(iOrb),COrb(iOrb)
             DO jj = 1,3
               ROrb(iOrb,jj) = RAt(k,jj)
             ENDDO
@@ -282,7 +283,9 @@ c Include normalization factors
            DO j = 1,3
              iAngv(j) = iAng(iA,j)
            ENDDO
+           write(6,*) 'A', COrb(iA)
            CALL norm_basis(iAngv,Alph(iA),COrb(iA),PureCart)
+           write(6,*) 'A2', COrb(iA), Alph(iA)
         ENDDO
 
 c Normalize Shell

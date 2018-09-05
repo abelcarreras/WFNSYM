@@ -1,0 +1,17 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module WFNSYMLIB ! in 
+    interface  ! in :WFNSYMLIB
+        subroutine mainlib(input, Etot, NEval, NBas, Norb) ! in :WFNSYMLIB:lib_main.F
+            character :: input*255
+!            integer :: Etot, NEval, NBas, Norb, NAt
+!            integer :: iZAt(NAt)
+!            CHARACTER :: AtLab(NAt)*2
+
+        end subroutine mainlib
+   end interface
+end python module WFNSYMLIB
+
+! This file was auto-generated with f2py (version:2).
+! See http://cens.ioc.ee/projects/f2py2e/

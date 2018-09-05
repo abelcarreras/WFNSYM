@@ -58,6 +58,7 @@ endif(WITH_MKL)
 
 # build executables
 set( EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/EXE)
+set( LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/LIB)
 set (EXECUTABLES "WFNSYM")
 
 add_executable ("WFNSYM"
@@ -76,6 +77,29 @@ add_executable ("WFNSYM"
                 "src/read_routines.F"
                 "src/sym_routines.F")
 
+ADD_LIBRARY ("WFNSYMLIB" "STATIC"
+                "src/VRoutines.F"
+                "src/aos_product.F"
+                "src/get_basis.F"
+                "src/get_dim.F"
+                "src/get_mos.F"
+                "src/group_table.F"
+                "src/make_molden.F"
+                "src/make_s.F"
+                "src/make_uhfno.F"
+                "src/overlap.F"
+                "src/print_routines.F"
+                "src/lib_main.F"
+                "src/read_routines.F"
+                "src/sym_routines.F")
+
+
 # install executables and scripts
 install (TARGETS ${EXECUTABLES}
          RUNTIME DESTINATION "bin")
+
+#INSTALL(TARGETS lemon
+#        ARCHIVE DESTINATION lib
+#        LIBRARY DESTINATION lib  # <-- Add this line
+#        COMPONENT library
+#)
