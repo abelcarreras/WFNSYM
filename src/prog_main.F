@@ -118,9 +118,9 @@ c Say hello!
             IF (AXIS) THEN
               Dot = VAxis(1)**2 + VAxis(2)**2 + VAxis(3)**2
               Dot = 1.d0 / DSQRT(Dot)
-              VAxis(1) = Dot * VAxis(1) 
-              VAxis(2) = Dot * VAxis(2) 
-              VAxis(3) = Dot * VAxis(3) 
+              VAxis(1) = Dot * VAxis(1)
+              VAxis(2) = Dot * VAxis(2)
+              VAxis(3) = Dot * VAxis(3)
               AngCHK = .true.
             ELSEIF (ANGLES) THEN
               VAxis(1) = VAxis(1) * PI / 180.d0
@@ -139,7 +139,7 @@ c Say hello!
               AngCHK2 = .true.
             ENDIF
           ENDIF
-          IF (readRN .and. .not.NAtCenCHK) THEN 
+          IF (readRN .and. .not.NAtCenCHK) THEN
             DEALLOCATE(Icenter)
             ALLOCATE(Icenter(Ncenter))
             READ(iunit,*) (Icenter(k),k=1,Ncenter)
@@ -236,7 +236,7 @@ c Where do we center the molecule?
           RC(J) = ANGSBOHR * RCread(J)
         ENDDO
       ELSEIF (readRN) THEN
-        WRITE(iout,"('Symmetry analysis at the geometric center of:', 
+        WRITE(iout,"('Symmetry analysis at the geometric center of:',
      &        1X,I2,1X,'atoms')") Ncenter
         RC(:) = Zero
         DO k = 1,Ncenter
@@ -354,7 +354,7 @@ c     write(iout,*)'reading AOs'
       CALL get_basis(Basis,AtLab,RAt,iAng,Alph,
      & ROrb,COrb,iContr,iLAO,cLAO,NAt,NBas,NOrb,PureCart)
 
-c Compute AO Overlap Matrix 
+c Compute AO Overlap Matrix
 c     write(iout,*)'computing AO overlap'
       ALLOCATE(S_AO(NBas2),S_MOa(NBas2),S_MOb(NBas2),Xaux(NBas2))
       MatId(:,:) = Zero
@@ -478,7 +478,7 @@ cgroups
       ENDDO
       ENDDO
       WRITE(iout,*)' '
-c Define X,Y,Z transformation 
+c Define X,Y,Z transformation
       write(iout,*)'X,Y,Z oper ',iG
       write(iout,'(1x,f15.9)') SymMat(1,1)
       write(iout,'(1x,f15.9)') SymMat(2,2)
@@ -489,7 +489,7 @@ c Define X,Y matrix transformation
       write(iout,'(2(1x,f15.9))') SymMat(1,2),SymMat(2,1)
       write(iout,'(2(1x,f15.9))') SymMat(2,1),SymMat(1,2)
       write(iout,'(2(1x,f15.9))') SymMat(2,2),SymMat(2,2)
-c Define X,Y,Z matrix transformation 
+c Define X,Y,Z matrix transformation
       write(iout,*)'X,Y,Z matrix ',iG
       write(iout,'(2(1x,f15.9))') SymMat(1,1),SymMat(1,1)
       write(iout,'(2(1x,f15.9))') SymMat(1,2),SymMat(2,1)
@@ -506,13 +506,13 @@ c Z^2, X2-Y2 matrix transformation
 c Define Z^2 transformation (2Z^2-X^2-Y^2)
       XMat0(:,:) = Zero
       XMat0(1,1) = -One/DSQRT(6.d0)
-      XMat0(2,2) = XMat0(1,1) 
-      XMat0(3,3) = -Two*XMat0(1,1) 
+      XMat0(2,2) = XMat0(1,1)
+      XMat0(3,3) = -Two*XMat0(1,1)
       CALL AtimsB(XMat1,XMat0,SymMat, 3,3,3, 3,3,3, 3)
       CALL AtimsB(XMat2,SymMat,XMat1, 3,3,3, 3,3,3, 1)
       Dot11 = XMat0(1,1)*XMat2(1,1) + XMat0(2,2)*XMat2(2,2)
      &    + XMat0(3,3)*XMat2(3,3)
-c Define X^2-Y^2 transformation 
+c Define X^2-Y^2 transformation
       XMat3(:,:) = Zero
       XMat3(1,1) = One/DSQRT(Two)
       XMat3(2,2) = -XMat3(1,1)
@@ -554,7 +554,7 @@ c Define X^2-Y^2 transformation
 c--------------------------------------------
 c XZ, YZ matrix transformation
       write(iout,*)'XZ,YZ matrix ',iG
-c Define XZ transformation 
+c Define XZ transformation
       XMat0(:,:) = Zero
       XMat0(1,3) = One/DSQRT(2.d0)
       XMat0(3,1) = XMat0(1,3)
@@ -678,7 +678,7 @@ c       CALL VRadd2(SGrpA,S_MOa,NBas2)
         ENDIF
       ENDIF
 
-      
+
 c Print Sym trans MO Overlap Matrix
       IF (NPrint .GE. 2) THEN
         WRITE(iout,"('sym-trans oper ',I2,':',1X,A6)") iG,SymLab(iG)
@@ -736,7 +736,7 @@ c Compute the wave function symmetry
           ENDIF
         ENDDO
       ELSE
-        S_WFb = Zero 
+        S_WFb = Zero
       ENDIF
       DO IJ = iOp,iOp+iSymMu(iG)-1
         WDiagA(IJ) = S_WFa
@@ -827,11 +827,11 @@ c Print Alpha MOs S values for the whole group
         WRITE(iout,FMT1,advance='no')
       ENDDO
       WRITE(iout,*)
-      WRITE(iout,'(3X)',advance='no') 
+      WRITE(iout,'(3X)',advance='no')
       DO i = 1,dGroup
         WRITE(iout,FMT3,advance='no') SymLab(i)
       ENDDO
-      WRITE(iout,*) 
+      WRITE(iout,*)
       WRITE(iout,'(3X)',advance='no')
       DO i = 1,dGroup
         WRITE(iout,FMT1,advance='no')
@@ -844,7 +844,7 @@ c Print Alpha MOs S values for the whole group
           WRITE(iout,FMT2,advance='no') SDiagA(i+(iOp-1)*NBas)
           iOp = iOp + iSymMu(iG)
         ENDDO
-        WRITE(iout,*) 
+        WRITE(iout,*)
       ENDDO
       WRITE(iout,'(3X)',advance='no')
       DO i = 1,dGroup
@@ -905,7 +905,7 @@ c Print WaveFunction S values for the whole group
         WRITE(iout,FMT2,advance='no') WDiagA(iOp)
         iOp = iOp + iSymMu(iG)
       ENDDO
-      WRITE(iout,*) 
+      WRITE(iout,*)
       IF(NOb.NE.0) THEN
         WRITE(iout,"('b-WF')",advance='no')
         iOp = 1
@@ -914,14 +914,14 @@ c Print WaveFunction S values for the whole group
           iOp = iOp + iSymMu(iG)
         ENDDO
       ENDIF
-      WRITE(iout,*) 
+      WRITE(iout,*)
       WRITE(iout,"(' WFN')",advance='no')
       iOp = 1
       DO iG = 1,dGroup
         WRITE(iout,FMT2,advance='no') WDiag(iOp)
         iOp = iOp + iSymMu(iG)
       ENDDO
-      WRITE(iout,*) 
+      WRITE(iout,*)
       WRITE(iout,'(4X)',advance='no')
       DO i = 1,dGroup
         WRITE(iout,FMT1,advance='no')
@@ -997,11 +997,11 @@ c Project over Irred. Repr. of the group
       ALLOCATE(gIRB(NBas,nIR),gIRwfB(nIR))
 
 c All projections
-c     DO iOrb = 1,NBas       
+c     DO iOrb = 1,NBas
 c write(iout,"('Projections Orbital: ',I3)") iOrb
 c DO iG  = 1,hGroup
 c       Xaux(iG) = Zero
-c       DO iOp = 0,hGroup-1        
+c       DO iOp = 0,hGroup-1
 c        Xaux(iG) = Xaux(iG)+SDiagA(iOrb+iOp*NBas)*GrpTbl(iG,iOp+1)
 c  ENDDO
 c  write(iout,"(1x,f9.5)") Xaux(iG)
@@ -1210,13 +1210,13 @@ cScale = (EXP(One)-One) / DFLOAT(dGroup)
       CALL VRscale(SGrpA,NOa*NOa,Scale)
 c     DO I = 1,NOa
 c       SGrpA(I+(I-1)*NOa) = One + SGrpA(I+(I-1)*NOa)
-c     ENDDO 
+c     ENDDO
 c	CALL VRscale(SGrpA,NBas2,Scale)
 
 c Compute the wavefunction symmetry (only alpha)
       CALL VRtrace(Sgroup,SGrpA,NOa)
       write(iout,*) 'Trace = ',Sgroup
-      Sgroup = (exp(Sgroup) - One) / (exp(One) - One)	
+      Sgroup = (exp(Sgroup) - One) / (exp(One) - One)
       write(iout,*) '< G > = ',Sgroup
       Sgroup = 100.*(One-Sgroup)
       WRITE(iout,"('**************')")
@@ -1264,7 +1264,7 @@ c Print SymOrbs as a Molden file (*.mol)
      &     NOa,NBas,SOrbA,WOrbA,PureCart)
       DEALLOCATE(SOrbA,WOrbA)
 
-      IF(NOb.NE.0 .AND.(NOa.NE.NOb .OR. Unrestricted)) 
+      IF(NOb.NE.0 .AND.(NOa.NE.NOb .OR. Unrestricted))
      &   DEALLOCATE(SOrbB,WOrbB)
 
       ENDIF

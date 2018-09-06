@@ -1,7 +1,9 @@
 #include "wfnsym.h"
 
 c      PROGRAM Prog_Main
-      SUBROUTINE mainlib(input, Etot, NEval, NBas, Norb)
+      SUBROUTINE mainlib(input, basis_2, NEtot, NEval, NBas, Norb,
+     & NAt_2, NTotShell, iZAt_2, AtLab_2, Alph_2, COrb_2, NShell,
+     & RAt_2, NPrim, shell_type)
 
 c--------------------------------------------------------------
 c       David Casanova          06/APR/10	Initializing program
@@ -46,11 +48,20 @@ c					 True : 5 decimals
 c--------------------------------------------------------------
       IMPLICIT REAL*8 (a-h,o-z)
       CHARACTER ::  wfnsym_out*255
+      CHARACTER ::  basis_2*80
+      INTEGER :: iZAt_2(NAt_2), NPrim(NTotShell)
+      CHARACTER :: AtLab_2(NAt_2)*2
+      REAL*8 :: Alph_2(Norb),  COrb_2(Norb), RAt_2(NAt_2, 3)
+
 c Include files
       INCLUDE 'definition_var.ins'
       INCLUDE 'common_var.ins'
       INCLUDE 'init_var.ins'
 
+       write(6,*) 'ini'
+       do i=1,NAt_2
+         write(6,*) 'iZAt_2', iZAt_2(i), AtLab_2(i)
+       enddo
 c Read input file name (first argument)
 c      CALL getarg(1,input)
 
@@ -109,10 +120,10 @@ c Say hello!
             MolCHK = .true.
             ALLOCATE(AtLab(NAt),RAt(NAt,3),stRAt(NAt,3),iZAt(NAt))
             READ(iunit,*) iCharge, iMult
-            DO k = 1,NAt
-              READ(iunit,'(A2)',advance='no') AtLab(k)
-              READ(iunit,*) (RAt(k,j),j=1,3)
-            ENDDO
+c            DO k = 1,NAt
+c              READ(iunit,'(A2)',advance='no') AtLab(k)
+c              READ(iunit,*) (RAt(k,j),j=1,3)
+c            ENDDO
           ENDIF
           IF(.not.AngCHK) THEN
             IF (AXIS) THEN
@@ -153,6 +164,13 @@ c Say hello!
         end if
       end do
 
+c Added Data
+      RAt = Rat_2
+      do i = 1, NAt
+        AtLab(i) = AtLab_2(i)
+        iZAt(i) = iZAt_2(i)
+      enddo
+
 c Define Axes thresh
       IF(.NOT.Ax_Thresh) IAx_Thresh = 9
 
@@ -192,7 +210,8 @@ c Check consistency
 
 c Get some dimensions
       write(iout,*)'Reading dimensions'
-      CALL get_dim(NEtot,NEval,NBas,NOrb,Basis,AtLab,NAt,iZAt,PureCart)
+c      CALL get_dim(NEtot,NEval,NBas,NOrb,Basis,AtLab,NAt,iZAt,PureCart)
+
       write (6,*) 'NEtot', NEtot
       write (6,*) 'NBas', NBas
       write (6,*) 'NEval', NEval
@@ -203,7 +222,10 @@ c Get some dimensions
       do i = 1, NAt
         write(6,*) 'iZAt ',iZAt (i)
       enddo
-      stop
+      do i = 1, NAt
+        write(6,*) 'iZAt ',iZAt (i)
+      enddo
+
 
 c Set up some variables
       NEtot = NEtot - iCharge
@@ -225,10 +247,10 @@ c Writing Coordinates and transform them to AU unities
       WRITE(iout,100)
       DO k = 1,NAt
         WRITE(iout,'(A2,4X,3(F12.8,1X))')
-     &        AtLab(k),(RAt(k,j),j=1,3)
-        DO j = 1,3
-          RAt(k,j) = RAt(k,j)*ANGSBOHR
-        ENDDO
+     &        AtLab(k),(RAt(k,j)/ANGSBOHR, j=1,3)
+c        DO j = 1,3
+c          RAt(k,j) = RAt(k,j)*ANGSBOHR
+c        ENDDO
       ENDDO
       WRITE(iout,100)
       WRITE(iout,*)' '
@@ -362,8 +384,16 @@ c     ALLOCATE(IpivA(NOa),IpivB(NOb))
 
 c Reading AO Basis Set
 c     write(iout,*)'reading AOs'
-      CALL get_basis(Basis,AtLab,RAt,iAng,Alph,
-     & ROrb,COrb,iContr,iLAO,cLAO,NAt,NBas,NOrb,PureCart)
+      CALL get_basis(basis_2,AtLab_2,RAt_2,iAng,Alph_2,
+     & ROrb,COrb_2,iContr,iLAO,cLAO,NAt,NBas,NOrb,PureCart,
+     & NPrim, NTotShell, NShell, shell_type)
+
+      basis = basis_2
+      RAt = Rat_2
+      AtLab = AtLab_2
+      Alph = Alph_2
+      COrb = COrb_2
+
       do i = 1,NOrb
         write(6,*)  'ROrb', ROrb(i, 1), ROrb(i, 2), ROrb(i, 3)
       enddo
