@@ -3,7 +3,7 @@
 c      PROGRAM Prog_Main
       SUBROUTINE mainlib(input, basis_2, NEtot, NEval, NBas, Norb,
      & NAt_2, NTotShell, iZAt_2, AtLab_2, Alph_2, COrb_2, NShell,
-     & RAt_2, NPrim, shell_type)
+     & RAt_2, NPrim, shell_type, igroup_2, ngroup_2)
 
 c--------------------------------------------------------------
 c       David Casanova          06/APR/10	Initializing program
@@ -58,7 +58,6 @@ c Include files
       INCLUDE 'common_var.ins'
       INCLUDE 'init_var.ins'
 
-       write(6,*) 'ini'
        do i=1,NAt_2
          write(6,*) 'iZAt_2', iZAt_2(i), AtLab_2(i)
        enddo
@@ -79,7 +78,7 @@ continue
       if (input(k-4:k).eq.'.win') input(k-4:k)='    '
 
 c Open I/O files
-      Open(Unit=iunit,file=trim(input)//".win",status='old',iostat=k)
+c      Open(Unit=iunit,file=trim(input)//".win",status='old',iostat=k)
 
       CALL getenv("WFNSYM_OUT", wfnsym_out)
 c     Check enviroment if run in screen mode or file
@@ -92,79 +91,155 @@ c     Check enviroment if run in screen mode or file
 c Say hello!
       CALL PrintHead(iout)
 
-      if (k.eq.0) then
-         WRITE(iout,*)' '
-         WRITE(iout,"('Reading data from file ',a)") trim(input)//'.win'
-         WRITE(iout,*)' '
-      else
-         WRITE(iout,"('File not found')")
-         WRITE(6,*) "Warning! Input file not found"
-         WRITE(6,*) "Usage: ./WFNSYSM  input_file"
-         STOP
-      end if
+c      if (k.eq.0) then
+c         WRITE(iout,*)' '
+c         WRITE(iout,"('Reading data from file ',a)") trim(input)//'.win'
+c         WRITE(iout,*)' '
+c      else
+c         WRITE(iout,"('File not found')")
+c         WRITE(6,*) "Warning! Input file not found"
+c         WRITE(6,*) "Usage: ./WFNSYSM  input_file"
+c         STOP
+c      end if
 
-      call nextline(iunit)
-      read(iunit,"(a)") line
-      if((line(1:1).eq.'$').and.(len_trim(title).eq.0)) then
-        title(1:79)=line(2:80)
-        call nextline(iunit)
-        read(iunit,"(a)") line
-      end if
-      WRITE(iout,"(A)") title
-      WRITE(iout,*) ' '
+c ----------- Added manual arguments-----------
+      igroup = igroup_2
+      ngroup = ngroup_2
+      CALL SetGroupDim(iGroup, nGroup, dGroup, hGroup)
 
-      do while (keyctrl)
-        if((line(1:1).eq.'%').and.(len_trim(line).gt.1)) then
-          call options(line,iout)
-          IF (molecule .and. .not.MolCHK) THEN
-            MolCHK = .true.
-            ALLOCATE(AtLab(NAt),RAt(NAt,3),stRAt(NAt,3),iZAt(NAt))
-            READ(iunit,*) iCharge, iMult
+      NAt = NAt_2
+      iCharge = 0
+      iMult = 1
+
+      RCread(1) = 0
+      RCread(2) = 0
+      RCread(3) = 0
+
+      VAxis(1) = 1
+      VAxis(2) = 0
+      VAxis(3) = 0
+
+      VAxis2(1) = 0
+      VAxis2(2) = 0
+      VAxis2(3) = 1
+
+      IF(.not.AngCHK) THEN
+        IF (AXIS) THEN
+          Dot = VAxis(1)**2 + VAxis(2)**2 + VAxis(3)**2
+          Dot = 1.d0 / DSQRT(Dot)
+          VAxis(1) = Dot * VAxis(1)
+          VAxis(2) = Dot * VAxis(2)
+          VAxis(3) = Dot * VAxis(3)
+          AngCHK = .true.
+        ELSEIF (ANGLES) THEN
+          VAxis(1) = VAxis(1) * PI / 180.d0
+          VAxis(2) = VAxis(2) * PI / 180.d0
+          AngCHK = .true.
+        ENDIF
+      ENDIF
+      IF(.not.AngCHK2) THEN
+        IF (AXIS2) THEN
+          Dot = VAxis2(1)**2 + VAxis2(2)**2 + VAxis2(3)**2
+          Dot = 1.d0 / DSQRT(Dot)
+          VAxis2(:) = Dot * VAxis2(:)
+          AngCHK2 = .true.
+        ELSEIF (ANGLES2) THEN
+          VAxis2(1:2) = VAxis2(1:2) * PI / 180.d0
+          AngCHK2 = .true.
+        ENDIF
+      ENDIF
+
+      ALLOCATE(AtLab(NAt),RAt(NAt,3),stRAt(NAt,3),iZAt(NAt))
+      Basis = basis_2
+      DoOper = .FALSE.
+      DoGroup = .TRUE.
+      basin = .TRUE.
+      molecule = .TRUE.
+      natom = .TRUE.
+      Group = 'C'
+      SubG = '6V'
+c      WRITE(SubG,'(A1, A3)') 'C6V'
+
+      IF(iGroup.GE.0 .AND. iGroup.LE.9) THEN
+        WRITE(iout,106) Group, SubG
+      ELSE
+        WRITE(iout,107) Group, SubG
+        STOP
+      ENDIF
+
+107   FORMAT(3X,'* ERROR * INCORRECT SYMMETRY GROUP: ',2X,A1,A3)
+106   FORMAT('MEASURES OF THE SYMMETRY GROUP: ',2X,A1,A3)
+
+
+c ----------------------------------------
+
+c      call nextline(iunit)
+c      read(iunit,"(a)") line
+c      if((line(1:1).eq.'$').and.(len_trim(title).eq.0)) then
+c        title(1:79)=line(2:80)
+c        call nextline(iunit)
+c        read(iunit,"(a)") line
+c      end if
+c      WRITE(iout,"(A)") title
+c      WRITE(iout,*) ' '
+
+c      do while (keyctrl)
+c        if((line(1:1).eq.'%').and.(len_trim(line).gt.1)) then
+c          write(6,*) 'molecule', molecule, MolCHK
+c          call options(line,iout)
+c          write(6,*) 'molecule2', molecule, MolCHK
+c          IF (molecule .and. .not.MolCHK) THEN
+c            MolCHK = .true.
+c            ALLOCATE(AtLab(NAt),RAt(NAt,3),stRAt(NAt,3),iZAt(NAt))
+c            READ(iunit,*) iCharge, iMult
 c            DO k = 1,NAt
 c              READ(iunit,'(A2)',advance='no') AtLab(k)
 c              READ(iunit,*) (RAt(k,j),j=1,3)
 c            ENDDO
-          ENDIF
-          IF(.not.AngCHK) THEN
-            IF (AXIS) THEN
-              Dot = VAxis(1)**2 + VAxis(2)**2 + VAxis(3)**2
-              Dot = 1.d0 / DSQRT(Dot)
-              VAxis(1) = Dot * VAxis(1)
-              VAxis(2) = Dot * VAxis(2)
-              VAxis(3) = Dot * VAxis(3)
-              AngCHK = .true.
-            ELSEIF (ANGLES) THEN
-              VAxis(1) = VAxis(1) * PI / 180.d0
-              VAxis(2) = VAxis(2) * PI / 180.d0
-              AngCHK = .true.
-            ENDIF
-          ENDIF
-          IF(.not.AngCHK2) THEN
-            IF (AXIS2) THEN
-              Dot = VAxis2(1)**2 + VAxis2(2)**2 + VAxis2(3)**2
-              Dot = 1.d0 / DSQRT(Dot)
-              VAxis2(:) = Dot * VAxis2(:)
-              AngCHK2 = .true.
-            ELSEIF (ANGLES2) THEN
-              VAxis2(1:2) = VAxis2(1:2) * PI / 180.d0
-              AngCHK2 = .true.
-            ENDIF
-          ENDIF
-          IF (readRN .and. .not.NAtCenCHK) THEN
-            DEALLOCATE(Icenter)
-            ALLOCATE(Icenter(Ncenter))
-            READ(iunit,*) (Icenter(k),k=1,Ncenter)
-            NAtCenCHK = .true.
-          ENDIF
+c          ENDIF
+c          IF(.not.AngCHK) THEN
+c            IF (AXIS) THEN
+c              Dot = VAxis(1)**2 + VAxis(2)**2 + VAxis(3)**2
+c              Dot = 1.d0 / DSQRT(Dot)
+c              VAxis(1) = Dot * VAxis(1)
+c              VAxis(2) = Dot * VAxis(2)
+c              VAxis(3) = Dot * VAxis(3)
+c              AngCHK = .true.
+c            ELSEIF (ANGLES) THEN
+c              VAxis(1) = VAxis(1) * PI / 180.d0
+c              VAxis(2) = VAxis(2) * PI / 180.d0
+c              AngCHK = .true.
+c            ENDIF
+c          ENDIF
+c          IF(.not.AngCHK2) THEN
+c            IF (AXIS2) THEN
+c              Dot = VAxis2(1)**2 + VAxis2(2)**2 + VAxis2(3)**2
+c              Dot = 1.d0 / DSQRT(Dot)
+c              VAxis2(:) = Dot * VAxis2(:)
+c              AngCHK2 = .true.
+c            ELSEIF (ANGLES2) THEN
+c              VAxis2(1:2) = VAxis2(1:2) * PI / 180.d0
+c              AngCHK2 = .true.
+c            ENDIF
+c          ENDIF
+c          IF (readRN .and. .not.NAtCenCHK) THEN
+c            DEALLOCATE(Icenter)
+c            ALLOCATE(Icenter(Ncenter))
+c            READ(iunit,*) (Icenter(k),k=1,Ncenter)
+c            NAtCenCHK = .true.
+c          ENDIF
 
-          call nextline(iunit)
-          read(iunit,"(a)") line
-        else
-          keyctrl=.false.
-        end if
-      end do
+c          call nextline(iunit)
+c          read(iunit,"(a)") line
+c        else
+c          keyctrl=.false.
+c        end if
+c      end do
 
-c Added Data
+c --------------Added Data -----------------------------
+
+
+      write(6,*) 'VAxis', VAxis(1), VAxis(2)
       RAt = Rat_2
       do i = 1, NAt
         AtLab(i) = AtLab_2(i)
@@ -208,6 +283,7 @@ c Check consistency
 
       WRITE(iout,'("Basis: ",A8)') Basis(1:8)
 
+      write(6,*) 'igroup', igroup, 'ngroup', ngroup
 c Get some dimensions
       write(iout,*)'Reading dimensions'
 c      CALL get_dim(NEtot,NEval,NBas,NOrb,Basis,AtLab,NAt,iZAt,PureCart)
@@ -1417,7 +1493,7 @@ c Saying goodbye
  498  FORMAT('  *** Thank you for using Wave-Sym ***')
 
 c Close files
-      CLOSE(1)
+c      CLOSE(1)
       CLOSE(2)
 
  1    END

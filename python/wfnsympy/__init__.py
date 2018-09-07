@@ -46,7 +46,6 @@ p_con_coef = [0.00000000E+00, 0.00000000E+00, 0.00000000E+00, 0.00000000E+00, 0.
               0.00000000E+00, 0.00000000E+00, 0.00000000E+00, 0.00000000E+00, 0.00000000E+00,
               0.00000000E+00, 0.00000000E+00, 0.00000000E+00, 0.00000000E+00, 0.00000000E+00]
 
-
 RAt = [[0.00000000E+00,  0.00000000E+00, 4.02378628E+00],
        [0.00000000E+00,  0.00000000E+00,  2.11400638E+00],
        [0.00000000E+00,  2.12502726E+00,  6.30346495E-01],
@@ -58,13 +57,14 @@ RAt = [[0.00000000E+00,  0.00000000E+00, 4.02378628E+00],
        [0.00000000E+00,  2.56483456E+00, -3.49426423E+00],
        [0.00000000E+00, -2.56483456E+00, -3.49426423E+00]]
 
-
 n_prim = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
 
 atom_map = [1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 8, 9, 10]
 
 basis = 'STO-3G'
 
+igroup = 3
+ngroup = 6
 
 # ---------------  INTERFACE -------------- #
 
@@ -108,7 +108,8 @@ for i, stype in enumerate(shell_type):
 COrb = np.array(COrb).flatten()
 
 os.remove('pirrol.wout')
-mainlib('pirrol', basis, Etot, NEval, NBas, Norb, Nat, NTotShell, iZAt, AtLab, Alph, COrb, NShell, RAt, n_prim, shell_type)
+mainlib('pirrol', basis, Etot, NEval, NBas, Norb, Nat, NTotShell, iZAt, AtLab, Alph,
+        COrb, NShell, RAt, n_prim, shell_type,  igroup, ngroup)
 
 if (filecmp.cmp('pirrol.wout', 'pirrol.wout_ref')):
     print('!!!!!!!ALL OK!!!!!!!')

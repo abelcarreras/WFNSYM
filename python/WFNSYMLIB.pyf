@@ -3,11 +3,11 @@
 
 python module WFNSYMLIB ! in 
     interface  ! in :WFNSYMLIB
-        subroutine mainlib(input, basis, Etot, NEval, NBas, Norb, NAt, NCShell, iZAt, AtLab, Alph, COrb, NShell, RAt, n_prim, shell_type) ! in :WFNSYMLIB:lib_main.F
+        subroutine mainlib(input, basis, Etot, NEval, NBas, Norb, NAt, NCShell, iZAt, AtLab, Alph, COrb, NShell, RAt, n_prim, shell_type, igroup, ngroup) ! in :WFNSYMLIB:lib_main.F
             character :: input*255
             character :: basis*80
 
-            integer :: Etot, NEval, NBas, Norb, NAt
+            integer :: Etot, NEval, NBas, Norb, NAt,  igroup, ngroup
 
             real*8 dimension(Norb),intent(in),depend(Norb) :: Alph
             real*8 dimension(Norb),intent(in),depend(Norb) :: COrb

@@ -8,11 +8,6 @@
    Symmetry analysis of the electronic wave function
    by David Casanova, University of Barcelona
   
-  
-Reading data from file pirrol.win
-  
- NH3                                                                            
-  
 MEASURES OF THE SYMMETRY GROUP:   C6V 
 Basis: STO-3G  
  Reading dimensions
@@ -31,7 +26,6 @@ H       0.00000000   1.35725200  -1.84908500
 H       0.00000000  -1.35725200  -1.84908500
 --------------------------------------------
   
- Symmetry analysis at the input center
 --------------------------------------------
   *** Wavefunction dimensions ***
 # Total   Electrons              36
