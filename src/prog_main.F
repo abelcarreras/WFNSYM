@@ -6,6 +6,7 @@ c--------------------------------------------------------------
 c       David Casanova          06/APR/10	Initializing program
 c       David Casanova          28/JUN/10	f-orbitals (starting)
 c       David Casanova          22/JUL/10	Print level
+c       Abel Carreras           05/SEP/10	Minor details to compile with gfortran
 c--------------------------------------------------------------
 c	Variables
 c

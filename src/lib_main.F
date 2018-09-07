@@ -2,14 +2,15 @@
 
 c      PROGRAM Prog_Main
       SUBROUTINE mainlib(input, basis_2, NEtot, NEval, NBas, Norb,
-     & NAt_2, NTotShell, iZAt_2, AtLab_2, Alph_2, COrb_2, NShell,
-     & RAt_2, NPrim, shell_type, igroup_2, ngroup_2, Ca_2, Cb_2,
+     & NAt_2, NTotShell, iZAt, AtLab, Alph, COrb, NShell,
+     & RAt, NPrim, shell_type, igroup_2, ngroup_2, Ca, Cb,
      & RCread_2, VAxis_2, VAxis2_2, iCharge, iMult, DoOp)
 
 c--------------------------------------------------------------
 c       David Casanova          06/APR/10	Initializing program
 c       David Casanova          28/JUN/10	f-orbitals (starting)
 c       David Casanova          22/JUL/10	Print level
+c       Abel Carreras            8/SEP/18   Create library
 c--------------------------------------------------------------
 c	Variables
 c
@@ -50,33 +51,18 @@ c--------------------------------------------------------------
       IMPLICIT REAL*8 (a-h,o-z)
       CHARACTER ::  wfnsym_out*255
       CHARACTER ::  basis_2*80
-      INTEGER :: iZAt_2(NAt_2), NPrim(NTotShell)
-      CHARACTER :: AtLab_2(NAt_2)*2
-      REAL*8 :: Alph_2(Norb),  COrb_2(Norb), RAt_2(NAt_2, 3)
-      REAL*8 :: Ca_2(NBas*NBas),  Cb_2(NBas*NBas)
+      INTEGER :: iZAt(NAt_2), NPrim(NTotShell)
+      CHARACTER :: AtLab(NAt_2)*2
+      REAL*8 :: Alph(Norb),  COrb(Norb), RAt(NAt_2, 3)
+      REAL*8 :: Ca(NBas*NBas),  Cb(NBas*NBas)
       REAL*8 :: RCread_2(3), VAxis_2(3), VAxis2_2(3)
       LOGICAL :: DoOp
 
 c Include files
-      INCLUDE 'definition_var.ins'
+      INCLUDE 'definitionlib_var.ins'
       INCLUDE 'common_var.ins'
       INCLUDE 'init_var.ins'
 
-       do i=1,NAt_2
-         write(6,*) 'iZAt_2', iZAt_2(i), AtLab_2(i)
-       enddo
-c Read input file name (first argument)
-c      CALL getarg(1,input)
-
-c Print Operations and Groups
-continue
-      IF (trim(input).eq.'+') THEN
-        CALL PrintOperGrp()
-        GOTO 1
-      ELSEIF (trim(input).eq.'+keywords') THEN
-        CALL PrintKeys()
-        GOTO 1
-      ENDIF
 
       k=max(len_trim(input),5)
       if (input(k-4:k).eq.'.win') input(k-4:k)='    '
@@ -95,17 +81,6 @@ c     Check enviroment if run in screen mode or file
 c Say hello!
       CALL PrintHead(iout)
 
-c      if (k.eq.0) then
-c         WRITE(iout,*)' '
-c         WRITE(iout,"('Reading data from file ',a)") trim(input)//'.win'
-c         WRITE(iout,*)' '
-c      else
-c         WRITE(iout,"('File not found')")
-c         WRITE(6,*) "Warning! Input file not found"
-c         WRITE(6,*) "Usage: ./WFNSYSM  input_file"
-c         STOP
-c      end if
-
 c ----------- Added manual arguments-----------
       igroup = igroup_2
       ngroup = ngroup_2
@@ -115,7 +90,24 @@ c ----------- Added manual arguments-----------
       RCread = RCread_2
       VAxis = VAxis_2
       VAxis2 = VAxis2_2
+      basis = basis_2
 
+      PureCart = .FALSE.
+      basin = .TRUE.
+      molecule = .TRUE.
+      natom = .TRUE.
+      Group = 'C'
+      SubG = '6V'
+
+      IF (DoOp) THEN
+        DoOper = .FALSE.
+      ELSE
+        DoGroup = .TRUE.
+      ENDIF
+
+c -----------------------------------------------
+
+c Check angles in VAxis & VAxis
       IF(.not.AngCHK) THEN
         IF (AXIS) THEN
           Dot = VAxis(1)**2 + VAxis(2)**2 + VAxis(3)**2
@@ -142,21 +134,7 @@ c ----------- Added manual arguments-----------
         ENDIF
       ENDIF
 
-      ALLOCATE(AtLab(NAt),RAt(NAt,3),stRAt(NAt,3),iZAt(NAt))
-      Basis = basis_2
-      IF (DoOp) THEN
-        DoOper = .FALSE.
-      ELSE
-        DoGroup = .TRUE.
-      ENDIF
-
-c      basin = .TRUE.
-c      molecule = .TRUE.
-c      natom = .TRUE.
-      Group = 'C'
-      SubG = '6V'
-c      WRITE(SubG,'(A1, A3)') 'C6V'
-
+c     print in output
       IF(iGroup.GE.0 .AND. iGroup.LE.9) THEN
         WRITE(iout,106) Group, SubG
       ELSE
@@ -167,6 +145,7 @@ c      WRITE(SubG,'(A1, A3)') 'C6V'
 107   FORMAT(3X,'* ERROR * INCORRECT SYMMETRY GROUP: ',2X,A1,A3)
 106   FORMAT('MEASURES OF THE SYMMETRY GROUP: ',2X,A1,A3)
 
+      ALLOCATE(stRAt(NAt,3))
 
 c ----------------------------------------
 
@@ -233,16 +212,6 @@ c          keyctrl=.false.
 c        end if
 c      end do
 
-c --------------Added Data -----------------------------
-
-
-      write(6,*) 'VAxis', VAxis(1), VAxis(2)
-      RAt = Rat_2
-      do i = 1, NAt
-        AtLab(i) = AtLab_2(i)
-        iZAt(i) = iZAt_2(i)
-      enddo
-
 c Define Axes thresh
       IF(.NOT.Ax_Thresh) IAx_Thresh = 9
 
@@ -280,24 +249,24 @@ c      ENDIF
 
       WRITE(iout,'("Basis: ",A8)') Basis(1:8)
 
-      write(6,*) 'igroup', igroup, 'ngroup', ngroup
+c      write(6,*) 'igroup', igroup, 'ngroup', ngroup
 c Get some dimensions
       write(iout,*)'Reading dimensions'
 c      CALL get_dim(NEtot,NEval,NBas,NOrb,Basis,AtLab,NAt,iZAt,PureCart)
 
-      write (6,*) 'NEtot', NEtot
-      write (6,*) 'NBas', NBas
-      write (6,*) 'NEval', NEval
-      write (6,*) 'NOrb', NOrb
-      do i = 1, NAt
-        write(6,*) 'AtLab ', AtLab(i)
-      enddo
-      do i = 1, NAt
-        write(6,*) 'iZAt ',iZAt (i)
-      enddo
-      do i = 1, NAt
-        write(6,*) 'iZAt ',iZAt (i)
-      enddo
+c      write (6,*) 'NEtot', NEtot
+c      write (6,*) 'NBas', NBas
+c      write (6,*) 'NEval', NEval
+c      write (6,*) 'NOrb', NOrb
+c      do i = 1, NAt
+c        write(6,*) 'AtLab ', AtLab(i)
+c      enddo
+c      do i = 1, NAt
+c        write(6,*) 'iZAt ',iZAt (i)
+c      enddo
+c      do i = 1, NAt
+c        write(6,*) 'iZAt ',iZAt (i)
+c      enddo
 
 
 c Set up some variables
@@ -450,51 +419,32 @@ c     write(iout,*)'allocating space'
       ALLOCATE(SDiagA(NN),SDiagB(NN))
       ALLOCATE(WDiagA(hGroup),WDiagB(hGroup),WDiag(hGroup))
       ALLOCATE(iAng(NOrb,3),iLAO(NBas),cLAO(NBas))
-      ALLOCATE(ROrb(NOrb,3),stROrb(NOrb,3),COrb(NOrb),Alph(NOrb))
+      ALLOCATE(ROrb(NOrb,3),stROrb(NOrb,3))
       ALLOCATE(iContr(NBas))
 c     ALLOCATE(IpivA(NOa),IpivB(NOb))
       ALLOCATE(IpivA(NBas),IpivB(NBas))
 
 c Reading AO Basis Set
 c     write(iout,*)'reading AOs'
-      CALL get_basis(basis_2,AtLab_2,RAt_2,iAng,Alph_2,
-     & ROrb,COrb_2,iContr,iLAO,cLAO,NAt,NBas,NOrb,PureCart,
+      CALL get_basis(basis_2,AtLab,RAt,iAng,Alph,
+     & ROrb,COrb,iContr,iLAO,cLAO,NAt,NBas,NOrb,PureCart,
      & NPrim, NTotShell, NShell, shell_type)
 
-      basis = basis_2
-      RAt = Rat_2
-      AtLab = AtLab_2
-      Alph = Alph_2
-      COrb = COrb_2
-
-      do i = 1,NOrb
-        write(6,*)  'ROrb', ROrb(i, 1), ROrb(i, 2), ROrb(i, 3)
-      enddo
-      do i = 1,NOrb
-        write(6,*) 'COrb', COrb(i)
-      enddo
-      do i = 1,NOrb
-        write(6,*) 'Alph', Alph(i)
-      enddo
-      do i = 1, NOrb
-        write(6,*) 'iAng', iAng(i,1), iAng(i,2), iAng(i,3)
-      enddo
-      do i = 1,NBas
-        write(6,*) 'iLAO', iLAO(i), 'cLAO ', cLAO(i),'iContr', iContr(i)
-      enddo
-
-
-c      ROrb   center  (uncontracted function)         c
-c      COrb   coeffs  (uncontracted function)         c
-c      iAng   angular indices uncontracted functions  c
-c      Alph   exponents (uncontracted functions)      c
-c      NC     contracted funcions                     c
-c      iLAO   l number for each AO                    c
-c      cLAO   l name   for each AO                    c
-c      iContr basis contraction vector                c
-c             contains the # of functions             c
-c             in each shell                           c
-
+c      do i = 1,NOrb
+c        write(6,*)  'ROrb', ROrb(i, 1), ROrb(i, 2), ROrb(i, 3)
+c      enddo
+c      do i = 1,NOrb
+c        write(6,*) 'COrb', COrb(i)
+c      enddo
+c      do i = 1,NOrb
+c        write(6,*) 'Alph', Alph(i)
+c      enddo
+c      do i = 1, NOrb
+c        write(6,*) 'iAng', iAng(i,1), iAng(i,2), iAng(i,3)
+c      enddo
+c      do i = 1,NBas
+c        write(6,*) 'iLAO', iLAO(i), 'cLAO ', cLAO(i),'iContr', iContr(i)
+c      enddo
 
 c Compute AO Overlap Matrix
 c     write(iout,*)'computing AO overlap'
@@ -527,9 +477,9 @@ c Print Basis data
       WRITE(iout,100)
 
 c Allocate space for MOs
-      ALLOCATE(CA(NBas2))
+c      ALLOCATE(CA(NBas2))
       IF(Unrestricted .OR. UHFNO) THEN
-        ALLOCATE(CB(NBas2))
+c        ALLOCATE(CB(NBas2))
         IF(Unrestricted) THEN
           WRITE(iout,*)'Unrestricted Wave Function'
         ELSE
@@ -544,13 +494,13 @@ c Get MO coefficients or make UHFNO
       iOff = 0
       IF(Unrestricted) THEN
 c        CALL get_mos(CA,CB,NBas2,iOff,input,1)
-        CA = CA_2
-        CB = CB_2
+c        CA = CA_2
+c        CB = CB_2
       ELSEIF(UHFNO) THEN
         write(iout,*)'calling make_uhfno'
         CALL make_uhfno(CA,CB,WOcc,S_AO,NBas,input)
         write(iout,*)'make_uhfno done'
-        DEALLOCATE(CB)
+c        DEALLOCATE(CB)
 
         write(iout,*)'UHF-NO occupancies'
         DO I = 1,NBas
@@ -562,7 +512,7 @@ c        CALL get_mos(CA,CB,NBas2,iOff,input,1)
      &       NBAS,NBas,CA,WOcc,PureCart)
       ELSE
 c        CALL get_mos(CA,CA,NBas2,iOff,input,0)
-        CA = CA_2
+c        CA = CA_2
       ENDIF
 
 c Print MOs
@@ -1468,11 +1418,11 @@ c--------------------------------------------------------------
 c Free some space
       DEALLOCATE(iAng,iContr)
       DEALLOCATE(S_AO,S_MOa,S_MOb,Xaux)
-      DEALLOCATE(CA)
-      IF(Unrestricted) DEALLOCATE(CB)
+c      DEALLOCATE(CA)
+c      IF(Unrestricted) DEALLOCATE(CB)
       DEALLOCATE(iLAO,cLAO)
-      DEALLOCATE(Alph,COrb,ROrb,stROrb)
-      DEALLOCATE(AtLab,RAt,stRAt,Icenter)
+      DEALLOCATE(ROrb,stROrb)
+      DEALLOCATE(stRAt,Icenter)
       DEALLOCATE(SymGrp,SymLab,iSymMu)
       DEALLOCATE(SDiagA,SDiagB,WDiagA,WDiagB,WDiag)
       IF(DoGroup) THEN

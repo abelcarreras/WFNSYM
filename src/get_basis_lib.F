@@ -38,9 +38,6 @@ c*****************************************************c
       SAVE Zero,Half,One,Two,Four
       DATA Zero,Half,One,Two,Four / 0d0,0.5d0,1d0,2d0,4d0  /
 
-c Get the auxiliarity folder
-c      CALL getenv("WSAUX",Aux)
-
 c Initialize some variables
       ND  = 6   ! cart d-orbitals
       NF  = 10  ! cart f-orbitals
@@ -51,23 +48,9 @@ c Initialize some variables
       RAB(:) = Zero
 
       ATOMS: DO k = 1,NAt
-c        OPEN(Unit=10, Status="old", File=
-c     &"/"//trim(Aux)//"/basis/"
-c     &//trim(Basis)//"/"//trim(AtLab(k))//".dat")
-
-c        READ(10,*) NShell
-c        READ(10,*)
-
-c        write(6,*) 'NShell', NShell
         SHELLS: DO iShell = 1, NShell(k)
         iShellC = iShellC + 1
-c        READ(10,'(A2)',advance='no') OrbType
-c        READ(10,*) NC
-c        READ(10,*)
         NC = NPrim(iShellC)
-        write(6,*) '---<>---'
-        write(6,*) 'OrbType ', ' NC ', NC
-        write(6,*) 'shell_type: ', iShellC, shell_type(iShellC)
 
         iOrb0 = iOrb
 c S type functions
@@ -80,10 +63,6 @@ c        IF (OrbType.eq.'S ') THEN
           cLAO(iCount) = 's   '
           iCount = iCount + 1
           DO j = 1,NC
-c            write(6,*) 'T-P', Alph(iOrb),COrb(iOrb)
-c            READ(10,*)
-c            READ(10,*) Alph(iOrb),COrb(iOrb)
-c            write(6,*) 'T-A', Alph(iOrb),COrb(iOrb)
             DO jj = 1,3
               ROrb(iOrb,jj) = RAt(k,jj)
             ENDDO
@@ -116,13 +95,6 @@ c        ELSEIF (OrbType.eq.'P ') THEN
             iAng(iOrb+i-1,1)      = 1
             iAng(iOrb+i-1+NC,2)   = 1
             iAng(iOrb+i-1+2*NC,3) = 1
-c            READ(10,*) exp1, coef1
-c            Alph(iOrb+i-1)      = exp1
-c            Alph(iOrb+i-1+NC)   = exp1
-c            Alph(iOrb+i-1+2*NC) = exp1
-c            COrb(iOrb+i-1)      = coef1
-c            COrb(iOrb+i-1+NC)   = coef1
-c            COrb(iOrb+i-1+2*NC) = coef1
           ENDDO
           NOrbSh = 3*NC
           iOrb=iOrb+NOrbSh
@@ -154,18 +126,6 @@ c        ELSEIF (OrbType.eq.'SP') THEN
             iAng(iOrb+i+NC,2)   = 1
             iAng(iOrb+i+2*NC,3) = 1
           ENDDO
-c          DO i=1,NC
-c            READ(10,*) exp1, coef1, coef2
-c            Alph(iOrb+i-1)      = exp1
-c            Alph(iOrb+i-1+NC)   = exp1
-c            Alph(iOrb+i-1+2*NC) = exp1
-c            Alph(iOrb+i-1+3*NC) = exp1
-c            write(6,*) 'P-->', coef1, coef2, coef2, coef2
-c            COrb(iOrb+i-1)      = coef1
-c            COrb(iOrb+i-1+NC)   = coef2
-c            COrb(iOrb+i-1+2*NC) = coef2
-c            COrb(iOrb+i-1+3*NC) = coef2
-c          ENDDO
           NOrbSh = 4*NC
           iOrb = iOrb+NOrbSh
 
@@ -192,13 +152,6 @@ c        ELSEIF (OrbType.eq.'D ') THEN
             cLAO(iCount+5) = 'dz2 '
           ENDIF
           iCount=iCount+ND
-          DO i=1,NC
-c            READ(10,*) exp1, coef1
-c            DO j = 0,ND-1
-c              Alph(iOrb+i-1+j*NC) = exp1
-c              COrb(iOrb+i-1+j*NC) = coef1
-c            ENDDO
-          ENDDO
           DO i = 1,ND*NC
              DO j = 1,3
                iAng(iOrb+i-1,j) = 0
@@ -256,13 +209,6 @@ c        ELSEIF (OrbType.eq.'F ') THEN
             cLAO(iCount+9) = 'fzzz'
           ENDIF
           iCount=iCount+NF
-c          DO i=1,NC
-c             READ(10,*) exp1, coef1
-c             DO j = 0,NF-1
-c               Alph(iOrb+i-1+j*NC) = exp1
-c               COrb(iOrb+i-1+j*NC) = coef1
-c             ENDDO
-c          ENDDO
           DO i = 1,NF*NC
              DO j = 1,3
                iAng(iOrb+i-1,j) = 0
@@ -306,9 +252,7 @@ c Include normalization factors
            DO j = 1,3
              iAngv(j) = iAng(iA,j)
            ENDDO
-           write(6,*) 'A', COrb(iA), iAngv(1), iAngv(2), iAngv(3)
            CALL norm_basis(iAngv,Alph(iA),COrb(iA),PureCart)
-c           write(6,*) 'A2', COrb(iA), Alph(iA)
         ENDDO
 
 c Normalize Shell
