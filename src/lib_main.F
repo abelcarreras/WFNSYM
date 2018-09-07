@@ -3,7 +3,8 @@
 c      PROGRAM Prog_Main
       SUBROUTINE mainlib(input, basis_2, NEtot, NEval, NBas, Norb,
      & NAt_2, NTotShell, iZAt_2, AtLab_2, Alph_2, COrb_2, NShell,
-     & RAt_2, NPrim, shell_type, igroup_2, ngroup_2)
+     & RAt_2, NPrim, shell_type, igroup_2, ngroup_2, Ca_2, Cb_2,
+     & RCread_2, VAxis_2, VAxis2_2, iCharge, iMult, DoOp)
 
 c--------------------------------------------------------------
 c       David Casanova          06/APR/10	Initializing program
@@ -52,6 +53,9 @@ c--------------------------------------------------------------
       INTEGER :: iZAt_2(NAt_2), NPrim(NTotShell)
       CHARACTER :: AtLab_2(NAt_2)*2
       REAL*8 :: Alph_2(Norb),  COrb_2(Norb), RAt_2(NAt_2, 3)
+      REAL*8 :: Ca_2(NBas*NBas),  Cb_2(NBas*NBas)
+      REAL*8 :: RCread_2(3), VAxis_2(3), VAxis2_2(3)
+      LOGICAL :: DoOp
 
 c Include files
       INCLUDE 'definition_var.ins'
@@ -108,20 +112,9 @@ c ----------- Added manual arguments-----------
       CALL SetGroupDim(iGroup, nGroup, dGroup, hGroup)
 
       NAt = NAt_2
-      iCharge = 0
-      iMult = 1
-
-      RCread(1) = 0
-      RCread(2) = 0
-      RCread(3) = 0
-
-      VAxis(1) = 1
-      VAxis(2) = 0
-      VAxis(3) = 0
-
-      VAxis2(1) = 0
-      VAxis2(2) = 0
-      VAxis2(3) = 1
+      RCread = RCread_2
+      VAxis = VAxis_2
+      VAxis2 = VAxis2_2
 
       IF(.not.AngCHK) THEN
         IF (AXIS) THEN
@@ -151,11 +144,15 @@ c ----------- Added manual arguments-----------
 
       ALLOCATE(AtLab(NAt),RAt(NAt,3),stRAt(NAt,3),iZAt(NAt))
       Basis = basis_2
-      DoOper = .FALSE.
-      DoGroup = .TRUE.
-      basin = .TRUE.
-      molecule = .TRUE.
-      natom = .TRUE.
+      IF (DoOp) THEN
+        DoOper = .FALSE.
+      ELSE
+        DoGroup = .TRUE.
+      ENDIF
+
+c      basin = .TRUE.
+c      molecule = .TRUE.
+c      natom = .TRUE.
       Group = 'C'
       SubG = '6V'
 c      WRITE(SubG,'(A1, A3)') 'C6V'
@@ -250,36 +247,36 @@ c Define Axes thresh
       IF(.NOT.Ax_Thresh) IAx_Thresh = 9
 
 c Check consistency
-      IF(.not.DoOper .AND. .not.DoGroup) THEN
-        WRITE(iout,*) 'ERROR. Define Operation or Group'
-        stop
-      ELSEIF(DoOper.AND.DoGroup) THEN
-        WRITE(iout,*) 'ERROR. Only define Operation or Group'
-        stop
-      ENDIF
-      IF(NO_CENTER) readRD = .FALSE.
-      IF(.not.basin) THEN
-        WRITE(iout,*) 'ERROR. Basis Set not defined'
-        stop
-      ENDIF
-      IF(.not.natom) THEN
-        WRITE(iout,*) 'ERROR. Number of atoms not defined'
-        stop
-      ENDIF
-      IF(.not.molecule) THEN
-        WRITE(iout,*) 'ERROR. Coordinates not defined'
-        stop
-      ENDIF
-      IF(readRD .AND. .not.dipCHK) THEN
-        WRITE(iout,*) 'ERROR. Molecular Dipole (a.u.) not found'
-        stop
-      ENDIF
-      IF((iOper.GE.2 .AND. iOper.LE.4).AND.
-     &   (.NOT.ANGLES.AND..NOT.AXIS.AND.
-     &    .NOT.AxVec.AND..NOT.AxPlane)) THEN
-        WRITE(iout,*) 'ERROR. No axis orientation indicated'
-        stop
-      ENDIF
+c      IF(.not.DoOper .AND. .not.DoGroup) THEN
+c        WRITE(iout,*) 'ERROR. Define Operation or Group'
+c        stop
+c      ELSEIF(DoOper.AND.DoGroup) THEN
+c        WRITE(iout,*) 'ERROR. Only define Operation or Group'
+c        stop
+c      ENDIF
+c      IF(NO_CENTER) readRD = .FALSE.
+c      IF(.not.basin) THEN
+c        WRITE(iout,*) 'ERROR. Basis Set not defined'
+c        stop
+c      ENDIF
+c      IF(.not.natom) THEN
+c        WRITE(iout,*) 'ERROR. Number of atoms not defined'
+c        stop
+c      ENDIF
+c      IF(.not.molecule) THEN
+c        WRITE(iout,*) 'ERROR. Coordinates not defined'
+c        stop
+c      ENDIF
+c      IF(readRD .AND. .not.dipCHK) THEN
+c        WRITE(iout,*) 'ERROR. Molecular Dipole (a.u.) not found'
+c        stop
+c      ENDIF
+c      IF((iOper.GE.2 .AND. iOper.LE.4).AND.
+c     &   (.NOT.ANGLES.AND..NOT.AXIS.AND.
+c     &    .NOT.AxVec.AND..NOT.AxPlane)) THEN
+c        WRITE(iout,*) 'ERROR. No axis orientation indicated'
+c        stop
+c      ENDIF
 
       WRITE(iout,'("Basis: ",A8)') Basis(1:8)
 
@@ -546,7 +543,9 @@ c Allocate space for MOs
 c Get MO coefficients or make UHFNO
       iOff = 0
       IF(Unrestricted) THEN
-        CALL get_mos(CA,CB,NBas2,iOff,input,1)
+c        CALL get_mos(CA,CB,NBas2,iOff,input,1)
+        CA = CA_2
+        CB = CB_2
       ELSEIF(UHFNO) THEN
         write(iout,*)'calling make_uhfno'
         CALL make_uhfno(CA,CB,WOcc,S_AO,NBas,input)
@@ -562,7 +561,8 @@ c Get MO coefficients or make UHFNO
         CALL make_molden(NAt,iZAt,AtLab,RAt,Basis,input,
      &       NBAS,NBas,CA,WOcc,PureCart)
       ELSE
-        CALL get_mos(CA,CA,NBas2,iOff,input,0)
+c        CALL get_mos(CA,CA,NBas2,iOff,input,0)
+        CA = CA_2
       ENDIF
 
 c Print MOs
