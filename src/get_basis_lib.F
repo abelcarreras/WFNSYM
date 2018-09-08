@@ -1,5 +1,5 @@
 
-        SUBROUTINE get_basis(Basis,AtLab,RAt,iAng,Alph,
+        SUBROUTINE get_basis(AtLab,RAt,iAng,Alph,
      & ROrb,COrb,iContr,iLAO,cLAO,NAt,NBas,NOrb,PureCart,
      & NPrim, NTotShell, NShell, shell_type)
 c*****************************************************c
@@ -8,7 +8,6 @@ c       Reads AOs from disk and makes                 c
 c       uncontracted basis                            c
 c                                                     c
 c    INPUT                                            c
-c      Basis  atomic basis                            c
 c      AtLab  atomic label                            c
 c      RAt    atomic position                         c
 c                                                     c
@@ -33,7 +32,7 @@ c*****************************************************c
       INTEGER :: iAng(NOrb,3),iContr(NBas),iAngv(3),iLAO(NBas)
       INTEGER :: NPrim(NTotShell), NShell(NAt), shell_type(NTotShell)
       REAL*8    :: RAt(NAt,3),RAB(3),ROrb(NOrb,3),COrb(NOrb),Alph(NOrb)
-      CHARACTER :: Basis*80, AtLab(*)*2,cLAO(NBas)*4,Aux*255
+      CHARACTER :: AtLab(*)*2,cLAO(NBas)*4,Aux*255
       LOGICAL   :: PureCart
       SAVE Zero,Half,One,Two,Four
       DATA Zero,Half,One,Two,Four / 0d0,0.5d0,1d0,2d0,4d0  /

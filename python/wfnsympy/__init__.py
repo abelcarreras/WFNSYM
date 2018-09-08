@@ -243,8 +243,6 @@ Ca = [-6.43302924E-03,  9.93234079E-01,  3.29472273E-02, -2.01329290E-16, -1.577
       -7.88398567E-01, -2.67731796E-01,  2.67731796E-01,  4.07955748E-01, -4.07955748E-01]
 
 
-basis = 'STO-3G'
-
 igroup = 3
 ngroup = 6
 
@@ -297,8 +295,8 @@ for i, stype in enumerate(shell_type):
             COrb.append(b_coef_group[i])
 COrb = np.array(COrb).flatten()
 
-os.remove('pirrol.wout')
-mainlib('pirrol', basis, Etot, NEval, NBas, Norb, Nat, NTotShell, iZAt, AtLab, Alph,
+#os.remove('pirrol.wout')
+mainlib(Etot, NEval, NBas, Norb, Nat, NTotShell, iZAt, AtLab, Alph,
         COrb, NShell, RAt, n_prim, shell_type,  igroup, ngroup, Ca, Ca, RCread, VAxis, VAxis2,
         iCharge, iMult, do_operation)
 

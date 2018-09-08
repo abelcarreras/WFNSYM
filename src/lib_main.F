@@ -1,7 +1,7 @@
 #include "wfnsym.h"
 
 c      PROGRAM Prog_Main
-      SUBROUTINE mainlib(input, basis_2, NEtot, NEval, NBas, Norb,
+      SUBROUTINE mainlib(NEtot, NEval, NBas, Norb,
      & NAt_2, NTotShell, iZAt, AtLab, Alph, COrb, NShell,
      & RAt, NPrim, shell_type, igroup_2, ngroup_2, Ca, Cb,
      & RCread_2, VAxis_2, VAxis2_2, iCharge, iMult, DoOp)
@@ -50,7 +50,7 @@ c					 True : 5 decimals
 c--------------------------------------------------------------
       IMPLICIT REAL*8 (a-h,o-z)
       CHARACTER ::  wfnsym_out*255
-      CHARACTER ::  basis_2*80
+      CHARACTER ::  basis_2*80, input_2*80
       INTEGER :: iZAt(NAt_2), NPrim(NTotShell)
       CHARACTER :: AtLab(NAt_2)*2
       REAL*8 :: Alph(Norb),  COrb(Norb), RAt(NAt_2, 3)
@@ -63,7 +63,8 @@ c Include files
       INCLUDE 'common_var.ins'
       INCLUDE 'init_var.ins'
 
-
+      input = input_2
+      write(input, '(A6)') 'pirrol'
       k=max(len_trim(input),5)
       if (input(k-4:k).eq.'.win') input(k-4:k)='    '
 
@@ -90,7 +91,7 @@ c ----------- Added manual arguments-----------
       RCread = RCread_2
       VAxis = VAxis_2
       VAxis2 = VAxis2_2
-      basis = basis_2
+      basis = 'STO-3G'
 
       PureCart = .FALSE.
       basin = .TRUE.
@@ -426,7 +427,7 @@ c     ALLOCATE(IpivA(NOa),IpivB(NOb))
 
 c Reading AO Basis Set
 c     write(iout,*)'reading AOs'
-      CALL get_basis(basis_2,AtLab,RAt,iAng,Alph,
+      CALL get_basis(AtLab,RAt,iAng,Alph,
      & ROrb,COrb,iContr,iLAO,cLAO,NAt,NBas,NOrb,PureCart,
      & NPrim, NTotShell, NShell, shell_type)
 
@@ -508,8 +509,8 @@ c        DEALLOCATE(CB)
         ENDDO
 
         write(iout,*)'print uhfnos into molden file'
-        CALL make_molden(NAt,iZAt,AtLab,RAt,Basis,input,
-     &       NBAS,NBas,CA,WOcc,PureCart)
+c        CALL make_molden(NAt,iZAt,AtLab,RAt,Basis,input,
+c     &       NBAS,NBas,CA,WOcc,PureCart)
       ELSE
 c        CALL get_mos(CA,CA,NBas2,iOff,input,0)
 c        CA = CA_2
@@ -1355,8 +1356,8 @@ c	CALL AtimsB(SOrbA,CA,SGrpA, NBas,NBas,NBas, NBas,NBas,NBas, 1)
 
 c Print SymOrbs as a Molden file (*.mol)
       WRITE(iout,*) 'Writing Molden format'
-      CALL make_molden(NAt,iZAt,AtLab,RAt,Basis,input,
-     &     NOa,NBas,SOrbA,WOrbA,PureCart)
+c      CALL make_molden(NAt,iZAt,AtLab,RAt,Basis,input,
+c     &     NOa,NBas,SOrbA,WOrbA,PureCart)
       DEALLOCATE(SOrbA,WOrbA)
 
       IF(NOb.NE.0 .AND.(NOa.NE.NOb .OR. Unrestricted))
