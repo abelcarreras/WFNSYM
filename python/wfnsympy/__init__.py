@@ -2,16 +2,17 @@ from WFNSYMLIB import mainlib
 import os
 import numpy as np
 
+os.chdir('/Users/abel/Programes/WFNSYM/test/')
 
 class WfnSympy:
     def __init__(self,
                  Etot,
                  NEval,
-                 NBas,
-                 Norb,
-                 NTotShell,
+                 # NBas,
+                 # Norb,
+                 # NTotShell,
+                 # iZAt,
                  AtLab,
-                 iZAt,
                  shell_type,
                  p_exp,
                  con_coef,
@@ -29,22 +30,20 @@ class WfnSympy:
                  do_operation = False,
                  use_pure_d_functions=False):
 
-        Nat = len(iZAt)
+        iZAt = [symbol_map[e] for e in AtLab]
 
         self._atom_coor = np.array(RAt)
         NShell = np.unique(atom_map, return_counts=True)[1]
 
         AtLab = np.array([list('{:<2}'.format(char)) for char in AtLab])
 
-        #ROrb = np.repeat(RAt, NShell, axis=0)
-        #ROrb = np.repeat(ROrb, n_prim, axis=0)
-
         typeList = {'-1': ['sp', 4],
                      '0': ['s', 1],
                      '1': ['p', 3],
                      '2': ['d', 6],
-                     '3': ['f', 10]}  # Warning check for pure D
+                     '3': ['f', 10]}
 
+        # Check for pure D
         if use_pure_d_functions:
             typeList.update({'2', ['d', 5]})
 
@@ -69,13 +68,17 @@ class WfnSympy:
                     COrb.append(b_coef_group[i])
         COrb = np.array(COrb).flatten()
 
+        # determine dimension
+        Nat = len(AtLab)
+        NTotShell = len(atom_map)
+        Norb = len(COrb)
+        NBas = np.sum([typeList['{}'.format(st)][1] for st in shell_type])
+
         #os.remove('pirrol.wout')
         out_data = mainlib(Etot, NEval, NBas, Norb, Nat, NTotShell, iZAt, AtLab, Alph,
-                COrb, NShell, RAt, n_prim, shell_type,  igroup, ngroup, Ca, Cb, RCread, VAxis, VAxis2,
-                iCharge, iMult, do_operation)
-        print(mainlib.__doc__)
-
-        os.chdir('/Users/abel/Programes/WFNSYM/test/')
+                COrb, NShell, RAt, n_prim, shell_type, igroup, ngroup, Ca, Cb, RCread, VAxis, VAxis2,
+                iCharge, iMult, do_operation, use_pure_d_functions)
+        # print(mainlib.__doc__)
 
         #import filecmp
         #if (filecmp.cmp('pirrol.wout', 'pirrol.wout_ref')):
@@ -116,7 +119,6 @@ class WfnSympy:
         self._gIRwfB = out_data[13][0:nIR]
         self._SymMat = out_data[14][0:dgroup]
 
-
     # Print Outputs
     def print_CSM(self):
         print('\nWaveFunction: CSM-like values')
@@ -141,7 +143,7 @@ class WfnSympy:
         print('     '+'  '.join(['{:^7}'.format(s) for s in self._SymLab]))
         print('a-wf' + '  '.join(['{:7.3f}'.format(s) for s in self._a_wf]))
         print('b-wf' + '  '.join(['{:7.3f}'.format(s) for s in self._b_wf]))
-        print('WFN ' + '  '.join(['{:7.3f}'.format(s) for s in self._wf]))
+        # print('WFN ' + '  '.join(['{:7.3f}'.format(s) for s in self._wf]))
 
     def print_ideal_group_table(self):
         print('\nIdeal Group Table')
@@ -166,7 +168,7 @@ class WfnSympy:
         print('     '+'  '.join(['{:^7}'.format(s) for s in self._IRLab]))
         print('a-wf' + '  '.join(['{:7.3f}'.format(s) for s in self._gIRwfA]))
         print('b-wf' + '  '.join(['{:7.3f}'.format(s) for s in self._gIRwfB]))
-        print('WFN ' + '  '.join(['{:7.3f}'.format(s) for s in self._IRwf]))
+        # print('WFN ' + '  '.join(['{:7.3f}'.format(s) for s in self._IRwf]))
 
     def print_symmetry_operation_matrix(self, nop):
         if nop > len(self._SymMat):
@@ -193,13 +195,131 @@ class WfnSympy:
         return self._dgroup
 
 
+symbol_map = {
+    "H": 1,
+    "He": 2,
+    "Li": 3,
+    "Be": 4,
+    "B": 5,
+    "C": 6,
+    "N": 7,
+    "O": 8,
+    "F": 9,
+    "Ne": 10,
+    "Na": 11,
+    "Mg": 12,
+    "Al": 13,
+    "Si": 14,
+    "P": 15,
+    "S": 16,
+    "Cl": 17,
+    "Ar": 18,
+    "K": 19,
+    "Ca": 20,
+    "Sc": 21,
+    "Ti": 22,
+    "V": 23,
+    "Cr": 24,
+    "Mn": 25,
+    "Fe": 26,
+    "Co": 27,
+    "Ni": 28,
+    "Cu": 29,
+    "Zn": 30,
+    "Ga": 31,
+    "Ge": 32,
+    "As": 33,
+    "Se": 34,
+    "Br": 35,
+    "Kr": 36,
+    "Rb": 37,
+    "Sr": 38,
+    "Y": 39,
+    "Zr": 40,
+    "Nb": 41,
+    "Mo": 42,
+    "Tc": 43,
+    "Ru": 44,
+    "Rh": 45,
+    "Pd": 46,
+    "Ag": 47,
+    "Cd": 48,
+    "In": 49,
+    "Sn": 50,
+    "Sb": 51,
+    "Te": 52,
+    "I": 53,
+    "Xe": 54,
+    "Cs": 55,
+    "Ba": 56,
+    "La": 57,
+    "Ce": 58,
+    "Pr": 59,
+    "Nd": 60,
+    "Pm": 61,
+    "Sm": 62,
+    "Eu": 63,
+    "Gd": 64,
+    "Tb": 65,
+    "Dy": 66,
+    "Ho": 67,
+    "Er": 68,
+    "Tm": 69,
+    "Yb": 70,
+    "Lu": 71,
+    "Hf": 72,
+    "Ta": 73,
+    "W": 74,
+    "Re": 75,
+    "Os": 76,
+    "Ir": 77,
+    "Pt": 78,
+    "Au": 79,
+    "Hg": 80,
+    "Tl": 81,
+    "Pb": 82,
+    "Bi": 83,
+    "Po": 84,
+    "At": 85,
+    "Rn": 86,
+    "Fr": 87,
+    "Ra": 88,
+    "Ac": 89,
+    "Th": 90,
+    "Pa": 91,
+    "U": 92,
+    "Np": 93,
+    "Pu": 94,
+    "Am": 95,
+    "Cm": 96,
+    "Bk": 97,
+    "Cf": 98,
+    "Es": 99,
+    "Fm": 100,
+    "Md": 101,
+    "No": 102,
+    "Lr": 103,
+    "Rf": 104,
+    "Db": 105,
+    "Sg": 106,
+    "Bh": 107,
+    "Hs": 108,
+    "Mt": 109,
+    "Ds": 110,
+    "Rg": 111,
+    "Cn": 112,
+    "Uut": 113,
+    "Uuq": 114,
+    "Uup": 115,
+    "Uuh": 116,
+    "Uus": 117,
+    "Uuo": 118,
+}
+
 if __name__ == '__main__':
 
-    # Atomic elementd
+    # Atomic elements
     AtLab = ['H', 'N', 'C', 'C', 'C', 'C', 'H', 'H', 'H', 'H']
-
-    # Atomic numbers
-    iZAt = [1, 7, 6, 6, 6, 6, 1, 1, 1, 1]
 
     # Shell type [sp:-1, s:0, p:1, d:2, f:3]
     shell_type = [0, 0, -1, 0, -1, 0, -1, 0, -1, 0, -1, 0, 0, 0, 0]
@@ -437,18 +557,18 @@ if __name__ == '__main__':
            7.88398567E-01,  8.69435277E-02, -6.56193193E-01, -5.75068294E-17, -5.59207294E-01,
           -7.88398567E-01, -2.67731796E-01,  2.67731796E-01,  4.07955748E-01, -4.07955748E-01]
 
-    pirrol = WfnSympy(Etot=36,
-                      NEval=26,
-                      NBas=30,
-                      Norb=45*2,
-                      NTotShell=15,
-                      AtLab=AtLab,
-                      iZAt=iZAt,
+    pirrol = WfnSympy(Etot=36,        # Number of electrons
+                      NEval=26,       # Number of Valence electrons
+                      # NBas=30,      # Number of basis function
+                      # Norb=45*2,    # Number of Orbitals
+                      # NTotShell=15, # Number of shells
+                      # iZAt=iZAt,
+                      AtLab=AtLab,    # Atomic labels
                       shell_type=shell_type,
                       p_exp=p_exp,
                       con_coef=con_coef,
                       p_con_coef=p_con_coef,
-                      RAt=RAt,  # coordinates in Bohr
+                      RAt=RAt,  # atomic coordinates in Bohr
                       n_prim=n_prim,
                       atom_map=atom_map,
                       Ca=Ca, Cb=Ca,
@@ -459,8 +579,10 @@ if __name__ == '__main__':
                       igroup=3, ngroup=6,  # define symmetry group
                       do_operation=False)
 
+    # Testing
     pirrol.print_alpha_mo_IRD()
     pirrol.print_beta_mo_IRD()
+    pirrol.print_wf_mo_IRD()
     pirrol.print_CSM()
     pirrol.print_ideal_group_table()
     pirrol.print_overlap_mo_alpha()

@@ -4,10 +4,10 @@
 python module WFNSYMLIB ! in 
     interface  ! in :WFNSYMLIB
         subroutine mainlib(Etot, NEval, NBas, Norb, NAt, NCShell, iZAt, AtLab, Alph, COrb, NShell, RAt, n_prim, shell_type, &
-        igroup, ngroup, Ca, Cb, RCread, VAxis, VAxis2, iCharge, iMult, DoOp, OutDim, OutGrim, OutCMS, OutSymLab, OutSDiagA, &
+        igroup, ngroup, Ca, Cb, RCread, VAxis, VAxis2, iCharge, iMult, DoOp, PureCart, OutDim, OutGrim, OutCMS, OutSymLab, OutSDiagA, &
         OutSDiagB, OutWDiagA, OutWDiagB, OutTbl, OutIRLab, OutgIRA, OutgIRB, OutgIRwfA, OutgIRwfB, OutSymMat) ! in :WFNSYMLIB:lib_main.F
 
-            logical :: DoOp
+            logical :: DoOp, PureCart
             integer :: Etot, NEval, NBas, Norb, NAt, NCShell, igroup, ngroup, iCharge, iMult
 
             real*8 dimension(3),intent(in) :: RCread, VAxis, VAxis2

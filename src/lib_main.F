@@ -5,9 +5,10 @@ c      PROGRAM Prog_Main
      & NAt_2, NTotShell, iZAt, AtLab, Alph, COrb, NShell,
      & RAt, NPrim, shell_type, igroup_2, ngroup_2, Ca, Cb,
      & RCread_2, VAxis_2, VAxis2_2, iCharge, iMult, DoOp,
-     & OutDim, OutGrim, OutCSM, OutSymLab, OutSDiagA,
-     & OutSDiagB, OutWDiagA, OutWDiagB, OutTbl, OutIRLab,
-     & OutgIRA, OutgIRB,OutgIRwfA,OutgIRwfB, OutSymMat)
+     & PureCart_2, OutDim, OutGrim, OutCSM, OutSymLab,
+     & OutSDiagA, OutSDiagB, OutWDiagA, OutWDiagB, OutTbl,
+     & OutIRLab, OutgIRA, OutgIRB,OutgIRwfA,OutgIRwfB,
+     & OutSymMat)
 
 c--------------------------------------------------------------
 c       David Casanova          06/APR/10	Initializing program
@@ -59,7 +60,7 @@ c--------------------------------------------------------------
       REAL*8 :: Alph(Norb),  COrb(Norb), RAt(NAt_2, 3)
       REAL*8 :: Ca(NBas*NBas),  Cb(NBas*NBas)
       REAL*8 :: RCread_2(3), VAxis_2(3), VAxis2_2(3)
-      LOGICAL :: DoOp
+      LOGICAL :: DoOp, PureCart_2
 c     Output
       INTEGER :: OutDim(3)
       REAL*8 :: OutCSM(100), OutGrim(100)
@@ -105,7 +106,7 @@ c ----------- Added manual arguments-----------
       VAxis2 = VAxis2_2
       basis = 'STO-3G'
 
-      PureCart = .FALSE.
+      PureCart = PureCart_2
       basin = .TRUE.
       molecule = .TRUE.
       natom = .TRUE.
