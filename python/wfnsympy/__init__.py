@@ -258,6 +258,7 @@ do_operation = False
 
 Nat = len(iZAt)
 
+atom_coor = np.array(RAt) * 0.529177249
 NShell = np.unique(atom_map, return_counts=True)[1]
 
 
@@ -296,12 +297,104 @@ for i, stype in enumerate(shell_type):
 COrb = np.array(COrb).flatten()
 
 #os.remove('pirrol.wout')
-mainlib(Etot, NEval, NBas, Norb, Nat, NTotShell, iZAt, AtLab, Alph,
+out_data = mainlib(Etot, NEval, NBas, Norb, Nat, NTotShell, iZAt, AtLab, Alph,
         COrb, NShell, RAt, n_prim, shell_type,  igroup, ngroup, Ca, Ca, RCread, VAxis, VAxis2,
         iCharge, iMult, do_operation)
+print (mainlib.__doc__)
 
 if (filecmp.cmp('pirrol.wout', 'pirrol.wout_ref')):
     print('!!!!!!!ALL OK!!!!!!!')
 else:
     print('**********ERROR***********')
 
+# Process outputs
+dgroup = out_data[0][0]
+hGroup = out_data[0][1]
+nIR = out_data[0][2]
+
+grim = out_data[1][0:dgroup]
+csm = out_data[2][0:dgroup]
+
+SymLab = [''.join(line).strip() for line in out_data[3][0:dgroup]]
+
+SDiagA = out_data[4][:, 0:dgroup]
+SDiagB = out_data[5][:, 0:dgroup]
+
+a_wf = out_data[6][0:dgroup]
+b_wf = out_data[7][0:dgroup]
+wf = np.prod([a_wf, b_wf], axis=0)
+
+Tbl = out_data[8][:nIR, :dgroup]
+
+IRLab = [''.join(line).strip() for line in out_data[9][0:nIR]]
+
+gIRA = out_data[10][:, 0:nIR]
+gIRB = out_data[11][:, 0:nIR]
+
+gIRwfA = out_data[12][0:nIR]
+gIRwfB = out_data[13][0:nIR]
+IRwf = np.prod([gIRwfA, gIRwfB], axis=0)
+
+gIRwfB = out_data[13][0:nIR]
+SymMat = out_data[14][0:dgroup]
+
+# Print Outputs
+print(SymLab)
+
+print('GRIM')
+print(grim)
+print('CSM')
+print(csm)
+
+print('\nWaveFunction: CSM-like values')
+print('     '+'  '.join(['{:^7}'.format(s) for s in SymLab]))
+print('Grim' + '  '.join(['{:7.3f}'.format(s) for s in grim]))
+print('CSM ' + '  '.join(['{:7.3f}'.format(s) for s in csm]))
+
+print('\nAlpha MOs: Symmetry Overlap Expectation Values')
+print('     '+'  '.join(['{:^7}'.format(s) for s in SymLab]))
+for i, line in enumerate(SDiagA):
+    print('{:4d}'.format(i+1) + '  '.join(['{:7.3f}'.format(s) for s in line]))
+
+print('\nBeta MOs: Symmetry Overlap Expectation Values')
+print('     '+'  '.join(['{:^7}'.format(s) for s in SymLab]))
+for i, line in enumerate(SDiagB):
+    print('{:4d}'.format(i+1) + '  '.join(['{:7.3f}'.format(s) for s in line]))
+
+print('\nWaveFunction: Symmetry Overlap Expectation Values')
+print('     '+'  '.join(['{:^7}'.format(s) for s in SymLab]))
+print('a-wf' + '  '.join(['{:7.3f}'.format(s) for s in a_wf]))
+print('b-wf' + '  '.join(['{:7.3f}'.format(s) for s in b_wf]))
+print('WFN ' + '  '.join(['{:7.3f}'.format(s) for s in wf]))
+
+print('\nIdeal Group Table')
+print('     '+'  '.join(['{:^7}'.format(s) for s in SymLab]))
+for i, line in enumerate(Tbl):
+    print('{:4}'.format(IRLab[i]) + '  '.join(['{:7.3f}'.format(s) for s in line]))
+
+print('\nAlpha MOs: Irred. Rep. Decomposition')
+print('     '+'  '.join(['{:^7}'.format(s) for s in IRLab]))
+for i, line in enumerate(gIRA):
+    print('{:4d}'.format(i+1) + '  '.join(['{:7.3f}'.format(s) for s in line]))
+
+print('\nBeta MOs: Irred. Rep. Decomposition')
+print('     '+'  '.join(['{:^7}'.format(s) for s in IRLab]))
+for i, line in enumerate(gIRB):
+    print('{:4d}'.format(i+1) + '  '.join(['{:7.3f}'.format(s) for s in line]))
+
+
+print('\nWaveFunction: Irred. Rep. Decomposition')
+print('     '+'  '.join(['{:^7}'.format(s) for s in IRLab]))
+print('a-wf' + '  '.join(['{:7.3f}'.format(s) for s in gIRwfA]))
+print('b-wf' + '  '.join(['{:7.3f}'.format(s) for s in gIRwfB]))
+print('WFN ' + '  '.join(['{:7.3f}'.format(s) for s in IRwf]))
+
+
+print('\nMat')
+np.set_printoptions(formatter={'float': '{: 0.8f}'.format})
+for i, mat in enumerate(SymMat):
+    print('\n@@@ Operation: {0} {1}'.format(i+1, SymLab[i]))
+    print('Symmetry Transformation matrix')
+    print(mat)
+    print('Symmetry Transformed Atomic Coordinates (Angstroms)')
+    print(np.dot(atom_coor, mat.T))

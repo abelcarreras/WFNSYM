@@ -4,7 +4,10 @@ c      PROGRAM Prog_Main
       SUBROUTINE mainlib(NEtot, NEval, NBas, Norb,
      & NAt_2, NTotShell, iZAt, AtLab, Alph, COrb, NShell,
      & RAt, NPrim, shell_type, igroup_2, ngroup_2, Ca, Cb,
-     & RCread_2, VAxis_2, VAxis2_2, iCharge, iMult, DoOp)
+     & RCread_2, VAxis_2, VAxis2_2, iCharge, iMult, DoOp,
+     & OutDim, OutGrim, OutCSM, OutSymLab, OutSDiagA,
+     & OutSDiagB, OutWDiagA, OutWDiagB, OutTbl, OutIRLab,
+     & OutgIRA, OutgIRB,OutgIRwfA,OutgIRwfB, OutSymMat)
 
 c--------------------------------------------------------------
 c       David Casanova          06/APR/10	Initializing program
@@ -57,7 +60,16 @@ c--------------------------------------------------------------
       REAL*8 :: Ca(NBas*NBas),  Cb(NBas*NBas)
       REAL*8 :: RCread_2(3), VAxis_2(3), VAxis2_2(3)
       LOGICAL :: DoOp
-
+c     Output
+      INTEGER :: OutDim(3)
+      REAL*8 :: OutCSM(100), OutGrim(100)
+      CHARACTER :: OutSymLab(100)*6, OutIRLab(100)*3
+      REAL*8 :: OutSDiagA(NBas, 100), OutSDiagB(NBas, 100)
+      REAL*8 :: OutWDiagA(NBas), OutWDiagB(NBas)
+      REAL*8 :: OutTbl(100,100)
+      REAL*8 :: OutgIRA(NBas,100), OutgIRB(NBas,100)
+      REAL*8 :: OutgIRwfA(100), OutgIRwfB(100)
+      REAL*8 :: OutSymMat(100, 3, 3)
 c Include files
       INCLUDE 'definitionlib_var.ins'
       INCLUDE 'common_var.ins'
@@ -564,6 +576,12 @@ cgroups
       DO i = 1,3
         WRITE(iout,902) (SymMat(i,j),j=1,3)
       ENDDO
+      DO i = 1,3
+        DO j = 1,3
+          OutSymMat(iG, i, j) = SymMat(i,j)
+        ENDDO
+      ENDDO
+
 
 #if 0
       WRITE(iout,"('@@@ Operation-vectors',I2,':',1X,A6)") iG,SymLab(iG)
@@ -895,6 +913,7 @@ c Print Group Table
             Tbl = GrpTbl(jIR,iOp)+GrpTbl(jIR+4,iOp)+GrpTbl(jIR+8,iOp)
           ENDIF
           WRITE(iout,FMT2,advance='no') Tbl
+          OutTbl(iIR, iG) = Tbl
           iOp = iOp + iSymMu(iG)
         ENDDO
         WRITE(iout,*)
@@ -1078,6 +1097,40 @@ c Print results
         WRITE(iout,FMT1,advance='no')
       ENDDO
       WRITE(iout,*)
+
+c     Set output data
+      do i = 1, dGroup
+        OutGrim(i) = csm(i)
+      enddo
+
+      do i = 1, dGroup
+        OutCSM(i) = 100.*(One-WDiag(i))
+      enddo
+
+      do i = 1, dGroup
+         OutSymLab(i) = SymLab(i)
+      enddo
+
+      DO i = 1,NBas
+        iOp = 1
+        DO iG = 1,dGroup
+          OutSDiagA(i,iG) = SDiagA(i+(iOp-1)*NBas)
+          OutSDiagB(i,iG) = SDiagB(i+(iOp-1)*NBas)
+          iOp = iOp + iSymMu(iG)
+        ENDDO
+      ENDDO
+
+      iOp = 1
+      DO iG = 1,dGroup
+        OutWDiagA(iG) = WDiagA(iOp)
+        OutWDiagB(iG) = WDiagB(iOp)
+        iOp = iOp + iSymMu(iG)
+      ENDDO
+
+      DO i = 1,nIR
+        OutIRLab(i) = IRLab(i)
+      ENDDO
+
 
       DEALLOCATE(csm)
 
@@ -1287,6 +1340,20 @@ c Print WaveFunction Irred. Repr. projections
 
       ENDIF ! DoGroup
 
+      DO i = 1,NBas
+        DO iIR = 1,nIR
+c          OutIRLab(i) = IRLab(i)
+          OutgIRB(i, iIR)  =  gIRB(i,iIR)
+          OutgIRA(i, iIR)  =  gIRA(i,iIR)
+        ENDDO
+      ENDDO
+
+      DO i = 1,nIR
+        OutIRLab(i) = IRLab(i)
+        OutgIRwfA(i)  =  gIRwfA(i)
+        OutgIRwfB(i)  =  gIRwfB(i)
+      ENDDO
+
 
 c ################################
 c #  Diagonilze Symmetry Matrix  #
@@ -1446,6 +1513,11 @@ c Saying goodbye
 c Close files
 c      CLOSE(1)
       CLOSE(2)
+
+c     Generate outputs
+      OutDim(1) = dGroup
+      OutDim(2) = hGroup
+      OutDim(3) = nIR
 
  1    END
 
