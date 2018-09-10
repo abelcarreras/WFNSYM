@@ -26,3 +26,8 @@ Installation instructions
    python setup.py install --user
    ```
 
+Authors
+--------------------------------------------------------
+
+This software has been developed by David Casanova
+Python module by Abel Carreras
