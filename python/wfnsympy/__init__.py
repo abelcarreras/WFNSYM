@@ -1,6 +1,6 @@
 from WFNSYMLIB import mainlib
-import os
 import numpy as np
+import os
 
 os.chdir('/Users/abel/Programes/WFNSYM/test/')
 
@@ -26,7 +26,7 @@ class WfnSympy:
                  VAxis2,
                  iCharge, iMult,
                  igroup=1,
-                 ngroup=1,
+                 ngroup=1, # This has to be obtained from label
                  do_operation = False,
                  use_pure_d_functions=False):
 
