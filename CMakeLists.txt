@@ -99,9 +99,3 @@ ADD_LIBRARY ("WFNSYMLIB" "STATIC"
 # install executables and scripts
 install (TARGETS ${EXECUTABLES}
          RUNTIME DESTINATION "bin")
-
-#INSTALL(TARGETS lemon
-#        ARCHIVE DESTINATION lib
-#        LIBRARY DESTINATION lib  # <-- Add this line
-#        COMPONENT library
-#)
