@@ -35,7 +35,7 @@ class WfnSympy:
         self._atom_coor = np.array(RAt)
         NShell = np.unique(atom_map, return_counts=True)[1]
 
-        AtLab = np.array([list('{:<2}'.format(char)) for char in AtLab])
+        AtLab = np.array([list('{:<2}'.format(char)) for char in AtLab], dtype='S')
 
         typeList = {'-1': ['sp', 4],
                      '0': ['s', 1],
@@ -96,7 +96,7 @@ class WfnSympy:
         self._grim = out_data[1][0:dgroup]
         self._csm = out_data[2][0:dgroup]
 
-        self._SymLab = [''.join(line).strip() for line in out_data[3][0:dgroup]]
+        self._SymLab = [''.join(line).strip() for line in np.array(out_data[3][0:dgroup],dtype='str')]
 
         self._SDiagA = out_data[4][:, 0:dgroup]
         self._SDiagB = out_data[5][:, 0:dgroup]
@@ -107,7 +107,7 @@ class WfnSympy:
 
         self._Tbl = out_data[8][:nIR, :dgroup]
 
-        self._IRLab = [''.join(line).strip() for line in out_data[9][0:nIR]]
+        self._IRLab = [''.join(line).strip() for line in np.array(out_data[9][0:nIR],dtype='str')]
 
         self._gIRA = out_data[10][:, 0:nIR]
         self._gIRB = out_data[11][:, 0:nIR]
