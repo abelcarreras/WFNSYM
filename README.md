@@ -14,7 +14,7 @@ Installation instructions
   - (optional) MKL
 
 
-2a. Install as standalone binary:
+2a. Install as standalone binary
    ```
    ./configure (see --help for available options)
    cd build
