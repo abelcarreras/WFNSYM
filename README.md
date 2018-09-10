@@ -10,7 +10,7 @@ Installation instructions
 
 1. Requirements
   - Lapack & Blas libraries
-  - cmake 2.0
+  - cmake 2.6
   - (optional) MKL
 
 
