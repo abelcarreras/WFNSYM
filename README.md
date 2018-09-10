@@ -30,4 +30,4 @@ Authors
 --------------------------------------------------------
 
 This software has been developed by David Casanova
-Python module by Abel Carreras
+<br>Python module by Abel Carreras
