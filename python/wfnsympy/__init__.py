@@ -27,7 +27,7 @@ class WfnSympy:
                  iCharge, iMult,
                  igroup=1,
                  ngroup=1, # This has to be obtained from label
-                 do_operation = False,
+                 do_operation=False,
                  use_pure_d_functions=False):
 
         iZAt = [symbol_map[e] for e in AtLab]
@@ -143,7 +143,7 @@ class WfnSympy:
         print('     '+'  '.join(['{:^7}'.format(s) for s in self._SymLab]))
         print('a-wf' + '  '.join(['{:7.3f}'.format(s) for s in self._a_wf]))
         print('b-wf' + '  '.join(['{:7.3f}'.format(s) for s in self._b_wf]))
-        # print('WFN ' + '  '.join(['{:7.3f}'.format(s) for s in self._wf]))
+        print('WFN ' + '  '.join(['{:7.3f}'.format(s) for s in self._wf]))
 
     def print_ideal_group_table(self):
         print('\nIdeal Group Table')
