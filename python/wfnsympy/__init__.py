@@ -1,4 +1,4 @@
-from WFNSYMLIB import mainlib
+from wfnsympy.WFNSYMLIB import mainlib
 import numpy as np
 import os
 
@@ -64,7 +64,6 @@ class WfnSympy:
         coef_group = np.array(np.split(np.array(con_coef), np.cumsum(n_prim))[:-1])
         b_coef_group = np.array(np.split(np.array(p_con_coef), np.cumsum(n_prim))[:-1])
 
-        # L'error esta aqui
         COrb = []
         for i, stype in enumerate(shell_type):
             COrb.append(coef_group[i])
