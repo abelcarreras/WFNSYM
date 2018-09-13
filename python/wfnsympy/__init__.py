@@ -2,7 +2,7 @@ from WFNSYMLIB import mainlib
 import numpy as np
 import os
 
-os.chdir('/Users/abel/Programes/WFNSYM/test/')
+# os.chdir('/home/efrem/test/')
 
 class WfnSympy:
     def __init__(self,
@@ -45,28 +45,41 @@ class WfnSympy:
 
         # Check for pure D
         if use_pure_d_functions:
-            typeList.update({'2', ['d', 5]})
+            typeList.update({'-2' : ['d', 5],
+                             '-3' : ['f', 7]})
 
         exp_group = np.array(np.split(np.array(p_exp), np.cumsum(n_prim))[:-1])
 
         Alph=[]
         for i, stype in enumerate(shell_type):
             for _ in range(typeList['{}'.format(stype)][1]):
-                # print(stype, i, typeList['{}'.format(stype)])
+                # print(stype, i, typeList['{}'.format(stype)][1])
                 Alph.append(exp_group[i])
-        Alph = np.array(Alph).flatten()
-
+        # Alph = np.array(Alph).flatten()
+        Alph2 = []
+        for i in Alph:
+            Alph2.append(np.ndarray.tolist(i))
+        Alph = [item for sublist in Alph2 for item in sublist]
 
         coef_group = np.array(np.split(np.array(con_coef), np.cumsum(n_prim))[:-1])
         b_coef_group = np.array(np.split(np.array(p_con_coef), np.cumsum(n_prim))[:-1])
 
+        # L'error esta aqui
         COrb = []
         for i, stype in enumerate(shell_type):
             COrb.append(coef_group[i])
-            if not (b_coef_group[i] == 0).all():
-                for _ in range(n_prim[i]):
+            if typeList['{}'.format(stype)][0] == 'd' or typeList['{}'.format(stype)][0] == 'f':
+                for _ in range(typeList['{}'.format(stype)][1]-1):
+                    COrb.append(coef_group[i])
+            # if not (b_coef_group[i] == 0).all():
+            if typeList['{}'.format(stype)][0] == 'sp':
+                for _ in range(3):
                     COrb.append(b_coef_group[i])
-        COrb = np.array(COrb).flatten()
+        # COrb = np.array(COrb).flatten()
+        COrb2 = []
+        for i in COrb:
+            COrb2.append(np.ndarray.tolist(i))
+        COrb = [item for sublist in COrb2 for item in sublist]
 
         # determine dimension
         Nat = len(AtLab)
