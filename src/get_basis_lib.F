@@ -40,7 +40,10 @@ c*****************************************************c
 c Initialize some variables
       ND  = 6   ! cart d-orbitals
       NF  = 10  ! cart f-orbitals
-      IF(PureCart) ND = 5 ! pure d-orbitals
+      IF(PureCart)
+          ND = 5 ! pure d-orbitals
+          NF = 7 ! pure f-orbitals
+      END IF
       iOrb   = 1
       iCount = 1
       iShellC = 0
@@ -195,6 +198,13 @@ c        ELSEIF (OrbType.eq.'F ') THEN
              iLAO(iCount+j) = 3
            ENDDO
            IF(PureCart) THEN
+            cLAO(iCount)   = 'f1  '
+            cLAO(iCount+1) = 'f2  '
+            cLAO(iCount+2) = 'f3  '
+            cLAO(iCount+3) = 'f4  '
+            cLAO(iCount+4) = 'f5  '
+            cLAO(iCount+5) = 'f6  '
+            cLAO(iCount+6) = 'f7  '
            ELSE
             cLAO(iCount)   = 'fxxx'
             cLAO(iCount+1) = 'fxxy'

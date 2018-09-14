@@ -1,6 +1,5 @@
 from wfnsympy.WFNSYMLIB import mainlib
 import numpy as np
-import os
 
 # os.chdir('/home/efrem/test/')
 
@@ -105,81 +104,132 @@ class WfnSympy:
 
         self._dgroup = dgroup
 
-        self._grim = out_data[1][0:dgroup]
-        self._csm = out_data[2][0:dgroup]
+        self._grim_coef = out_data[1][0:dgroup]
+        self._csm_coef = out_data[2][0:dgroup]
 
         self._SymLab = [''.join(line).strip() for line in np.array(out_data[3][0:dgroup],dtype='str')]
 
-        self._SDiagA = out_data[4][:, 0:dgroup]
-        self._SDiagB = out_data[5][:, 0:dgroup]
+        self._mo_SOEVs_a = out_data[4][:, 0:dgroup]
+        self._mo_SOEVs_b = out_data[5][:, 0:dgroup]
 
-        self._a_wf = out_data[6][0:dgroup]
-        self._b_wf = out_data[7][0:dgroup]
-        self._wf = np.prod([self._a_wf, self._b_wf], axis=0)
+        self._wf_SOEVs_a = out_data[6][0:dgroup]
+        self._wf_SOEVs_b = out_data[7][0:dgroup]
+        self._wf_SOEVs = np.prod([self._wf_SOEVs_a, self._wf_SOEVs_b], axis=0)
 
-        self._Tbl = out_data[8][:nIR, :dgroup]
+        self._ideal_gt = out_data[8][:nIR, :dgroup]
 
         self._IRLab = [''.join(line).strip() for line in np.array(out_data[9][0:nIR],dtype='str')]
 
-        self._gIRA = out_data[10][:, 0:nIR]
-        self._gIRB = out_data[11][:, 0:nIR]
+        self._mo_IRd_a = out_data[10][:, 0:nIR]
+        self._mo_IRd_b = out_data[11][:, 0:nIR]
 
-        self._gIRwfA = out_data[12][0:nIR]
-        self._gIRwfB = out_data[13][0:nIR]
-        self._IRwf = np.prod([self._gIRwfA, self._gIRwfB], axis=0)
+        self._wf_IRd_a = out_data[12][0:nIR]
+        self._wf_IRd_b = out_data[13][0:nIR]
+        self._wf_IRd = np.prod([self._wf_IRd_a, self._wf_IRd_b], axis=0)
 
-        self._gIRwfB = out_data[13][0:nIR]
+        # self._gIRwfB = out_data[13][0:nIR]
         self._SymMat = out_data[14][0:dgroup]
+
+    def get_dgroup(self):
+        return self._dgroup
+
+    def get_grim_coef(self):
+        return self._grim_coef
+
+    def get_csm_coef(self):
+        return self._csm_coef
+
+    def get_SymLab(self):
+        return self._SymLab
+
+    def get_mo_SOEVs_a(self):
+        return self._mo_SOEVs_a
+
+    def get_mo_SOEVs_b(self):
+        return self._mo_SOEVs_b
+
+    def get_wf_SOEVs_a(self):
+        return self._wf_SOEVs_a
+
+    def get_wf_SOEVs_b(self):
+        return self._wf_SOEVs_b
+
+    def get_wf_SOEVs(self):
+        return self._wf_SOEVs
+
+    def get_ideal_gt(self):
+        return self._ideal_gt
+
+    def get_IRLab(self):
+        return self._IRLab
+
+    def get_mo_IRd_a(self):
+        return self._mo_IRd_a
+
+    def get_mo_IRd_b(self):
+        return self._mo_IRd_b
+
+    def get_wf_IRd_a(self):
+        return self._wf_IRd_a
+
+    def get_wf_IRd_b(self):
+        return self._wf_IRd_b
+
+    def get_wf_IRd(self):
+        return self._wf_IRd
+
+    def get_SymMat(self):
+        return self._SymMat
 
     # Print Outputs
     def print_CSM(self):
         print('\nWaveFunction: CSM-like values')
         print('     '+'  '.join(['{:^7}'.format(s) for s in self._SymLab]))
-        print('Grim' + '  '.join(['{:7.3f}'.format(s) for s in self._grim]))
-        print('CSM ' + '  '.join(['{:7.3f}'.format(s) for s in self._csm]))
+        print('Grim' + '  '.join(['{:7.3f}'.format(s) for s in self.grim_coef]))
+        print('CSM ' + '  '.join(['{:7.3f}'.format(s) for s in self.csm_coef]))
 
     def print_overlap_mo_alpha(self):
         print('\nAlpha MOs: Symmetry Overlap Expectation Values')
         print('     '+'  '.join(['{:^7}'.format(s) for s in self._SymLab]))
-        for i, line in enumerate(self._SDiagA):
+        for i, line in enumerate(self._mo_SOEVs_a):
             print('{:4d}'.format(i+1) + '  '.join(['{:7.3f}'.format(s) for s in line]))
 
     def print_overlap_mo_beta(self):
         print('\nBeta MOs: Symmetry Overlap Expectation Values')
         print('     '+'  '.join(['{:^7}'.format(s) for s in self._SymLab]))
-        for i, line in enumerate(self._SDiagB):
+        for i, line in enumerate(self._mo_SOEVs_b):
             print('{:4d}'.format(i+1) + '  '.join(['{:7.3f}'.format(s) for s in line]))
 
     def print_overlap_wf(self):
         print('\nWaveFunction: Symmetry Overlap Expectation Values')
         print('     '+'  '.join(['{:^7}'.format(s) for s in self._SymLab]))
-        print('a-wf' + '  '.join(['{:7.3f}'.format(s) for s in self._a_wf]))
-        print('b-wf' + '  '.join(['{:7.3f}'.format(s) for s in self._b_wf]))
-        print('WFN ' + '  '.join(['{:7.3f}'.format(s) for s in self._wf]))
+        print('a-wf' + '  '.join(['{:7.3f}'.format(s) for s in self._wf_SOEVs_a]))
+        print('b-wf' + '  '.join(['{:7.3f}'.format(s) for s in self._wf_SOEVs_b]))
+        print('WFN ' + '  '.join(['{:7.3f}'.format(s) for s in self._wf_SOEVs]))
 
     def print_ideal_group_table(self):
         print('\nIdeal Group Table')
         print('     '+'  '.join(['{:^7}'.format(s) for s in self._SymLab]))
-        for i, line in enumerate(self._Tbl):
+        for i, line in enumerate(self._ideal_gt):
             print('{:4}'.format(self._IRLab[i]) + '  '.join(['{:7.3f}'.format(s) for s in line]))
 
     def print_alpha_mo_IRD(self):
         print('\nAlpha MOs: Irred. Rep. Decomposition')
         print('     '+'  '.join(['{:^7}'.format(s) for s in self._IRLab]))
-        for i, line in enumerate(self._gIRA):
+        for i, line in enumerate(self._mo_IRd_a):
             print('{:4d}'.format(i+1) + '  '.join(['{:7.3f}'.format(s) for s in line]))
 
     def print_beta_mo_IRD(self):
         print('\nBeta MOs: Irred. Rep. Decomposition')
         print('     '+'  '.join(['{:^7}'.format(s) for s in self._IRLab]))
-        for i, line in enumerate(self._gIRB):
+        for i, line in enumerate(self._mo_IRd_b):
             print('{:4d}'.format(i+1) + '  '.join(['{:7.3f}'.format(s) for s in line]))
 
     def print_wf_mo_IRD(self):
         print('\nWaveFunction: Irred. Rep. Decomposition')
         print('     '+'  '.join(['{:^7}'.format(s) for s in self._IRLab]))
-        print('a-wf' + '  '.join(['{:7.3f}'.format(s) for s in self._gIRwfA]))
-        print('b-wf' + '  '.join(['{:7.3f}'.format(s) for s in self._gIRwfB]))
+        print('a-wf' + '  '.join(['{:7.3f}'.format(s) for s in self._wf_IRd_a]))
+        print('b-wf' + '  '.join(['{:7.3f}'.format(s) for s in self._wf_IRd_b]))
         # print('WFN ' + '  '.join(['{:7.3f}'.format(s) for s in self._IRwf]))
 
     def print_symmetry_operation_matrix(self, nop):
@@ -205,6 +255,70 @@ class WfnSympy:
     @property
     def dgroup(self):
         return self._dgroup
+
+    @property
+    def grim_coef(self):
+        return self._grim_coef
+
+    @property
+    def csm_coef(self):
+        return self._csm_coef
+
+    @property
+    def SymLab(self):
+        return self._SymLab
+
+    @property
+    def mo_SOEVs_a(self):
+        return self._mo_SOEVs_a
+
+    @property
+    def mo_SOEVs_b(self):
+        return self._mo_SOEVs_b
+
+    @property
+    def wf_SOEVs_a(self):
+        return self._wf_SOEVs_a
+
+    @property
+    def wf_SOEVs_b(self):
+        return self._wf_SOEVs_b
+
+    @property
+    def wf_SOEVs(self):
+        return self._wf_SOEVs
+
+    @property
+    def ideal_gt(self):
+        return self._ideal_gt
+
+    @property
+    def IRLab(self):
+        return self._IRLab
+
+    @property
+    def mo_IRd_a(self):
+        return self._mo_IRd_a
+
+    @property
+    def mo_IRd_b(self):
+        return self._mo_IRd_b
+
+    @property
+    def wf_IRd_a(self):
+        return self._wf_IRd_a
+
+    @property
+    def wf_IRd_b(self):
+        return self._wf_IRd_b
+
+    @property
+    def wf_IRd(self):
+        return self._wf_IRd
+
+    @property
+    def SymMat(self):
+        return self._SymMat
 
 
 symbol_map = {
