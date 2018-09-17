@@ -22,9 +22,8 @@ install:
     - pip install -e .
 
 script:
-    - cd wfnsympy
     - cd unittest
-    - coverage run --source=../ -m unittest discover . "test_*.py"
+    - coverage run --source=../wfnsympy -m unittest discover . "test_*.py"
 
 after_success:
     - coveralls
