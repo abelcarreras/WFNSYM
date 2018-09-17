@@ -62,7 +62,7 @@ def get_operation_num_from_label(label):
 
 class WfnSympy:
     def __init__(self,
-                 Etot,
+                 # Etot,
                  NEval,
                  # NBas,
                  # Norb,
@@ -87,14 +87,18 @@ class WfnSympy:
                  do_operation=False,
                  use_pure_d_functions=False):
 
+        # Transform group label to igroup, ngroup
         if group is None:
             raise ('point group note defined')
         else:
             igroup, ngroup = get_group_num_from_label(group)
 
+        # get atomic numbers
         iZAt = [symbol_map[e] for e in AtLab]
 
-        self._atom_coor = np.array(RAt)
+        # get number of electrons
+        Etot = np.sum(iZAt) - iCharge
+
         NShell = np.unique(atom_map, return_counts=True)[1]
 
         AtLab = np.array([list('{:<2}'.format(char)) for char in AtLab], dtype='S')
@@ -158,6 +162,7 @@ class WfnSympy:
         nIR = out_data[0][2]
 
         self._dgroup = dgroup
+        self._atom_coor = np.array(RAt)
 
         self._grim_coef = out_data[1][0:dgroup]
         self._csm_coef = out_data[2][0:dgroup]
@@ -687,7 +692,7 @@ if __name__ == '__main__':
            7.88398567E-01,  8.69435277E-02, -6.56193193E-01, -5.75068294E-17, -5.59207294E-01,
           -7.88398567E-01, -2.67731796E-01,  2.67731796E-01,  4.07955748E-01, -4.07955748E-01]
 
-    pirrol = WfnSympy(Etot=36,        # Number of electrons
+    pirrol = WfnSympy(#Etot=36,        # Number of electrons
                       NEval=26,       # Number of Valence electrons
                       # NBas=30,      # Number of basis function
                       # Norb=45*2,    # Number of Orbitals
