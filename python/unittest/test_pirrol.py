@@ -1,7 +1,4 @@
-try:
-    from wfnsympy import WfnSympy
-except ImportError:
-    from python.wfnsympy import WfnSympy
+from wfnsympy import WfnSympy
 
 import numpy as np
 import unittest
