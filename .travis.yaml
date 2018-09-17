@@ -22,7 +22,7 @@ install:
 script:
     - cd wfnsympy
     - cd unittest
-    - coverage run --source=.. -m unittest discover . "*_test.py"
+    - coverage run --source=../ -m unittest discover . "test_*.py"
 
 after_success:
     - coveralls
