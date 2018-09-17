@@ -130,57 +130,6 @@ class WfnSympy:
         # self._gIRwfB = out_data[13][0:nIR]
         self._SymMat = out_data[14][0:dgroup]
 
-    def get_dgroup(self):
-        return self._dgroup
-
-    def get_grim_coef(self):
-        return self._grim_coef
-
-    def get_csm_coef(self):
-        return self._csm_coef
-
-    def get_SymLab(self):
-        return self._SymLab
-
-    def get_mo_SOEVs_a(self):
-        return self._mo_SOEVs_a
-
-    def get_mo_SOEVs_b(self):
-        return self._mo_SOEVs_b
-
-    def get_wf_SOEVs_a(self):
-        return self._wf_SOEVs_a
-
-    def get_wf_SOEVs_b(self):
-        return self._wf_SOEVs_b
-
-    def get_wf_SOEVs(self):
-        return self._wf_SOEVs
-
-    def get_ideal_gt(self):
-        return self._ideal_gt
-
-    def get_IRLab(self):
-        return self._IRLab
-
-    def get_mo_IRd_a(self):
-        return self._mo_IRd_a
-
-    def get_mo_IRd_b(self):
-        return self._mo_IRd_b
-
-    def get_wf_IRd_a(self):
-        return self._wf_IRd_a
-
-    def get_wf_IRd_b(self):
-        return self._wf_IRd_b
-
-    def get_wf_IRd(self):
-        return self._wf_IRd
-
-    def get_SymMat(self):
-        return self._SymMat
-
     # Print Outputs
     def print_CSM(self):
         print('\nWaveFunction: CSM-like values')
