@@ -261,8 +261,7 @@ class TestWfnsympy(unittest.TestCase):
                                VAxis= [1., 0., 0.],
                                VAxis2=[0., 0., 1.],
                                iCharge=0, iMult=1,
-                               igroup=3, ngroup=6,  # define symmetry group
-                               do_operation=False)
+                               group='C6v')
 
     def test_symlab(self):
         symlab_test = ['E', '2C6', '2C3', 'C2', 's_v1', 's_d1', 's_v2', 's_d2', 's_v3', 's_d3']

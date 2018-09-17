@@ -53,8 +53,6 @@ c			             False: 3 decimals (default)
 c					 True : 5 decimals
 c--------------------------------------------------------------
       IMPLICIT REAL*8 (a-h,o-z)
-c      CHARACTER ::  wfnsym_out*255
-c      CHARACTER ::  basis_2*80, input_2*80
       INTEGER :: iZAt(NAt_2), NPrim(NTotShell)
       CHARACTER :: AtLab(NAt_2)*2
       REAL*8 :: Alph(Norb),  COrb(Norb), RAt(NAt_2, 3)
@@ -76,26 +74,9 @@ c Include files
       INCLUDE 'common_var.ins'
       INCLUDE 'init_var.ins'
 
-c      input = input_2
-c      write(input, '(A6)') 'pirrol'
-c      k=max(len_trim(input),5)
-c      if (input(k-4:k).eq.'.win') input(k-4:k)='    '
-
-c Open I/O files
-c      Open(Unit=iunit,file=trim(input)//".win",status='old',iostat=k)
-
-c      CALL getenv("WFNSYM_OUT", wfnsym_out)
-c     Check enviroment if run in screen mode or file
-c      IF (trim(wfnsym_out).eq.'SCREEN') THEN
-      iout = 0
-c      ELSE
-c        Open(Unit=iout,file=trim(input)//".wout",status='unknown')
-c      ENDIF
-
-c Say hello!
-c      CALL PrintHead(iout)
 
 c ----------- Added manual arguments-----------
+      iout = 0
       igroup = igroup_2
       ngroup = ngroup_2
       CALL SetGroupDim(iGroup, nGroup, dGroup, hGroup)
@@ -156,8 +137,8 @@ c        WRITE(iout,107) Group, SubG
 c        STOP
 c      ENDIF
 
-107   FORMAT(3X,'* ERROR * INCORRECT SYMMETRY GROUP: ',2X,A1,A3)
-106   FORMAT('MEASURES OF THE SYMMETRY GROUP: ',2X,A1,A3)
+c 107   FORMAT(3X,'* ERROR * INCORRECT SYMMETRY GROUP: ',2X,A1,A3)
+c 106   FORMAT('MEASURES OF THE SYMMETRY GROUP: ',2X,A1,A3)
 
       ALLOCATE(stRAt(NAt,3))
 

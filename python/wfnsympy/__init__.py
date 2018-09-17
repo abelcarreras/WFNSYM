@@ -1,7 +1,64 @@
 from wfnsympy.WFNSYMLIB import mainlib
 import numpy as np
 
-# os.chdir('/home/efrem/test/')
+
+def get_group_num_from_label(label):
+
+    label_2 = label[0].upper()
+    try:
+        ngroup = int(label[1])
+        label_2 += 'n'
+        try:
+            label_2 += label[2:].upper()
+        except:
+            pass
+    except:
+        label_2 += label[1:]
+        ngroup = 0
+
+    if label.upper() == 'S2':
+        label_2 = 'CI'
+
+    if label_2[0].upper() == 'S':
+        if ngroup % 2 != 0:
+            label_2[0] = 'C'
+
+    operations = {'Cn':  [1, ngroup],
+                  'CnH': [2, ngroup],
+                  'CnV': [3, ngroup],
+                  'CI':  [0, 2],
+                  'CINF':[9, 1],
+                  'Dn':  [4, ngroup],
+                  'Dnd': [5, ngroup],
+                  'DnH': [6, ngroup],
+                  'DINF':[9, 2],
+                  'Sn':  [7, ngroup],
+                  'T':   [8, 1],
+                  'TH':  [8, 2],
+                  'TD':  [8, 3],
+                  'O':   [8, 4],
+                  'OH':  [8, 5],
+                  'I':   [8, 6],
+                  'IH':  [8, 7],
+                  }
+    try:
+        return operations[label_2]
+    except KeyError:
+        raise Exception('Label not found')
+
+
+def get_operation_num_from_label(label):
+    operations = {'I': 1,
+                  'R': 2,
+                  'C': 3,
+                  'S': 4}
+    ioper = operations[label[0]]
+    if ioper > 2:
+        irot = int(label[1])
+    else:
+        irot = 0
+    return ioper, irot
+
 
 class WfnSympy:
     def __init__(self,
@@ -24,10 +81,16 @@ class WfnSympy:
                  VAxis,
                  VAxis2,
                  iCharge, iMult,
-                 igroup=1,
-                 ngroup=1, # This has to be obtained from label
+                 group=None,
+                 #igroup=1,
+                 #ngroup=1, # This has to be obtained from label
                  do_operation=False,
                  use_pure_d_functions=False):
+
+        if group is None:
+            raise ('point group note defined')
+        else:
+            igroup, ngroup = get_group_num_from_label(group)
 
         iZAt = [symbol_map[e] for e in AtLab]
 
@@ -85,17 +148,9 @@ class WfnSympy:
         Norb = len(COrb)
         NBas = np.sum([typeList['{}'.format(st)][1] for st in shell_type])
 
-        #os.remove('pirrol.wout')
         out_data = mainlib(Etot, NEval, NBas, Norb, Nat, NTotShell, iZAt, AtLab, Alph,
                 COrb, NShell, RAt, n_prim, shell_type, igroup, ngroup, Ca, Cb, RCread, VAxis, VAxis2,
                 iCharge, iMult, do_operation, use_pure_d_functions)
-        # print(mainlib.__doc__)
-
-        #import filecmp
-        #if (filecmp.cmp('pirrol.wout', 'pirrol.wout_ref')):
-        #    print('!!!!!!!ALL OK!!!!!!!')
-        #else:
-        #    print('**********ERROR***********')
 
         # Process outputs
         dgroup = out_data[0][0]
@@ -651,7 +706,8 @@ if __name__ == '__main__':
                       VAxis= [1., 0., 0.],
                       VAxis2=[0., 0., 1.],
                       iCharge=0, iMult=1,
-                      igroup=3, ngroup=6,  # define symmetry group
+                      # igroup=3, ngroup=6,  # define symmetry group
+                      group='c6v',
                       do_operation=False)
 
     # Testing
