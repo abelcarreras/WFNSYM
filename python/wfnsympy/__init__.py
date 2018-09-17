@@ -1,4 +1,11 @@
-from wfnsympy.WFNSYMLIB import mainlib
+try:
+    from wfnsympy.WFNSYMLIB import mainlib
+except ImportError:
+    try:
+        from python.wfnsympy.WFNSYMLIB import mainlib
+    except ImportError:
+        from WFNSYMLIB import mainlib
+
 import numpy as np
 
 # os.chdir('/home/efrem/test/')

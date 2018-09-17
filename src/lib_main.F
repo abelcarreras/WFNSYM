@@ -53,8 +53,8 @@ c			             False: 3 decimals (default)
 c					 True : 5 decimals
 c--------------------------------------------------------------
       IMPLICIT REAL*8 (a-h,o-z)
-      CHARACTER ::  wfnsym_out*255
-      CHARACTER ::  basis_2*80, input_2*80
+c      CHARACTER ::  wfnsym_out*255
+c      CHARACTER ::  basis_2*80, input_2*80
       INTEGER :: iZAt(NAt_2), NPrim(NTotShell)
       CHARACTER :: AtLab(NAt_2)*2
       REAL*8 :: Alph(Norb),  COrb(Norb), RAt(NAt_2, 3)
@@ -76,24 +76,24 @@ c Include files
       INCLUDE 'common_var.ins'
       INCLUDE 'init_var.ins'
 
-      input = input_2
-      write(input, '(A6)') 'pirrol'
-      k=max(len_trim(input),5)
-      if (input(k-4:k).eq.'.win') input(k-4:k)='    '
+c      input = input_2
+c      write(input, '(A6)') 'pirrol'
+c      k=max(len_trim(input),5)
+c      if (input(k-4:k).eq.'.win') input(k-4:k)='    '
 
 c Open I/O files
 c      Open(Unit=iunit,file=trim(input)//".win",status='old',iostat=k)
 
-      CALL getenv("WFNSYM_OUT", wfnsym_out)
+c      CALL getenv("WFNSYM_OUT", wfnsym_out)
 c     Check enviroment if run in screen mode or file
-      IF (trim(wfnsym_out).eq.'SCREEN') THEN
-        iout = 6
-      ELSE
-        Open(Unit=iout,file=trim(input)//".wout",status='unknown')
-      ENDIF
+c      IF (trim(wfnsym_out).eq.'SCREEN') THEN
+      iout = 0
+c      ELSE
+c        Open(Unit=iout,file=trim(input)//".wout",status='unknown')
+c      ENDIF
 
 c Say hello!
-      CALL PrintHead(iout)
+c      CALL PrintHead(iout)
 
 c ----------- Added manual arguments-----------
       igroup = igroup_2
@@ -149,12 +149,12 @@ c Check angles in VAxis & VAxis
       ENDIF
 
 c     print in output
-      IF(iGroup.GE.0 .AND. iGroup.LE.9) THEN
-        WRITE(iout,106) Group, SubG
-      ELSE
-        WRITE(iout,107) Group, SubG
-        STOP
-      ENDIF
+c      IF(iGroup.GE.0 .AND. iGroup.LE.9) THEN
+c        WRITE(iout,106) Group, SubG
+c      ELSE
+c        WRITE(iout,107) Group, SubG
+c        STOP
+c      ENDIF
 
 107   FORMAT(3X,'* ERROR * INCORRECT SYMMETRY GROUP: ',2X,A1,A3)
 106   FORMAT('MEASURES OF THE SYMMETRY GROUP: ',2X,A1,A3)
@@ -261,11 +261,11 @@ c        WRITE(iout,*) 'ERROR. No axis orientation indicated'
 c        stop
 c      ENDIF
 
-      WRITE(iout,'("Basis: ",A8)') Basis(1:8)
+c      WRITE(iout,'("Basis: ",A8)') Basis(1:8)
 
 c      write(6,*) 'igroup', igroup, 'ngroup', ngroup
 c Get some dimensions
-      write(iout,*)'Reading dimensions'
+c      write(iout,*)'Reading dimensions'
 c      CALL get_dim(NEtot,NEval,NBas,NOrb,Basis,AtLab,NAt,iZAt,PureCart)
 
 c      write (6,*) 'NEtot', NEtot
@@ -293,47 +293,47 @@ c Set up some variables
       NOvb = NOb - Ncore
       NBas2 = NBas*NBas
       IF(NOa+NOb .NE. NEtot) THEN
-        WRITE(iout,*) 'ERROR. Charge/Multiplicity inconsistency'
+        WRITE(iout, *) 'ERROR. Charge/Multiplicity inconsistency'
         STOP
       ENDIF
 
 c Writing Coordinates and transform them to AU unities
-      WRITE(iout,100)
-      WRITE(iout,*)'Atomic Coordinates (Angstroms)'
-      WRITE(iout,100)
-      DO k = 1,NAt
-        WRITE(iout,'(A2,4X,3(F12.8,1X))')
-     &        AtLab(k),(RAt(k,j)/ANGSBOHR, j=1,3)
+c      WRITE(iout,100)
+c      WRITE(iout,*)'Atomic Coordinates (Angstroms)'
+c      WRITE(iout,100)
+c      DO k = 1,NAt
+c        WRITE(iout,'(A2,4X,3(F12.8,1X))')
+c     &        AtLab(k),(RAt(k,j)/ANGSBOHR, j=1,3)
 c        DO j = 1,3
 c          RAt(k,j) = RAt(k,j)*ANGSBOHR
 c        ENDDO
-      ENDDO
-      WRITE(iout,100)
-      WRITE(iout,*)' '
+c      ENDDO
+c      WRITE(iout,100)
+c      WRITE(iout,*)' '
 
 c Where do we center the molecule?
       IF (NO_CENTER) THEN
-        WRITE(iout,*)'Symmetry analysis at the geometric center'
+c        WRITE(iout,*)'Symmetry analysis at the geometric center'
           RC(:) = Zero
           DO k = 1,NAt
             RC(:) = RC(:) + RAt(k,:)
           ENDDO
           RC(:) = RC(:)/dfloat(NAt)
       ELSEIF (readRC) THEN
-        WRITE(iout,*) 'Symmetry analysis at the input center'
+c        WRITE(iout,*) 'Symmetry analysis at the input center'
         DO J = 1,3
           RC(J) = ANGSBOHR * RCread(J)
         ENDDO
       ELSEIF (readRN) THEN
-        WRITE(iout,"('Symmetry analysis at the geometric center of:',
-     &        1X,I2,1X,'atoms')") Ncenter
+c        WRITE(iout,"('Symmetry analysis at the geometric center of:',
+c     &        1X,I2,1X,'atoms')") Ncenter
         RC(:) = Zero
         DO k = 1,Ncenter
           RC(:) = RC(:) + RAt(Icenter(k),:)
         ENDDO
         RC(:) = RC(:)/dfloat(Ncenter)
       ELSEIF (readRD) THEN
-        WRITE(iout,*)'Symmetry analysis at the electron density center'
+c        WRITE(iout,*)'Symmetry analysis at the electron density center'
           RC(:) = -RDipole(:)
           DO I = 1,NAt
             RC(:) = RC(:) + dfloat(iZAt(I))*RAt(I,:)
@@ -479,76 +479,76 @@ c Print AO Overlap Matrix
 c	CALL VRcopy(Xaux,S_AO,NBas2)
 
 c Print Basis data
-      WRITE(iout,100)
-      WRITE(iout,790)
-      WRITE(iout,791) NEtot
-      WRITE(iout,792) Ncore*2
-      WRITE(iout,793) NEval
-      WRITE(iout,794) NOa,NOb
-      WRITE(iout,795) NOva,NOvb
-      WRITE(iout,796) NBas
-      WRITE(iout,797) NOrb
-      WRITE(iout,100)
+c      WRITE(iout,100)
+c      WRITE(iout,790)
+c      WRITE(iout,791) NEtot
+c      WRITE(iout,792) Ncore*2
+c      WRITE(iout,793) NEval
+c      WRITE(iout,794) NOa,NOb
+c      WRITE(iout,795) NOva,NOvb
+c      WRITE(iout,796) NBas
+c      WRITE(iout,797) NOrb
+c      WRITE(iout,100)
 
 c Allocate space for MOs
 c      ALLOCATE(CA(NBas2))
       IF(Unrestricted .OR. UHFNO) THEN
 c        ALLOCATE(CB(NBas2))
         IF(Unrestricted) THEN
-          WRITE(iout,*)'Unrestricted Wave Function'
+c          WRITE(iout,*)'Unrestricted Wave Function'
         ELSE
           ALLOCATE(WOcc(NBas))
-          WRITE(iout,*)'UHF Natural Orbitals'
+c          WRITE(iout,*)'UHF Natural Orbitals'
         ENDIF
-      ELSE
-        WRITE(iout,*)'Restricted Wave Function'
+c      ELSE
+c        WRITE(iout,*)'Restricted Wave Function'
       ENDIF
 
 c Get MO coefficients or make UHFNO
-      iOff = 0
-      IF(Unrestricted) THEN
+c      iOff = 0
+c      IF(Unrestricted) THEN
 c        CALL get_mos(CA,CB,NBas2,iOff,input,1)
 c        CA = CA_2
 c        CB = CB_2
-      ELSEIF(UHFNO) THEN
-        write(iout,*)'calling make_uhfno'
-        CALL make_uhfno(CA,CB,WOcc,S_AO,NBas,input)
-        write(iout,*)'make_uhfno done'
+c      ELSEIF(UHFNO) THEN
+c        write(iout,*)'calling make_uhfno'
+c        CALL make_uhfno(CA,CB,WOcc,S_AO,NBas,input)
+c        write(iout,*)'make_uhfno done'
 c        DEALLOCATE(CB)
 
-        write(iout,*)'UHF-NO occupancies'
-        DO I = 1,NBas
-          write(iout,'(1x,I3,1x,f9.6)') I, WOcc(I)
-        ENDDO
+c        write(iout,*)'UHF-NO occupancies'
+c        DO I = 1,NBas
+c          write(iout,'(1x,I3,1x,f9.6)') I, WOcc(I)
+c        ENDDO
 
-        write(iout,*)'print uhfnos into molden file'
+c        write(iout,*)'print uhfnos into molden file'
 c        CALL make_molden(NAt,iZAt,AtLab,RAt,Basis,input,
 c     &       NBAS,NBas,CA,WOcc,PureCart)
-      ELSE
+c      ELSE
 c        CALL get_mos(CA,CA,NBas2,iOff,input,0)
 c        CA = CA_2
-      ENDIF
+c      ENDIF
 
 c Print MOs
-      IF (NPrint .GE. 1) THEN
-        line = 'Alpha Molecular Orbitals'
-        CALL PrintMatrix(CA,cLAO,.TRUE.,.FALSE.,NBas,line,iout)
-        IF(Unrestricted) THEN
-          line = 'Beta Molecular Orbitals'
-          CALL PrintMatrix(CB,cLAO,.TRUE.,.FALSE.,NBas,line,iout)
-        ENDIF
-      ENDIF
+c      IF (NPrint .GE. 1) THEN
+c        line = 'Alpha Molecular Orbitals'
+c        CALL PrintMatrix(CA,cLAO,.TRUE.,.FALSE.,NBas,line,iout)
+c        IF(Unrestricted) THEN
+c          line = 'Beta Molecular Orbitals'
+c          CALL PrintMatrix(CB,cLAO,.TRUE.,.FALSE.,NBas,line,iout)
+c        ENDIF
+c      ENDIF
 
 c Write transformation matrix and atomic coordinates
-      WRITE(iout,*)' '
-      WRITE(iout,*)'Standard Atomic Coordinates (Angstroms)'
-      WRITE(iout,100)
-      DO k = 1,NAt
-        WRITE(iout,'(A2,4X,3(F12.6,1X))')
-     &        AtLab(k),(RAt(k,j)/ANGSBOHR,j=1,3)
-      ENDDO
-      WRITE(iout,100)
-      WRITE(iout,*)' '
+c      WRITE(iout,*)' '
+c      WRITE(iout,*)'Standard Atomic Coordinates (Angstroms)'
+c      WRITE(iout,100)
+c      DO k = 1,NAt
+c        WRITE(iout,'(A2,4X,3(F12.6,1X))')
+c     &        AtLab(k),(RAt(k,j)/ANGSBOHR,j=1,3)
+c      ENDDO
+c      WRITE(iout,100)
+c      WRITE(iout,*)' '
 
 c Set group matrices (if necessary)
       IF(DoSymOrb) THEN
@@ -570,13 +570,13 @@ cgroups
       iOp = 1
       OPERATIONS: DO iG = 1,dGroup
 
-      WRITE(iout,"('@@@ Operation ',I2,':',1X,A6)") iG,SymLab(iG)
+c      WRITE(iout,"('@@@ Operation ',I2,':',1X,A6)") iG,SymLab(iG)
       IF(DoGroup) SymMat(:,:) = SymGrp(:,:,iG)
-      WRITE(iout,*)' '
-      WRITE(iout,*)'Symmetry Transformation matrix'
-      DO i = 1,3
-        WRITE(iout,902) (SymMat(i,j),j=1,3)
-      ENDDO
+c      WRITE(iout,*)' '
+c      WRITE(iout,*)'Symmetry Transformation matrix'
+c      DO i = 1,3
+c        WRITE(iout,902) (SymMat(i,j),j=1,3)
+c      ENDDO
       DO i = 1,3
         DO j = 1,3
           OutSymMat(iG, i, j) = SymMat(i,j)
@@ -732,15 +732,15 @@ c--------------------------------------------
 #endif
 
       CALL AtimsB(stRAt,RAt,SymMat, NAt,3,3, NAt,NAt,3, 3)
-      WRITE(iout,*)' '
-      WRITE(iout,*)'Symmetry Transformed Atomic Coordinates (Angstroms)'
-      WRITE(iout,100)
-      DO k = 1,NAt
-        WRITE(iout,'(A2,4X,3(F12.6,1X))')
-     &        AtLab(k),(stRAt(k,j)/ANGSBOHR,j=1,3)
-      ENDDO
-      WRITE(iout,100)
-      WRITE(iout,*)' '
+c      WRITE(iout,*)' '
+c      WRITE(iout,*)'Symmetry Transformed Atomic Coordinates (Angstroms)'
+c      WRITE(iout,100)
+c      DO k = 1,NAt
+c        WRITE(iout,'(A2,4X,3(F12.6,1X))')
+c     &        AtLab(k),(stRAt(k,j)/ANGSBOHR,j=1,3)
+c      ENDDO
+c      WRITE(iout,100)
+c      WRITE(iout,*)' '
 
 c Symmetry Transform ROrb to stROrb
       CALL AtimsB(stROrb,ROrb,SymMat, NOrb,3,3, NOrb,NOrb,3, 3)
@@ -870,9 +870,9 @@ cgroups
       DEALLOCATE(IpivA,IpivB)
 
 c Define level of printing results
-      FMT1 = "('--------')"
-      FMT2 = "(1X,F7.3)"
-      FMT3 = "(2X,A6)"
+c      FMT1 = "('--------')"
+c      FMT2 = "(1X,F7.3)"
+c      FMT3 = "(2X,A6)"
 
       IF(DoGroup) THEN
 c Build Group Table
@@ -884,26 +884,26 @@ c Build Group Table
       CALL group_table(GrpTbl,nIR,iGroup,nGroup,hGroup,iout)
 
 c Print Group Table
-      WRITE(iout,"(1X,A1,A3,': Ideal Group Table')") Group,SubG
-      WRITE(iout,'(3X)',advance='no')
-      DO i = 1,dGroup
-        WRITE(iout,FMT1,advance='no')
-      ENDDO
-      WRITE(iout,*)
-      WRITE(iout,'(4X)',advance='no')
-      DO i = 1,dGroup
-        WRITE(iout,FMT3,advance='no') SymLab(i)
-      ENDDO
-      WRITE(iout,*)
-      WRITE(iout,'(3X)',advance='no')
-      DO i = 1,dGroup
-        WRITE(iout,FMT1,advance='no')
-      ENDDO
-      WRITE(iout,*)
+c      WRITE(iout,"(1X,A1,A3,': Ideal Group Table')") Group,SubG
+c      WRITE(iout,'(3X)',advance='no')
+c      DO i = 1,dGroup
+c        WRITE(iout,FMT1,advance='no')
+c      ENDDO
+c      WRITE(iout,*)
+c      WRITE(iout,'(4X)',advance='no')
+c      DO i = 1,dGroup
+c        WRITE(iout,FMT3,advance='no') SymLab(i)
+c      ENDDO
+c      WRITE(iout,*)
+c      WRITE(iout,'(3X)',advance='no')
+c      DO i = 1,dGroup
+c        WRITE(iout,FMT1,advance='no')
+c      ENDDO
+c      WRITE(iout,*)
 
       jIR = 1
       DO iIR = 1,nIR
-        WRITE(iout,'(A3)',advance='no') IRLab(iIR)
+c        WRITE(iout,'(A3)',advance='no') IRLab(iIR)
         iOp = 1
         DO iG = 1,dGroup
           IF(IRMul(iIR) .LE. 2) THEN
@@ -913,136 +913,136 @@ c Print Group Table
           ELSEIF(IRMul(iIR) .EQ. 9) THEN
             Tbl = GrpTbl(jIR,iOp)+GrpTbl(jIR+4,iOp)+GrpTbl(jIR+8,iOp)
           ENDIF
-          WRITE(iout,FMT2,advance='no') Tbl
+c          WRITE(iout,FMT2,advance='no') Tbl
           OutTbl(iIR, iG) = Tbl
           iOp = iOp + iSymMu(iG)
         ENDDO
-        WRITE(iout,*)
+c        WRITE(iout,*)
         jIR = jIR + IRMul(iIR)
       ENDDO
-      WRITE(iout,'(3X)',advance='no')
-      DO i = 1,dGroup
-        WRITE(iout,FMT1,advance='no')
-      ENDDO
-      WRITE(iout,*)
+c      WRITE(iout,'(3X)',advance='no')
+c      DO i = 1,dGroup
+c        WRITE(iout,FMT1,advance='no')
+c      ENDDO
+c      WRITE(iout,*)
 
       ENDIF ! DoGroup
 
 c Re-define level of printing results
-      IF(HighPrec) THEN
-        FMT1 = "('----------')"
-        FMT2 = "(1X,F9.5)"
-        FMT3 = "(3X,A6,1X)"
-      ENDIF
+c      IF(HighPrec) THEN
+c        FMT1 = "('----------')"
+c        FMT2 = "(1X,F9.5)"
+c        FMT3 = "(3X,A6,1X)"
+c      ENDIF
 
 c Print Alpha MOs S values for the whole group
-      WRITE(iout,*)' '
-      WRITE(iout,*)'Alpha MOs: Symmetry Overlap Expectation Values'
-      WRITE(iout,'(4X)',advance='no')
-      DO i = 1,dGroup
-        WRITE(iout,FMT1,advance='no')
-      ENDDO
-      WRITE(iout,*)
-      WRITE(iout,'(3X)',advance='no')
-      DO i = 1,dGroup
-        WRITE(iout,FMT3,advance='no') SymLab(i)
-      ENDDO
-      WRITE(iout,*)
-      WRITE(iout,'(3X)',advance='no')
-      DO i = 1,dGroup
-        WRITE(iout,FMT1,advance='no')
-      ENDDO
-      WRITE(iout,*)
-      DO i = 1,NBas
-        WRITE(iout,'(I3)',advance='no') i
-        iOp = 1
-        DO iG = 1,dGroup
-          WRITE(iout,FMT2,advance='no') SDiagA(i+(iOp-1)*NBas)
-          iOp = iOp + iSymMu(iG)
-        ENDDO
-        WRITE(iout,*)
-      ENDDO
-      WRITE(iout,'(3X)',advance='no')
-      DO i = 1,dGroup
-        WRITE(iout,FMT1,advance='no')
-      ENDDO
-c Print Beta MOs S values for the whole group
-      WRITE(iout,*)' '
-      WRITE(iout,*)'Beta MOs: Symmetry Overlap Expectation Values'
-      WRITE(iout,'(3X)',advance='no')
-      DO i = 1,dGroup
-        WRITE(iout,FMT1,advance='no')
-      ENDDO
-      WRITE(iout,*)
-      WRITE(iout,'(4X)',advance='no')
-      DO i = 1,dGroup
-        WRITE(iout,FMT3,advance='no') SymLab(i)
-      ENDDO
-      WRITE(iout,*)
-      WRITE(iout,'(3X)',advance='no')
-      DO i = 1,dGroup
-        WRITE(iout,FMT1,advance='no')
-      ENDDO
-      WRITE(iout,*)
-      DO i = 1,NBas
-        WRITE(iout,'(I3)',advance='no') i
-        iOp = 1
-        DO iG = 1,dGroup
-          WRITE(iout,FMT2,advance='no') SDiagB(i+(iOp-1)*NBas)
-          iOp = iOp + iSymMu(iG)
-        ENDDO
-        WRITE(iout,*)
-      ENDDO
-      WRITE(iout,'(3X)',advance='no')
-      DO i = 1,dGroup
-        WRITE(iout,FMT1,advance='no')
-      ENDDO
+c      WRITE(iout,*)' '
+c      WRITE(iout,*)'Alpha MOs: Symmetry Overlap Expectation Values'
+c      WRITE(iout,'(4X)',advance='no')
+c      DO i = 1,dGroup
+c        WRITE(iout,FMT1,advance='no')
+c      ENDDO
+c      WRITE(iout,*)
+c      WRITE(iout,'(3X)',advance='no')
+c      DO i = 1,dGroup
+c        WRITE(iout,FMT3,advance='no') SymLab(i)
+c      ENDDO
+c      WRITE(iout,*)
+c      WRITE(iout,'(3X)',advance='no')
+c      DO i = 1,dGroup
+c        WRITE(iout,FMT1,advance='no')
+c      ENDDO
+c      WRITE(iout,*)
+c      DO i = 1,NBas
+c        WRITE(iout,'(I3)',advance='no') i
+c        iOp = 1
+c        DO iG = 1,dGroup
+c          WRITE(iout,FMT2,advance='no') SDiagA(i+(iOp-1)*NBas)
+c          iOp = iOp + iSymMu(iG)
+c        ENDDO
+c        WRITE(iout,*)
+c      ENDDO
+c      WRITE(iout,'(3X)',advance='no')
+c      DO i = 1,dGroup
+c        WRITE(iout,FMT1,advance='no')
+c      ENDDO
+cc Print Beta MOs S values for the whole group
+c      WRITE(iout,*)' '
+c      WRITE(iout,*)'Beta MOs: Symmetry Overlap Expectation Values'
+c      WRITE(iout,'(3X)',advance='no')
+c      DO i = 1,dGroup
+c        WRITE(iout,FMT1,advance='no')
+c      ENDDO
+c      WRITE(iout,*)
+c      WRITE(iout,'(4X)',advance='no')
+c      DO i = 1,dGroup
+c        WRITE(iout,FMT3,advance='no') SymLab(i)
+c      ENDDO
+c      WRITE(iout,*)
+c      WRITE(iout,'(3X)',advance='no')
+c      DO i = 1,dGroup
+c        WRITE(iout,FMT1,advance='no')
+c      ENDDO
+c      WRITE(iout,*)
+c      DO i = 1,NBas
+c        WRITE(iout,'(I3)',advance='no') i
+c        iOp = 1
+c        DO iG = 1,dGroup
+c          WRITE(iout,FMT2,advance='no') SDiagB(i+(iOp-1)*NBas)
+c          iOp = iOp + iSymMu(iG)
+c        ENDDO
+c        WRITE(iout,*)
+c      ENDDO
+c      WRITE(iout,'(3X)',advance='no')
+c      DO i = 1,dGroup
+c        WRITE(iout,FMT1,advance='no')
+c      ENDDO
 c Print WaveFunction S values for the whole group
-      WRITE(iout,*)' '
-      WRITE(iout,*)'WaveFunction: Symmetry Overlap Expectation Values'
-      WRITE(iout,'(4X)',advance='no')
-      DO i = 1,dGroup
-        WRITE(iout,FMT1,advance='no')
-      ENDDO
-      WRITE(iout,*)
-      WRITE(iout,'(5X)',advance='no')
-      DO i = 1,dGroup
-        WRITE(iout,FMT3,advance='no') SymLab(i)
-      ENDDO
-      WRITE(iout,*)
-      WRITE(iout,'(4X)',advance='no')
-      DO i = 1,dGroup
-        WRITE(iout,FMT1,advance='no')
-      ENDDO
-      WRITE(iout,*)
-      WRITE(iout,"('a-WF')",advance='no')
-      iOp = 1
-      DO iG = 1,dGroup
-        WRITE(iout,FMT2,advance='no') WDiagA(iOp)
-        iOp = iOp + iSymMu(iG)
-      ENDDO
-      WRITE(iout,*)
-      IF(NOb.NE.0) THEN
-        WRITE(iout,"('b-WF')",advance='no')
-        iOp = 1
-        DO iG = 1,dGroup
-          WRITE(iout,FMT2,advance='no') WDiagB(iOp)
-          iOp = iOp + iSymMu(iG)
-        ENDDO
-      ENDIF
-      WRITE(iout,*)
-      WRITE(iout,"(' WFN')",advance='no')
-      iOp = 1
-      DO iG = 1,dGroup
-        WRITE(iout,FMT2,advance='no') WDiag(iOp)
-        iOp = iOp + iSymMu(iG)
-      ENDDO
-      WRITE(iout,*)
-      WRITE(iout,'(4X)',advance='no')
-      DO i = 1,dGroup
-        WRITE(iout,FMT1,advance='no')
-      ENDDO
-      WRITE(iout,*)
+c      WRITE(iout,*)' '
+c      WRITE(iout,*)'WaveFunction: Symmetry Overlap Expectation Values'
+c      WRITE(iout,'(4X)',advance='no')
+c      DO i = 1,dGroup
+c        WRITE(iout,FMT1,advance='no')
+c      ENDDO
+c      WRITE(iout,*)
+c      WRITE(iout,'(5X)',advance='no')
+c      DO i = 1,dGroup
+c        WRITE(iout,FMT3,advance='no') SymLab(i)
+c      ENDDO
+c      WRITE(iout,*)
+c      WRITE(iout,'(4X)',advance='no')
+c      DO i = 1,dGroup
+c        WRITE(iout,FMT1,advance='no')
+c      ENDDO
+c      WRITE(iout,*)
+c      WRITE(iout,"('a-WF')",advance='no')
+c      iOp = 1
+c      DO iG = 1,dGroup
+c        WRITE(iout,FMT2,advance='no') WDiagA(iOp)
+c        iOp = iOp + iSymMu(iG)
+c      ENDDO
+c      WRITE(iout,*)
+c      IF(NOb.NE.0) THEN
+c        WRITE(iout,"('b-WF')",advance='no')
+c        iOp = 1
+c        DO iG = 1,dGroup
+c          WRITE(iout,FMT2,advance='no') WDiagB(iOp)
+c          iOp = iOp + iSymMu(iG)
+c        ENDDO
+c      ENDIF
+c      WRITE(iout,*)
+c      WRITE(iout,"(' WFN')",advance='no')
+c      iOp = 1
+c      DO iG = 1,dGroup
+c        WRITE(iout,FMT2,advance='no') WDiag(iOp)
+c        iOp = iOp + iSymMu(iG)
+c      ENDDO
+c      WRITE(iout,*)
+c      WRITE(iout,'(4X)',advance='no')
+c      DO i = 1,dGroup
+c        WRITE(iout,FMT1,advance='no')
+c      ENDDO
+c      WRITE(iout,*)
 
 c*********************c
 c Grimme's CSM values c
@@ -1061,43 +1061,43 @@ c Compute Grimme's CSM
       ENDDO
 
 c Print results
-      WRITE(iout,*)' '
-      WRITE(iout,"(' WaveFunction: CSM-like values ')")
-      WRITE(iout,'(4X)',advance='no')
-      DO i = 1,dGroup
-        WRITE(iout,FMT1,advance='no')
-      ENDDO
-      WRITE(iout,*)
-      WRITE(iout,'(4X)',advance='no')
-      DO i = 1,dGroup
-        WRITE(iout,FMT3,advance='no') SymLab(i)
-      ENDDO
-      WRITE(iout,*)
-      WRITE(iout,'(4X)',advance='no')
-      DO i = 1,dGroup
-        WRITE(iout,FMT1,advance='no')
-      ENDDO
-      WRITE(iout,*)
+c      WRITE(iout,*)' '
+c      WRITE(iout,"(' WaveFunction: CSM-like values ')")
+c      WRITE(iout,'(4X)',advance='no')
+c      DO i = 1,dGroup
+c        WRITE(iout,FMT1,advance='no')
+c      ENDDO
+c      WRITE(iout,*)
+c      WRITE(iout,'(4X)',advance='no')
+c      DO i = 1,dGroup
+c        WRITE(iout,FMT3,advance='no') SymLab(i)
+c      ENDDO
+c      WRITE(iout,*)
+c      WRITE(iout,'(4X)',advance='no')
+c      DO i = 1,dGroup
+c        WRITE(iout,FMT1,advance='no')
+c      ENDDO
+c      WRITE(iout,*)
 
-      WRITE(iout,"('Grim')",advance='no')
-      iOp = 1
-      DO iG = 1,dGroup
-        WRITE(iout,FMT2,advance='no') csm(iOp)
-        iOp = iOp + iSymMu(iG)
-      ENDDO
-      WRITE(iout,*)
-      WRITE(iout,"('CSM ')",advance='no')
-      iOp = 1
-      DO iG = 1,dGroup
-        WRITE(iout,FMT2,advance='no') 100.*(One-WDiag(iOp))
-        iOp = iOp + iSymMu(iG)
-      ENDDO
-      WRITE(iout,*)
-      WRITE(iout,'(4X)',advance='no')
-      DO i = 1,dGroup
-        WRITE(iout,FMT1,advance='no')
-      ENDDO
-      WRITE(iout,*)
+c      WRITE(iout,"('Grim')",advance='no')
+c      iOp = 1
+c      DO iG = 1,dGroup
+c        WRITE(iout,FMT2,advance='no') csm(iOp)
+c        iOp = iOp + iSymMu(iG)
+c      ENDDO
+c      WRITE(iout,*)
+c      WRITE(iout,"('CSM ')",advance='no')
+c      iOp = 1
+c      DO iG = 1,dGroup
+c        WRITE(iout,FMT2,advance='no') 100.*(One-WDiag(iOp))
+c        iOp = iOp + iSymMu(iG)
+c      ENDDO
+c      WRITE(iout,*)
+c      WRITE(iout,'(4X)',advance='no')
+c      DO i = 1,dGroup
+c        WRITE(iout,FMT1,advance='no')
+c      ENDDO
+c      WRITE(iout,*)
 
 c     Set output data
       do i = 1, dGroup
@@ -1243,101 +1243,101 @@ c     ENDDO
       ENDDO
 
 c Print Alpha MOs Irred. Repr. projections
-      IF(HighPrec) THEN
-        FMT3 = "(3X,A3,4X)"
-      ELSE
-        FMT3 = "(2X,A3,3X)"
-      ENDIF
-      WRITE(iout,*)' '
-      WRITE(iout,*)'Alpha MOs: Irred. Rep. Decomposition'
-      WRITE(iout,'(3X)',advance='no')
-      DO i = 1,nIR
-        WRITE(iout,FMT1,advance='no')
-      ENDDO
-      WRITE(iout,*)
-      WRITE(iout,'(5X)',advance='no')
-      DO i = 1,nIR
-        WRITE(iout,FMT3,advance='no') IRLab(i)
-      ENDDO
-      WRITE(iout,*)
-      WRITE(iout,'(3X)',advance='no')
-      DO i = 1,nIR
-        WRITE(iout,FMT1,advance='no')
-      ENDDO
-      WRITE(iout,*)
-      DO i = 1,NBas
-        WRITE(iout,'(I3)',advance='no') i
-        Dot = Zero
-        DO iIR = 1,nIR
-          WRITE(iout,FMT2,advance='no')
-     &    gIRA(i,iIR)
-        ENDDO
-        WRITE(iout,*)
-      ENDDO
-      WRITE(iout,'(3X)',advance='no')
-      DO i = 1,nIR
-        WRITE(iout,FMT1,advance='no')
-      ENDDO
-      WRITE(iout,*)
+c      IF(HighPrec) THEN
+c        FMT3 = "(3X,A3,4X)"
+c      ELSE
+c        FMT3 = "(2X,A3,3X)"
+c      ENDIF
+c      WRITE(iout,*)' '
+c      WRITE(iout,*)'Alpha MOs: Irred. Rep. Decomposition'
+c      WRITE(iout,'(3X)',advance='no')
+c      DO i = 1,nIR
+c        WRITE(iout,FMT1,advance='no')
+c      ENDDO
+c      WRITE(iout,*)
+c      WRITE(iout,'(5X)',advance='no')
+c      DO i = 1,nIR
+c        WRITE(iout,FMT3,advance='no') IRLab(i)
+c      ENDDO
+c      WRITE(iout,*)
+c      WRITE(iout,'(3X)',advance='no')
+c      DO i = 1,nIR
+c        WRITE(iout,FMT1,advance='no')
+c      ENDDO
+c      WRITE(iout,*)
+c      DO i = 1,NBas
+c        WRITE(iout,'(I3)',advance='no') i
+c        Dot = Zero
+c        DO iIR = 1,nIR
+c          WRITE(iout,FMT2,advance='no')
+c     &    gIRA(i,iIR)
+c        ENDDO
+c        WRITE(iout,*)
+c      ENDDO
+c      WRITE(iout,'(3X)',advance='no')
+c      DO i = 1,nIR
+c        WRITE(iout,FMT1,advance='no')
+c      ENDDO
+c      WRITE(iout,*)
 c Print Beta MOs Irred. Repr. projections
-      WRITE(iout,*)'Beta MOs: Irred. Rep. Decomposition'
-      WRITE(iout,'(3X)',advance='no')
-      DO i = 1,nIR
-        WRITE(iout,FMT1,advance='no')
-      ENDDO
-      WRITE(iout,*)
-      WRITE(iout,'(5X)',advance='no')
-      DO i = 1,nIR
-        WRITE(iout,FMT3,advance='no') IRLab(i)
-      ENDDO
-      WRITE(iout,*)
-      WRITE(iout,'(3X)',advance='no')
-      DO i = 1,nIR
-        WRITE(iout,FMT1,advance='no')
-      ENDDO
-      WRITE(iout,*)
-      DO i = 1,NBas
-        WRITE(iout,'(I3)',advance='no') i
-        Dot = Zero
-        DO iIR = 1,nIR
-          WRITE(iout,FMT2,advance='no')
-     &    gIRB(i,iIR)
-        ENDDO
-        WRITE(iout,*)
-      ENDDO
-      WRITE(iout,'(3X)',advance='no')
-      DO i = 1,nIR
-        WRITE(iout,FMT1,advance='no')
-      ENDDO
-      WRITE(iout,*)
+c      WRITE(iout,*)'Beta MOs: Irred. Rep. Decomposition'
+c      WRITE(iout,'(3X)',advance='no')
+c      DO i = 1,nIR
+c        WRITE(iout,FMT1,advance='no')
+c      ENDDO
+c      WRITE(iout,*)
+c      WRITE(iout,'(5X)',advance='no')
+c      DO i = 1,nIR
+c        WRITE(iout,FMT3,advance='no') IRLab(i)
+c      ENDDO
+c      WRITE(iout,*)
+c      WRITE(iout,'(3X)',advance='no')
+c      DO i = 1,nIR
+c        WRITE(iout,FMT1,advance='no')
+c      ENDDO
+c      WRITE(iout,*)
+c      DO i = 1,NBas
+c        WRITE(iout,'(I3)',advance='no') i
+c        Dot = Zero
+c        DO iIR = 1,nIR
+c          WRITE(iout,FMT2,advance='no')
+c     &    gIRB(i,iIR)
+c        ENDDO
+c        WRITE(iout,*)
+c      ENDDO
+c      WRITE(iout,'(3X)',advance='no')
+c      DO i = 1,nIR
+c        WRITE(iout,FMT1,advance='no')
+c      ENDDO
+c      WRITE(iout,*)
 c Print WaveFunction Irred. Repr. projections
-      WRITE(iout,*)'WaveFunction: Irred. Rep. Decomposition'
-      WRITE(iout,'(4X)',advance='no')
-      DO i = 1,nIR
-        WRITE(iout,FMT1,advance='no')
-      ENDDO
-      WRITE(iout,*)
-      WRITE(iout,"('a-WF')",advance='no')
-      DO iIR = 1,nIR
-        WRITE(iout,FMT2,advance='no') gIRwfA(iIR)
-      ENDDO
-      WRITE(iout,*)
-      IF(NOb.NE.0) THEN
-        WRITE(iout,"('b-WF')",advance='no')
-        DO iIR = 1,nIR
-          WRITE(iout,FMT2,advance='no') gIRwfB(iIR)
-        ENDDO
-      ENDIF
-      WRITE(iout,*)
-      WRITE(iout,"(' WFN')",advance='no')
-      DO iG = 1,nIR
-        WRITE(iout,FMT2,advance='no') gIRwf(iG)
-      ENDDO
-      WRITE(iout,*)
-      WRITE(iout,'(4X)',advance='no')
-      DO i = 1,nIR
-        WRITE(iout,FMT1,advance='no')
-      ENDDO
+c      WRITE(iout,*)'WaveFunction: Irred. Rep. Decomposition'
+c      WRITE(iout,'(4X)',advance='no')
+c      DO i = 1,nIR
+c        WRITE(iout,FMT1,advance='no')
+c      ENDDO
+c      WRITE(iout,*)
+c      WRITE(iout,"('a-WF')",advance='no')
+c      DO iIR = 1,nIR
+c        WRITE(iout,FMT2,advance='no') gIRwfA(iIR)
+c      ENDDO
+c      WRITE(iout,*)
+c      IF(NOb.NE.0) THEN
+c        WRITE(iout,"('b-WF')",advance='no')
+c        DO iIR = 1,nIR
+c          WRITE(iout,FMT2,advance='no') gIRwfB(iIR)
+c        ENDDO
+c      ENDIF
+c      WRITE(iout,*)
+c      WRITE(iout,"(' WFN')",advance='no')
+c      DO iG = 1,nIR
+c        WRITE(iout,FMT2,advance='no') gIRwf(iG)
+c      ENDDO
+c      WRITE(iout,*)
+c      WRITE(iout,'(4X)',advance='no')
+c      DO i = 1,nIR
+c        WRITE(iout,FMT1,advance='no')
+c      ENDDO
 
       ENDIF ! DoGroup
 
@@ -1379,13 +1379,13 @@ c	CALL VRscale(SGrpA,NBas2,Scale)
 
 c Compute the wavefunction symmetry (only alpha)
       CALL VRtrace(Sgroup,SGrpA,NOa)
-      write(iout,*) 'Trace = ',Sgroup
+c      write(iout,*) 'Trace = ',Sgroup
       Sgroup = (exp(Sgroup) - One) / (exp(One) - One)
-      write(iout,*) '< G > = ',Sgroup
+c      write(iout,*) '< G > = ',Sgroup
       Sgroup = 100.*(One-Sgroup)
-      WRITE(iout,"('**************')")
-      WRITE(iout,"('* S = ',F6.2,' *')") Sgroup
-      WRITE(iout,"('**************')")
+c      WRITE(iout,"('**************')")
+c      WRITE(iout,"('* S = ',F6.2,' *')") Sgroup
+c      WRITE(iout,"('**************')")
 
 c Print SGrpA
       write(iout,*)'SGrpA Matrix'
@@ -1402,11 +1402,11 @@ c     CALL DSYEV('V','U',NBas,SGrpA,NBas,WOrbA,work,lwork,Info)
       DEALLOCATE(work)
 
 c Print eigenvalues (closed shell)
-      write(iout,*) 'Info = ',Info
-      write(iout,*)'Symmetry Eigenvalues'
-      DO I = 1,NOa
-        write(iout,'(1x,I3,1x,f9.6)') I, WOrbA(I)
-      ENDDO
+c      write(iout,*) 'Info = ',Info
+c      write(iout,*)'Symmetry Eigenvalues'
+c      DO I = 1,NOa
+c        write(iout,'(1x,I3,1x,f9.6)') I, WOrbA(I)
+c      ENDDO
 
 c Transform SGrpX(NOx,NOx) to SOrbX(NBas,NOx)
       ALLOCATE(SOrbA(NBas*NOa))
@@ -1423,7 +1423,7 @@ c	CALL AtimsB(SOrbA,CA,SGrpA, NBas,NBas,NBas, NBas,NBas,NBas, 1)
       ENDIF
 
 c Print SymOrbs as a Molden file (*.mol)
-      WRITE(iout,*) 'Writing Molden format'
+c      WRITE(iout,*) 'Writing Molden format'
 c      CALL make_molden(NAt,iZAt,AtLab,RAt,Basis,input,
 c     &     NOa,NBas,SOrbA,WOrbA,PureCart)
       DEALLOCATE(SOrbA,WOrbA)
@@ -1501,19 +1501,19 @@ c      IF(Unrestricted) DEALLOCATE(CB)
       ENDIF
 
 c Saying goodbye
-      WRITE(iout,*)' '
-      WRITE(iout,*)' '
-      WRITE(iout,499)
-      WRITE(iout,*)' '
-      WRITE(iout,498)
-      WRITE(iout,*)' '
+c      WRITE(iout,*)' '
+c      WRITE(iout,*)' '
+c      WRITE(iout,499)
+c      WRITE(iout,*)' '
+c      WRITE(iout,498)
+c      WRITE(iout,*)' '
 
  499  FORMAT('    Calculation has finished normally')
  498  FORMAT('  *** Thank you for using Wave-Sym ***')
 
 c Close files
 c      CLOSE(1)
-      CLOSE(2)
+c      CLOSE(2)
 
 c     Generate outputs
       OutDim(1) = dGroup

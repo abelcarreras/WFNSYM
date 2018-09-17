@@ -1,0 +1,29 @@
+language: python
+
+os:
+  - linux
+
+python:
+  - "2.7"
+  - "3.4"
+
+branches:
+  only:
+    - master
+    - development
+
+install:
+    - cd python
+    - pip install coverage
+    - pip install python-coveralls
+    - pip install -r requirements.txt
+    - pip install -e .
+
+script:
+    - cd wfnsympy
+    - cd unittest
+    - coverage run --source=.. -m unittest discover . "*_test.py"
+
+after_success:
+    - coveralls
+    - cd ../..

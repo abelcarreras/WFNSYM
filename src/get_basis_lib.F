@@ -40,7 +40,7 @@ c*****************************************************c
 c Initialize some variables
       ND  = 6   ! cart d-orbitals
       NF  = 10  ! cart f-orbitals
-      IF(PureCart)
+      IF(PureCart) then
           ND = 5 ! pure d-orbitals
           NF = 7 ! pure f-orbitals
       END IF
