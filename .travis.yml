@@ -13,6 +13,7 @@ branches:
     - development
 
 install:
+    - sudo apt-get install gfortran
     - cd python
     - pip install coverage
     - pip install python-coveralls
