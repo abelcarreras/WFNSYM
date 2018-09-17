@@ -28,5 +28,5 @@ setup(name='wfnsympy',
       description='wfnsympy',
       author='Abel Carreras',
       author_email='abelcarreras83@gmail.com',
-      packages=['wfnsym'],
+      packages=['wfnsympy'],
       ext_modules=[wfnsymlib])
