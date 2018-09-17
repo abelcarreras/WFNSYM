@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/abelcarreras/WFNSYM.svg?branch=development)](https://travis-ci.org/abelcarreras/WFNSYM)
+[![Coverage Status](https://coveralls.io/repos/github/abelcarreras/WFNSYM/badge.svg?branch=development)](https://coveralls.io/github/abelcarreras/WFNSYM?branch=development)
 
 WFNSYM
 =========
@@ -10,6 +12,7 @@ Installation instructions
 
 1. Requirements
   - Lapack & Blas libraries
+  - Fortran77 compiler
   - cmake 2.6
   - (optional) MKL
 
