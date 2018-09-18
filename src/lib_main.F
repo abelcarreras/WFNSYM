@@ -91,6 +91,7 @@ c ----------- Added manual arguments-----------
       basin = .TRUE.
       molecule = .TRUE.
       natom = .TRUE.
+      Unrestricted = .TRUE.
       Group = 'C'
       SubG = '6V'
 
