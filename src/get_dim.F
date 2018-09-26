@@ -31,7 +31,7 @@ c Get the auxiliarity folder
 c Initialize some variables
       ND  = 6   ! cart d-orbitals
       NF  = 10  ! cart f-orbitals
-      IF(PureCart)
+      IF(PureCart) THEN
         ND = 5 ! pure d-orbitals
         NF = 7 ! pure d-orbitals
       END IF

@@ -42,24 +42,12 @@ endif (Fortran_COMPILER_NAME MATCHES "gfortran.*")
 
 include_directories("${CMAKE_SOURCE_DIR}/include")
 
-# MKL library
-if(WITH_MKL)
-  message(STATUS "Use MKL library")
-  link_directories("/opt/intel/mkl/lib/")
-  include_directories("/opt/intel/compilers_and_libraries/mac/include/intel64/")
-#  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -lmkl_def -lmkl_core -lmkl_lapack -lmkl_intel_thread  -lmkl_sequential -lmkl_intel_lp64 -lguide  -lpthread")
-  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -lmkl_core -lmkl_intel_thread -lmkl_sequential -lmkl_intel_lp64 -lpthread")
-
-else(WITH_MKL)
-  link_directories("/usr/lib")
-  set (CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -llapack -lblas")   
-endif(WITH_MKL)
-
 
 # build executables
 set( EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/EXE)
 set( LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/LIB)
 set (EXECUTABLES "WFNSYM")
+
 
 add_executable ("WFNSYM"
                 "src/VRoutines.F"
@@ -94,6 +82,27 @@ ADD_LIBRARY ("WFNSYMLIB" "STATIC"
                 "src/lib_main.F"
                 "src/read_routines.F"
                 "src/sym_routines.F")
+
+
+# MKL library
+if(WITH_MKL)
+  message(STATUS "Use MKL library")
+  link_directories("/opt/intel/mkl/lib/")
+  include_directories("/opt/intel/compilers_and_libraries/mac/include/intel64/")
+  #  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -lmkl_def -lmkl_core -lmkl_lapack -lmkl_intel_thread  -lmkl_sequential -lmkl_intel_lp64 -lguide  -lpthread")
+  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -lmkl_core -lmkl_intel_thread -lmkl_sequential -lmkl_intel_lp64 -lpthread")
+
+else(WITH_MKL)
+  #  link_directories("/usr/lib/x86_64-linux-gnu/lapack/" "/usr/lib/x86_64-linux-gnu/blas/")
+  find_library(LAPACK_LIBRARY lapack HINTS /usr/lib/)
+  find_library(BLAS_LIBRARY blas HINTS /usr/lib/)
+  set (CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -llapack -lblas")
+  target_link_libraries(WFNSYM PUBLIC ${LAPACK_LIBRARY})
+  target_link_libraries(WFNSYM PUBLIC ${BLAS_LIBRARY})
+  target_link_libraries(WFNSYMLIB PUBLIC ${LAPACK_LIBRARY})
+  target_link_libraries(WFNSYMLIB PUBLIC ${BLAS_LIBRARY})
+endif(WITH_MKL)
+
 
 
 # install executables and scripts
