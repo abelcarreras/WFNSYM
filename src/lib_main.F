@@ -92,6 +92,9 @@ c ----------- Added manual arguments-----------
       molecule = .TRUE.
       natom = .TRUE.
       Unrestricted = .TRUE.
+      readRC = .TRUE.
+      AXIS = .TRUE.
+      AXIS2 = .TRUE.
       Group = 'C'
       SubG = '6V'
 
@@ -425,22 +428,6 @@ c     write(iout,*)'reading AOs'
       CALL get_basis(AtLab,RAt,iAng,Alph,
      & ROrb,COrb,iContr,iLAO,cLAO,NAt,NBas,NOrb,PureCart,
      & NPrim, NTotShell, NShell, shell_type)
-
-c      do i = 1,NOrb
-c        write(6,*)  'ROrb', ROrb(i, 1), ROrb(i, 2), ROrb(i, 3)
-c      enddo
-c      do i = 1,NOrb
-c        write(6,*) 'COrb', COrb(i)
-c      enddo
-c      do i = 1,NOrb
-c        write(6,*) 'Alph', Alph(i)
-c      enddo
-c      do i = 1, NOrb
-c        write(6,*) 'iAng', iAng(i,1), iAng(i,2), iAng(i,3)
-c      enddo
-c      do i = 1,NBas
-c        write(6,*) 'iLAO', iLAO(i), 'cLAO ', cLAO(i),'iContr', iContr(i)
-c      enddo
 
 c Compute AO Overlap Matrix
 c     write(iout,*)'computing AO overlap'

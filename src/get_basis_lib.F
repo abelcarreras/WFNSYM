@@ -147,11 +147,11 @@ c        ELSEIF (OrbType.eq.'D ') THEN
             cLAO(iCount+4) = 'd5  '
           ELSE
             cLAO(iCount)   = 'dx2 '
-            cLAO(iCount+1) = 'dxy '
-            cLAO(iCount+2) = 'dy2 '
-            cLAO(iCount+3) = 'dxz '
-            cLAO(iCount+4) = 'dyz '
-            cLAO(iCount+5) = 'dz2 '
+            cLAO(iCount+1) = 'dy2 '
+            cLAO(iCount+2) = 'dz2 '
+            cLAO(iCount+3) = 'dxy '
+            cLAO(iCount+4) = 'dxz '
+            cLAO(iCount+5) = 'dyz '
           ENDIF
           iCount=iCount+ND
           DO i = 1,ND*NC
@@ -176,14 +176,23 @@ c             Pure d-orbitals order in Q-Chem
 c             Cartesian d-orbitals order in Q-Chem
               xOrbType = DSQRT(8.d0)
               iAng(iOrb+i-1,1)      = 2  ! xx
-              iAng(iOrb+i-1+NC,1)   = 1  ! xy
-              iAng(iOrb+i-1+NC,2)   = 1  ! xy
-              iAng(iOrb+i-1+2*NC,2) = 2  ! yy
-              iAng(iOrb+i-1+3*NC,1) = 1  ! xz
-              iAng(iOrb+i-1+3*NC,3) = 1  ! xz
-              iAng(iOrb+i-1+4*NC,2) = 1  ! yz
-              iAng(iOrb+i-1+4*NC,3) = 1  ! yz
-              iAng(iOrb+i-1+5*NC,3) = 2  ! zz
+              iAng(iOrb+i-1+NC,2)   = 2  ! yy
+              iAng(iOrb+i-1+2*NC,3) = 2  ! zz
+              iAng(iOrb+i-1+3*NC,1) = 1  ! xy
+              iAng(iOrb+i-1+3*NC,2) = 1  ! xy
+              iAng(iOrb+i-1+4*NC,1) = 1  ! xz
+              iAng(iOrb+i-1+4*NC,3) = 1  ! xz
+              iAng(iOrb+i-1+5*NC,2) = 1  ! yz
+              iAng(iOrb+i-1+5*NC,3) = 1  ! yz
+!             iAng(iOrb+i-1,1)      = 2  ! xx
+!             iAng(iOrb+i-1+NC,1)   = 1  ! xy
+!             iAng(iOrb+i-1+NC,2)   = 1  ! xy
+!             iAng(iOrb+i-1+2*NC,2) = 2  ! yy
+!             iAng(iOrb+i-1+3*NC,1) = 1  ! xz
+!             iAng(iOrb+i-1+3*NC,3) = 1  ! xz
+!             iAng(iOrb+i-1+4*NC,2) = 1  ! yz
+!             iAng(iOrb+i-1+4*NC,3) = 1  ! yz
+!             iAng(iOrb+i-1+5*NC,3) = 2  ! zz
             ENDIF
           ENDDO
           NOrbSh = ND*NC
