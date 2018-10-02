@@ -1069,12 +1069,16 @@ c      ENDDO
 c      WRITE(iout,*)
 
 c     Set output data
+      iOp = 1
       do i = 1, dGroup
-        OutGrim(i) = csm(i)
+        OutGrim(i) = csm(iOp)
+        iOp = iOp + iSymMu(i)
       enddo
 
+      iOp = 1
       do i = 1, dGroup
-        OutCSM(i) = 100.*(One-WDiag(i))
+        OutCSM(i) = 100.*(One-WDiag(iOp))
+        iOp = iOp + iSymMu(i)
       enddo
 
       do i = 1, dGroup
