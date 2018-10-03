@@ -5,7 +5,7 @@ python module WFNSYMLIB ! in
     interface  ! in :WFNSYMLIB
         subroutine mainlib(Etot, NEval, NBas, Norb, NAt, NCShell, iZAt, AtLab, Alph, COrb, NShell, RAt, n_prim, shell_type, &
         igroup, ngroup, Ca, Cb, RCread, VAxis, VAxis2, iCharge, iMult, DoOp, PureCart, OutDim, OutGrim, OutCMS, OutSymLab, OutSDiagA, &
-        OutSDiagB, OutWDiagA, OutWDiagB, OutTbl, OutIRLab, OutgIRA, OutgIRB, OutgIRwfA, OutgIRwfB, OutSymMat) ! in :WFNSYMLIB:lib_main.F
+        OutSDiagB, OutWDiagA, OutWDiagB, OutTbl, OutIRLab, OutgIRA, OutgIRB, OutgIRwfA, OutgIRwfB, OutgIRwf, OutSymMat) ! in :WFNSYMLIB:lib_main.F
 
 !           Inputs
             logical :: DoOp, PureCart
@@ -27,7 +27,7 @@ python module WFNSYMLIB ! in
             real*8 dimension(100),intent(out) :: OutWDiagA, OutWDiagB
             real*8 dimension(100,100),intent(out) :: OutTbl
             real*8 dimension(NBas,100),intent(out) :: OutgIRA, OutgIRB
-            real*8 dimension(100),intent(out) :: OutgIRwfA, OutgIRwfB
+            real*8 dimension(100),intent(out) :: OutgIRwfA, OutgIRwfB, OutgIRwf
             real*8 dimension(100,3,3),intent(out) :: OutSymMat
 
         end subroutine mainlib

@@ -119,9 +119,7 @@ class WfnSympy:
         Alph=[]
         for i, stype in enumerate(shell_type):
             for _ in range(typeList['{}'.format(stype)][1]):
-                # print(stype, i, typeList['{}'.format(stype)][1])
                 Alph.append(exp_group[i])
-        # Alph = np.array(Alph).flatten()
         Alph2 = []
         for i in Alph:
             Alph2.append(np.ndarray.tolist(i))
@@ -136,11 +134,9 @@ class WfnSympy:
             if typeList['{}'.format(stype)][0] == 'd' or typeList['{}'.format(stype)][0] == 'f':
                 for _ in range(typeList['{}'.format(stype)][1]-1):
                     COrb.append(coef_group[i])
-            # if not (b_coef_group[i] == 0).all():
             if typeList['{}'.format(stype)][0] == 'sp':
                 for _ in range(3):
                     COrb.append(b_coef_group[i])
-        # COrb = np.array(COrb).flatten()
         COrb2 = []
         for i in COrb:
             COrb2.append(np.ndarray.tolist(i))
@@ -185,10 +181,10 @@ class WfnSympy:
 
         self._wf_IRd_a = out_data[12][0:nIR]
         self._wf_IRd_b = out_data[13][0:nIR]
-        self._wf_IRd = np.prod([self._wf_IRd_a, self._wf_IRd_b], axis=0)
+        # self._wf_IRd = np.prod([self._wf_IRd_a, self._wf_IRd_b], axis=0)
+        self._wf_IRd = out_data[14][0:nIR]
 
-        # self._gIRwfB = out_data[13][0:nIR]
-        self._SymMat = out_data[14][0:dgroup]
+        self._SymMat = out_data[15][0:dgroup]
 
     # Print Outputs
     def print_CSM(self):

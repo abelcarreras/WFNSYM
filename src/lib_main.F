@@ -8,7 +8,7 @@ c      PROGRAM Prog_Main
      & PureCart_2, OutDim, OutGrim, OutCSM, OutSymLab,
      & OutSDiagA, OutSDiagB, OutWDiagA, OutWDiagB, OutTbl,
      & OutIRLab, OutgIRA, OutgIRB,OutgIRwfA,OutgIRwfB,
-     & OutSymMat)
+     & OutgIRwf, OutSymMat)
 
 c--------------------------------------------------------------
 c       David Casanova          06/APR/10	Initializing program
@@ -67,7 +67,7 @@ c     Output
       REAL*8 :: OutWDiagA(NBas), OutWDiagB(NBas)
       REAL*8 :: OutTbl(100,100)
       REAL*8 :: OutgIRA(NBas,100), OutgIRB(NBas,100)
-      REAL*8 :: OutgIRwfA(100), OutgIRwfB(100)
+      REAL*8 :: OutgIRwfA(100), OutgIRwfB(100), OutgIRwf(100)
       REAL*8 :: OutSymMat(100, 3, 3)
 c Include files
       INCLUDE 'definitionlib_var.ins'
@@ -1326,6 +1326,7 @@ c          OutIRLab(i) = IRLab(i)
         OutIRLab(i) = IRLab(i)
         OutgIRwfA(i)  =  gIRwfA(i)
         OutgIRwfB(i)  =  gIRwfB(i)
+        OutgIRwf(i)  =  gIRwf(i)
       ENDDO
 
 
