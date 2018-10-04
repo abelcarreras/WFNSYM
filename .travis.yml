@@ -12,6 +12,11 @@ branches:
     - master
     - development
 
+notifications:
+  email:
+  - abelcarreras83@gmail.com
+  - komuisan@gmail.com
+
 install:
     - sudo apt-get install libblas-dev liblapack-dev
     - sudo apt-get install gfortran
