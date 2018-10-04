@@ -267,9 +267,9 @@ class TestWfnsympy(unittest.TestCase):
         self.assertEqual(self.pirrol.SymLab, symlab_test)
 
     def test_csm_coef(self):
-        csm_coef_test = [5.33114175e-07, 9.99989431e+01, 9.99989431e+01, 1.00000000e+02,
-                         1.00000000e+02, 1.00000000e+02, 1.00000000e+02, 1.00000000e+02,
-                         9.99989431e+01, 5.33113642e-07]
+        csm_coef_test = [5.331142e-07, 9.999894e+01, 1.000000e+02, 1.000000e+02,
+                         1.000000e+02, 1.000000e+02, 9.999894e+01, 5.331136e-07,
+                         9.999894e+01, 1.000000e+02]
 
         np.testing.assert_allclose(csm_coef_test, self.pirrol.csm_coef, rtol=1e-6)
 
@@ -314,7 +314,7 @@ class TestWfnsympy(unittest.TestCase):
         np.testing.assert_allclose(wf_soevs_a_test, self.pirrol.wf_SOEVs_a, rtol=1e-6)
 
     def test_grim_coef(self):
-        grim_coef_test = [1.48087240e-08, 6.38290380e+01, 6.38290380e+01, 7.53467283e+01,
-                          7.53467283e+01, 5.90925836e+01, 5.90925836e+01, 7.53467283e+01,
-                          6.38290380e+01, 1.48087095e-08]
+        grim_coef_test = [1.480872e-08, 6.382904e+01, 7.534673e+01, 5.909258e+01,
+                          5.909258e+01, 7.534673e+01, 6.382904e+01, 1.480871e-08,
+                          6.382904e+01, 7.534673e+01]
         np.testing.assert_allclose(grim_coef_test, self.pirrol.grim_coef, rtol=1e-6)
