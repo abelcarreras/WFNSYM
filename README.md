@@ -34,3 +34,7 @@ Authors
 
 This software has been developed by David Casanova
 <br>Python module by Abel Carreras
+
+The theoretical background implemented in this software is described in:
+<br>Casanova D, Alemany P. Phys Chem Chem Phys. 2010;12(47):15523–9. 
+<br>Casanova D, Alemany P, Falceto A, Carreras A, Alvarez S. J Comput Chem 2013;34(15):1321–31.
