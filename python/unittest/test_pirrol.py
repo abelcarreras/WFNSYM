@@ -246,8 +246,8 @@ class TestWfnsympy(unittest.TestCase):
                7.88398567E-01,  8.69435277E-02, -6.56193193E-01, -5.75068294E-17, -5.59207294E-01,
               -7.88398567E-01, -2.67731796E-01,  2.67731796E-01,  4.07955748E-01, -4.07955748E-01]
 
-        self.pirrol = WfnSympy(NEval=26,       # Number of Valence electrons
-                               AtLab=AtLab,    # Atomic labels
+        self.pirrol = WfnSympy(NEval=26,  # Number of Valence electrons
+                               AtLab=AtLab,  # Atomic labels
                                shell_type=shell_type,
                                p_exp=p_exp,
                                con_coef=con_coef,
@@ -259,7 +259,7 @@ class TestWfnsympy(unittest.TestCase):
                                RCread=[0., 0., 0.],
                                VAxis= [1., 0., 0.],
                                VAxis2=[0., 0., 1.],
-                               iCharge=0, iMult=1,
+                               charge=0, multiplicity=1,
                                group='C6v')
 
     def test_symlab(self):
