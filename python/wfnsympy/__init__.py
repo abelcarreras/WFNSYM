@@ -2,6 +2,33 @@ from wfnsympy.WFNSYMLIB import mainlib
 import numpy as np
 
 
+type_list = {'s': 0,
+             'p': 1,
+             'd': 2,
+             'f': 3,
+             'sp': -1,
+             'dc': -2,  # pure
+             'fc': -3}  # pure
+
+
+def get_valence_electrons(atomic_numbers, charge):
+    valence_electrons = 0
+    for number in atomic_numbers:
+        if 2 >= number > 0:
+            valence_electrons += np.mod(number, 2)
+        if 18 >= number > 2:
+            valence_electrons += np.mod(number-2, 8)
+        if 54 >= number > 18:
+            valence_electrons += np.mod(number-18, 18)
+        if 118 >= number > 54:
+            valence_electrons += np.mod(number-54, 32)
+        if number > 118:
+            raise Exception('Atomic number size not implemented')
+
+    valence_electrons -= charge
+    return valence_electrons
+
+
 def get_group_num_from_label(label):
 
     label_2 = label[0].upper()
@@ -62,28 +89,17 @@ def get_operation_num_from_label(label):
 
 class WfnSympy:
     def __init__(self,
-                 # Etot,
-                 NEval,
-                 # NBas,
-                 # Norb,
-                 # NTotShell,
-                 # iZAt,
-                 AtLab,
-                 shell_type,
-                 p_exp,
-                 con_coef,
-                 p_con_coef,
-                 RAt,
-                 n_prim,
-                 atom_map,
-                 Ca, Cb,
-                 RCread,
+                 coordinates,  # Angstrom
+                 symbols,
+                 basis,  # basis dictionary
+                 center,
                  VAxis,
                  VAxis2,
-                 iCharge, iMult,
+                 charge,
+                 multiplicity,
+                 alpha_mo_coeff,
+                 beta_mo_coeff=None,
                  group=None,
-                 #igroup=1,
-                 #ngroup=1, # This has to be obtained from label
                  do_operation=False,
                  use_pure_d_functions=False):
 
@@ -93,11 +109,49 @@ class WfnSympy:
         else:
             igroup, ngroup = get_group_num_from_label(group)
 
+        # from basis to wfsymm
+        shell_type = []
+        p_exponents = []
+        c_coefficients = []
+        p_c_coefficients = []
+        n_primitives = []
+        atom_map = []
+        for i, atoms in enumerate(basis['atoms']):
+            for shell in atoms['shells']:
+                st = shell['shell_type']
+                shell_type.append(type_list[st])
+                n_primitives.append(len(shell['p_exponents']))
+                atom_map.append(i+1)
+                for p in shell['p_exponents']:
+                    p_exponents.append(p)
+                for c in shell['con_coefficients']:
+                    c_coefficients.append(c)
+                for pc in shell['p_con_coefficients']:
+                    p_c_coefficients.append(pc)
+
+        Ca = np.array(alpha_mo_coeff).flatten().tolist()
+        if beta_mo_coeff is not None:
+            Cb = np.array(beta_mo_coeff).flatten().tolist()
+        else:
+            Cb = Ca
+
+        bohr_to_angstrom = 0.529177249
+        RAt = np.array(coordinates)/bohr_to_angstrom
+        atomic_numbers = [symbol_map[i] for i in symbols]
+
+        NEval = get_valence_electrons(atomic_numbers, charge)
+        AtLab=symbols
+        n_prim=n_primitives
+        p_exp=p_exponents
+        con_coef=c_coefficients
+        p_con_coef=p_c_coefficients
+        RCread = [c/bohr_to_angstrom for c in center]
+
         # get atomic numbers
         iZAt = [symbol_map[e] for e in AtLab]
 
         # get number of electrons
-        Etot = np.sum(iZAt) - iCharge
+        Etot = np.sum(iZAt) - charge
 
         NShell = np.unique(atom_map, return_counts=True)[1]
 
@@ -149,8 +203,8 @@ class WfnSympy:
         NBas = np.sum([typeList['{}'.format(st)][1] for st in shell_type])
 
         out_data = mainlib(Etot, NEval, NBas, Norb, Nat, NTotShell, iZAt, AtLab, Alph,
-                COrb, NShell, RAt, n_prim, shell_type, igroup, ngroup, Ca, Cb, RCread, VAxis, VAxis2,
-                iCharge, iMult, do_operation, use_pure_d_functions)
+                           COrb, NShell, RAt, n_prim, shell_type, igroup, ngroup, Ca, Cb, RCread, VAxis, VAxis2,
+                           charge, multiplicity, do_operation, use_pure_d_functions)
 
         # Process outputs
         dgroup = out_data[0][0]
@@ -706,7 +760,7 @@ if __name__ == '__main__':
                       RCread=[0., 0., 0.],
                       VAxis= [1., 0., 0.],
                       VAxis2=[0., 0., 1.],
-                      iCharge=0, iMult=1,
+                      charge=0, multiplicity=1,
                       # igroup=3, ngroup=6,  # define symmetry group
                       group='c6v',
                       do_operation=False)
