@@ -136,12 +136,11 @@ def get_data_from_file_fchk(file_name):
                              c_coefficients=[float(num) for num in input_molecule[8]],
                              p_c_coefficients=[float(num) for num in input_molecule[9]])
 
-        alpha_coeff = [float(num) for num in input_molecule[10]]
-        beta_coeff = [float(num) for num in input_molecule[11]]
+        nbas = int(np.sqrt(len(input_molecule[10])))
 
-        coefficients = {'alpha': alpha_coeff}
-        if len(beta_coeff) != 0:
-            coefficients.update({'beta': beta_coeff})
+        coefficients = {'alpha': np.array(input_molecule[10], dtype=float).reshape(nbas, nbas).tolist()}
+        if len(input_molecule[11]) != 0:
+            coefficients['beta'] = np.array(input_molecule[11], dtype=float).reshape(nbas, nbas).tolist()
 
         return {'coordinates': coordinates,
                 'symbols': symbols,
