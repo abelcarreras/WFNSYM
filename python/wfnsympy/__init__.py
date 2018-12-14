@@ -2,15 +2,6 @@ from wfnsympy.WFNSYMLIB import mainlib
 import numpy as np
 
 
-type_list = {'s': 0,
-             'p': 1,
-             'd': 2,
-             'f': 3,
-             'sp': -1,
-             'dc': -2,  # pure
-             'fc': -3}  # pure
-
-
 def get_valence_electrons(atomic_numbers, charge):
     valence_electrons = 0
     for number in atomic_numbers:
@@ -89,16 +80,16 @@ def get_operation_num_from_label(label):
 
 class WfnSympy:
     def __init__(self,
-                 coordinates,  # Angstrom
+                 coordinates,  # in Angstrom
                  symbols,
                  basis,  # basis dictionary
-                 center,
+                 center,  # in Angstrom
                  VAxis,
                  VAxis2,
-                 charge,
-                 multiplicity,
-                 alpha_mo_coeff,
-                 beta_mo_coeff=None,
+                 alpha_mo_coeff,  # Nbas x Nbas
+                 charge=0,
+                 multiplicity=1,
+                 beta_mo_coeff=None,  # Nbas x Nbas
                  group=None,
                  do_operation=False,
                  use_pure_d_functions=False):
@@ -109,7 +100,21 @@ class WfnSympy:
         else:
             igroup, ngroup = get_group_num_from_label(group)
 
-        # from basis to wfsymm
+        bohr_to_angstrom = 0.529177249
+
+        shell_type_list = {'-1': ['sp', 4],
+                            '0': ['s',  1],
+                            '1': ['p',  3],
+                            '2': ['d',  6],
+                            '3': ['f',  10],
+                           '-2': ['dc', 5],  # pure
+                           '-3': ['fc', 7]}  # pure
+
+        type_list_inverse = {}
+        for item in shell_type_list.items():
+            type_list_inverse['{}'.format(item[1][0])] = int(item[0])
+
+        # from basis dictionary to wfsymm lib arguments
         shell_type = []
         p_exponents = []
         c_coefficients = []
@@ -119,7 +124,7 @@ class WfnSympy:
         for i, atoms in enumerate(basis['atoms']):
             for shell in atoms['shells']:
                 st = shell['shell_type']
-                shell_type.append(type_list[st])
+                shell_type.append(type_list_inverse[st])
                 n_primitives.append(len(shell['p_exponents']))
                 atom_map.append(i+1)
                 for p in shell['p_exponents']:
@@ -129,66 +134,57 @@ class WfnSympy:
                 for pc in shell['p_con_coefficients']:
                     p_c_coefficients.append(pc)
 
-        Ca = np.array(alpha_mo_coeff).flatten().tolist()
+        # Create MO coefficients in contiguous list
+        Ca = np.ascontiguousarray(alpha_mo_coeff).flatten().tolist()
         if beta_mo_coeff is not None:
-            Cb = np.array(beta_mo_coeff).flatten().tolist()
+            Cb = np.ascontiguousarray(beta_mo_coeff).flatten().tolist()
         else:
             Cb = Ca
 
-        bohr_to_angstrom = 0.529177249
-        RAt = np.array(coordinates)/bohr_to_angstrom
-        atomic_numbers = [symbol_map[i] for i in symbols]
-
-        NEval = get_valence_electrons(atomic_numbers, charge)
-        AtLab=symbols
-        n_prim=n_primitives
-        p_exp=p_exponents
-        con_coef=c_coefficients
-        p_con_coef=p_c_coefficients
-        RCread = [c/bohr_to_angstrom for c in center]
+        # convert from Angstroms to Bohr
+        coordinates = np.array(coordinates)/bohr_to_angstrom
+        center = [c/bohr_to_angstrom for c in center]
 
         # get atomic numbers
-        iZAt = [symbol_map[e] for e in AtLab]
+        atomic_numbers = [symbol_map[i] for i in symbols]
 
-        # get number of electrons
-        Etot = np.sum(iZAt) - charge
+        # get valence electrons
+        valence_electrons = get_valence_electrons(atomic_numbers, charge)
+
+        # get total number of electrons
+        total_electrons = np.sum(atomic_numbers) - charge
 
         NShell = np.unique(atom_map, return_counts=True)[1]
 
-        AtLab = np.array([list('{:<2}'.format(char)) for char in AtLab], dtype='S')
-
-        typeList = {'-1': ['sp', 4],
-                     '0': ['s', 1],
-                     '1': ['p', 3],
-                     '2': ['d', 6],
-                     '3': ['f', 10]}
+        # Transform symbols type to correct Fortran char*2 type
+        symbols = np.array([list('{:<2}'.format(char)) for char in symbols], dtype='S')
 
         # Check for pure D
         if use_pure_d_functions:
-            typeList.update({'-2' : ['d', 5],
+            shell_type_list.update({'-2' : ['d', 5],
                              '-3' : ['f', 7]})
 
-        exp_group = np.array(np.split(np.array(p_exp), np.cumsum(n_prim))[:-1])
+        exp_group = np.array(np.split(np.array(p_exponents), np.cumsum(n_primitives))[:-1])
 
         Alph=[]
         for i, stype in enumerate(shell_type):
-            for _ in range(typeList['{}'.format(stype)][1]):
+            for _ in range(shell_type_list['{}'.format(stype)][1]):
                 Alph.append(exp_group[i])
         Alph2 = []
         for i in Alph:
             Alph2.append(np.ndarray.tolist(i))
         Alph = [item for sublist in Alph2 for item in sublist]
 
-        coef_group = np.array(np.split(np.array(con_coef), np.cumsum(n_prim))[:-1])
-        b_coef_group = np.array(np.split(np.array(p_con_coef), np.cumsum(n_prim))[:-1])
+        coef_group = np.array(np.split(np.array(c_coefficients), np.cumsum(n_primitives))[:-1])
+        b_coef_group = np.array(np.split(np.array(p_c_coefficients), np.cumsum(n_primitives))[:-1])
 
         COrb = []
         for i, stype in enumerate(shell_type):
             COrb.append(coef_group[i])
-            if typeList['{}'.format(stype)][0] == 'd' or typeList['{}'.format(stype)][0] == 'f':
-                for _ in range(typeList['{}'.format(stype)][1]-1):
+            if shell_type_list['{}'.format(stype)][0] == 'd' or shell_type_list['{}'.format(stype)][0] == 'f':
+                for _ in range(shell_type_list['{}'.format(stype)][1]-1):
                     COrb.append(coef_group[i])
-            if typeList['{}'.format(stype)][0] == 'sp':
+            if shell_type_list['{}'.format(stype)][0] == 'sp':
                 for _ in range(3):
                     COrb.append(b_coef_group[i])
         COrb2 = []
@@ -197,13 +193,13 @@ class WfnSympy:
         COrb = [item for sublist in COrb2 for item in sublist]
 
         # determine dimension
-        Nat = len(AtLab)
+        Nat = len(symbols)
         NTotShell = len(atom_map)
         Norb = len(COrb)
-        NBas = np.sum([typeList['{}'.format(st)][1] for st in shell_type])
+        NBas = np.sum([shell_type_list['{}'.format(st)][1] for st in shell_type])
 
-        out_data = mainlib(Etot, NEval, NBas, Norb, Nat, NTotShell, iZAt, AtLab, Alph,
-                           COrb, NShell, RAt, n_prim, shell_type, igroup, ngroup, Ca, Cb, RCread, VAxis, VAxis2,
+        out_data = mainlib(total_electrons, valence_electrons, NBas, Norb, Nat, NTotShell, atomic_numbers, symbols, Alph,
+                           COrb, NShell, coordinates, n_primitives, shell_type, igroup, ngroup, Ca, Cb, center, VAxis, VAxis2,
                            charge, multiplicity, do_operation, use_pure_d_functions)
 
         # Process outputs
@@ -212,7 +208,7 @@ class WfnSympy:
         nIR = out_data[0][2]
 
         self._dgroup = dgroup
-        self._atom_coor = np.array(RAt)
+        self._atom_coor = np.array(coordinates)
 
         self._grim_coef = out_data[1][0:dgroup]
         self._csm_coef = out_data[2][0:dgroup]
