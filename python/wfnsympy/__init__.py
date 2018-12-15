@@ -108,8 +108,8 @@ class WfnSympy:
                             '1': ['p',  3],
                             '2': ['d',  6],
                             '3': ['f',  10],
-                           '-2': ['d',  5],  # pure
-                           '-3': ['f',  7]}  # pure
+                           '-2': ['d_', 5],  # pure
+                           '-3': ['f_', 7]}  # pure
 
 
         type_list_inverse = {}
