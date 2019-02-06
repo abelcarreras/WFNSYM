@@ -48,7 +48,12 @@ wfnsymlib = Extension('wfnsympy.WFNSYMLIB',
                                s_dir + 'lib_main.F',
                                s_dir + 'overlap.F',
                                s_dir + 'read_routines.F',
-                               s_dir + 'sym_routines.F'])
+                               s_dir + 'sym_routines.F',
+                               i_dir + 'common_var.ins',
+                               i_dir + 'definition_var.ins',
+                               i_dir + 'definitionlib_var.ins',
+                               i_dir + 'init_var.ins',
+                               i_dir + 'wfnsym.h'])
 
 setup(name='wfnsympy',
       version=get_version_number(),
@@ -56,4 +61,5 @@ setup(name='wfnsympy',
       author='Abel Carreras',
       author_email='abelcarreras83@gmail.com',
       packages=['wfnsympy'],
+      include_package_data=True,
       ext_modules=[wfnsymlib])
