@@ -22,11 +22,11 @@ if travis:
 if os.path.isdir('./src') and os.path.isdir('./include'):
     print('exists')
     s_dir = './src/'
-    i_dir = './include'
+    i_dir = './include/'
 else:
     print('not exists')
     s_dir = '../src/'
-    i_dir = '../include'
+    i_dir = '../include/'
 
 wfnsymlib = Extension('wfnsympy.WFNSYMLIB',
                       # extra_compile_args=['-std=c99'],
@@ -56,10 +56,4 @@ setup(name='wfnsympy',
       author='Abel Carreras',
       author_email='abelcarreras83@gmail.com',
       packages=['wfnsympy'],
-      include_package_data=True,
-      package_data={'': [i_dir + 'common_var.ins',
-                         i_dir + 'definition_var.ins',
-                         i_dir + 'definitionlib_var.ins',
-                         i_dir + 'init_var.ins',
-                         i_dir + 'wfnsym.h']},
       ext_modules=[wfnsymlib])
