@@ -19,14 +19,14 @@ if travis:
     copy_tree('../src', './src', update=True)
     copy_tree('../include', './include', update=True)
 
-if os.path.isdir('../src') and os.path.isdir('../include'):
+if os.path.isdir('./src') and os.path.isdir('./include'):
     print('exists')
-    s_dir = '../src/'
-    i_dir = '../include'
-else:
-    print('not exists')
     s_dir = './src/'
     i_dir = './include'
+else:
+    print('not exists')
+    s_dir = '../src/'
+    i_dir = '../include'
 
 wfnsymlib = Extension('wfnsympy.WFNSYMLIB',
                       # extra_compile_args=['-std=c99'],
