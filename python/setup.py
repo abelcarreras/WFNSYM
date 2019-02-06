@@ -5,6 +5,13 @@ import os
 
 # Make python package
 
+# get version number
+def get_version_number():
+    for l in open('wfnsympy/__init__.py', 'r').readlines():
+        if not(l.find('__version__')):
+            exec(l, globals())
+            return __version__
+
 
 travis = bool('TRAVIS' in os.environ)
 if travis:
@@ -12,12 +19,19 @@ if travis:
     copy_tree('../src', './src', update=True)
     copy_tree('../include', './include', update=True)
 
-s_dir = 'src/'
+if os.path.isdir('../src') and os.path.isdir('../include'):
+    print('exists')
+    s_dir = '../src/'
+    i_dir = '../include'
+else:
+    print('not exists')
+    s_dir = './src/'
+    i_dir = './include'
 
 wfnsymlib = Extension('wfnsympy.WFNSYMLIB',
                       # extra_compile_args=['-std=c99'],
                       #include_dirs=include_dirs_numpy,
-                      include_dirs=['include'],
+                      include_dirs=[i_dir],
                       libraries=['lapack', 'blas'],
                       sources=['WFNSYMLIB.pyf',
                                s_dir + 'VRoutines.F',
@@ -37,7 +51,7 @@ wfnsymlib = Extension('wfnsympy.WFNSYMLIB',
                                s_dir + 'sym_routines.F'])
 
 setup(name='wfnsympy',
-      version='0.1',
+      version=get_version_number(),
       description='wfnsympy',
       author='Abel Carreras',
       author_email='abelcarreras83@gmail.com',

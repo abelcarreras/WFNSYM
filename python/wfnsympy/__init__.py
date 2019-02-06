@@ -1,3 +1,5 @@
+__version__ = '0.1.1'
+
 from wfnsympy.WFNSYMLIB import mainlib
 import numpy as np
 
