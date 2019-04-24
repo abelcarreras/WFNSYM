@@ -1,4 +1,4 @@
-__version__ = '0.1.4'
+__version__ = '0.1.5'
 
 from wfnsympy.WFNSYMLIB import mainlib
 import numpy as np
@@ -197,9 +197,17 @@ class WfnSympy:
         Norb = len(COrb)
         NBas = np.sum([shell_type_list['{}'.format(st)][1] for st in shell_type])
 
+        #silence function
+        #import sys, os
+        #old_stdout = sys.stdout
+        #fnull = open(os.devnull, 'w')
+        #os.dup2(fnull.fileno(), sys.stderr.fileno())
+
         out_data = mainlib(total_electrons, valence_electrons, NBas, Norb, Nat, NTotShell, atomic_numbers, symbols, Alph,
                            COrb, NShell, coordinates, n_primitives, shell_type, igroup, ngroup, Ca, Cb, center, VAxis, VAxis2,
                            charge, multiplicity, do_operation, use_pure_d_functions)
+        #fnull.close()
+        #sys.stdout = old_stdout
 
         # Process outputs
         dgroup = out_data[0][0]

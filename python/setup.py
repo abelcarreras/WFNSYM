@@ -13,7 +13,7 @@ def get_version_number():
             return __version__
 
 
-travis = bool('TRAVIS' in os.environ)
+travis = bool('TRAVIS_WFNSYM' in os.environ)
 if travis:
     print('Testing in travis')
     copy_tree('../src', './src', update=True)

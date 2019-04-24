@@ -17,6 +17,9 @@ notifications:
   - abelcarreras83@gmail.com
   - komuisan@gmail.com
 
+env:
+  - TRAVIS_WFNSYM=true
+
 install:
     - sudo apt-get install libblas-dev liblapack-dev
     - sudo apt-get install gfortran
