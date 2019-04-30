@@ -15,7 +15,7 @@ class TestWfnsympy(unittest.TestCase):
                                basis=data['basis'],
                                center=[0., 0., 0.],
                                VAxis= [1., 0., 0.],
-                               VAxis2=[0., 0., 1.],
+                               # VAxis2=[0., 0., 1.],
                                alpha_mo_coeff=data['mo_coefficients']['alpha'],
                                charge=0,
                                multiplicity=1,

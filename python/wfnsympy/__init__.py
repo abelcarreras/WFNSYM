@@ -85,10 +85,10 @@ class WfnSympy:
                  coordinates,  # in Angstrom
                  symbols,
                  basis,  # basis dictionary
-                 center,  # in Angstrom
-                 VAxis,
-                 VAxis2,
                  alpha_mo_coeff,  # Nbas x Nbas
+                 center=None,  # in Angstrom
+                 VAxis=None,
+                 # VAxis2=None,
                  charge=0,
                  multiplicity=1,
                  beta_mo_coeff=None,  # Nbas x Nbas
@@ -112,7 +112,6 @@ class WfnSympy:
                             '3': ['f',  10],
                            '-2': ['d_', 5],  # pure
                            '-3': ['f_', 7]}  # pure
-
 
         type_list_inverse = {}
         for item in shell_type_list.items():
@@ -147,7 +146,8 @@ class WfnSympy:
 
         # convert from Angstroms to Bohr
         coordinates = np.array(coordinates)/bohr_to_angstrom
-        center = [c/bohr_to_angstrom for c in center]
+        if center is not None:
+            center = [c/bohr_to_angstrom for c in center]
 
         # get atomic numbers
         atomic_numbers = [symbol_map[i] for i in symbols]
@@ -202,6 +202,45 @@ class WfnSympy:
         #old_stdout = sys.stdout
         #fnull = open(os.devnull, 'w')
         #os.dup2(fnull.fileno(), sys.stderr.fileno())
+
+        # Axis optimization
+        if VAxis is None:
+            from wfnsympy.optimize import minimize_axis
+            from wfnsympy.optimize import rotation_xy
+
+            def target_function(alpha, beta, center=np.array(center)):
+                VAxis = np.dot(rotation_xy(alpha, beta), [1, 0, 0])
+                VAxis2 = np.dot(rotation_xy(alpha, beta), [0, 0, 1])
+
+                # print('centre', center)
+                out_data = mainlib(total_electrons, valence_electrons, NBas, Norb, Nat, NTotShell, atomic_numbers, symbols, Alph,
+                                   COrb, NShell, coordinates, n_primitives, shell_type, igroup, ngroup, Ca, Cb, center, VAxis, VAxis2,
+                                   charge, multiplicity, do_operation, use_pure_d_functions)
+
+                dgroup = out_data[0][0]
+
+                return np.sum(np.sqrt(out_data[2][0:dgroup]))
+
+            if center is None:
+                center_i = np.sum(coordinates, axis=0)/len(coordinates)
+                # print('center_i', center_i)
+                alpha, beta, c1, c2, c3 = minimize_axis(target_function, center_i, delta=0.05)
+                center = [c1, c2, c3]
+            else:
+                alpha, beta = minimize_axis(target_function, None, delta=0.05)
+
+            VAxis = np.dot(rotation_xy(alpha, beta), [1, 0, 0])
+            VAxis2 = np.dot(rotation_xy(alpha, beta), [0, 0, 1])
+
+        else:
+            if np.abs(np.dot(VAxis, [1, 0, 0])) < np.abs(np.dot(VAxis, [0, 1, 0])):
+                VAxis2 = np.cross(VAxis, [1, 0, 0])
+            else:
+                VAxis2 = np.cross(VAxis, [0, 1, 0])
+
+        # Add outputs
+        self._center = center
+        self._axis = VAxis
 
         out_data = mainlib(total_electrons, valence_electrons, NBas, Norb, Nat, NTotShell, atomic_numbers, symbols, Alph,
                            COrb, NShell, coordinates, n_primitives, shell_type, igroup, ngroup, Ca, Cb, center, VAxis, VAxis2,
@@ -382,6 +421,13 @@ class WfnSympy:
     def SymMat(self):
         return self._SymMat
 
+    @property
+    def center(self):
+        return self._center
+
+    @property
+    def axis(self):
+        return self._axis
 
 symbol_map = {
     "H": 1,
