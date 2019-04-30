@@ -220,6 +220,11 @@ class WfnSympy:
                 dgroup = out_data[0][0]
                 return np.sum(np.abs(out_data[2][0:dgroup]))
 
+            import sys, os
+            old_stdout = sys.stdout
+            fnull = open(os.devnull, 'w')
+            os.dup2(fnull.fileno(), sys.stderr.fileno())
+
             if center is None:
                 center_i = np.sum(coordinates, axis=0)/len(coordinates)
                 # print('center_i', center_i)
@@ -227,6 +232,9 @@ class WfnSympy:
                 center = [c1, c2, c3]
             else:
                 alpha, beta = minimize_axis(target_function, None, delta=0.05)
+
+            sys.stdout = old_stdout
+            fnull.close()
 
             VAxis = np.dot(rotation_xy(alpha, beta), [1, 0, 0])
             VAxis2 = np.dot(rotation_xy(alpha, beta), [0, 0, 1])
