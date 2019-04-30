@@ -218,8 +218,7 @@ class WfnSympy:
                                    charge, multiplicity, do_operation, use_pure_d_functions)
 
                 dgroup = out_data[0][0]
-
-                return np.sum(np.sqrt(out_data[2][0:dgroup]))
+                return np.sum(np.abs(out_data[2][0:dgroup]))
 
             if center is None:
                 center_i = np.sum(coordinates, axis=0)/len(coordinates)
