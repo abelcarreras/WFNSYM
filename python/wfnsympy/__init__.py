@@ -41,7 +41,10 @@ def get_group_num_from_label(label):
 
     if label_2[0].upper() == 'S':
         if ngroup % 2 != 0:
+            label_2 = list(label_2)
             label_2[0] = 'C'
+            label_2 = ''.join(label_2)
+
 
     operations = {'Cn':  [1, ngroup],
                   'CnH': [2, ngroup],
@@ -88,7 +91,7 @@ class WfnSympy:
                  alpha_mo_coeff,  # Nbas x Nbas
                  center=None,  # in Angstrom
                  VAxis=None,
-                 # VAxis2=None,
+                 VAxis2=None,
                  charge=0,
                  multiplicity=1,
                  beta_mo_coeff=None,  # Nbas x Nbas
