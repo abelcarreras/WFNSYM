@@ -45,17 +45,16 @@ def get_group_num_from_label(label):
             label_2[0] = 'C'
             label_2 = ''.join(label_2)
 
-
-    operations = {'Cn':  [1, ngroup],
-                  'CnH': [2, ngroup],
-                  'CnV': [3, ngroup],
+    operations = {'CN':  [1, ngroup],
+                  'CNH': [2, ngroup],
+                  'CNV': [3, ngroup],
                   'CI':  [0, 2],
                   'CINF':[9, 1],
-                  'Dn':  [4, ngroup],
-                  'Dnd': [5, ngroup],
-                  'DnH': [6, ngroup],
+                  'DN':  [4, ngroup],
+                  'DND': [5, ngroup],
+                  'DNH': [6, ngroup],
                   'DINF':[9, 2],
-                  'Sn':  [7, ngroup],
+                  'SN':  [7, ngroup],
                   'T':   [8, 1],
                   'TH':  [8, 2],
                   'TD':  [8, 3],
@@ -65,7 +64,7 @@ def get_group_num_from_label(label):
                   'IH':  [8, 7],
                   }
     try:
-        return operations[label_2]
+        return operations[label_2.upper()]
     except KeyError:
         raise Exception('Label not found')
 
@@ -81,6 +80,14 @@ def get_operation_num_from_label(label):
     else:
         irot = 0
     return ioper, irot
+
+
+def get_perpendicular_axis(axis):
+    axis = np.array(axis)
+    if np.abs(np.dot(axis, [1, 0, 0])) < np.abs(np.dot(axis, [0, 1, 0])):
+        return np.cross(axis, [1, 0, 0])
+    else:
+        return np.cross(axis, [0, 1, 0])
 
 
 class WfnSympy:
@@ -209,11 +216,11 @@ class WfnSympy:
         # Axis optimization
         if VAxis is None:
             from wfnsympy.optimize import minimize_axis
-            from wfnsympy.optimize import rotation_xy
+            from wfnsympy.optimize import rotation_xy, rotation_axis
 
-            def target_function(alpha, beta, center=np.array(center)):
+            def target_function(alpha, beta, center, gamma=0.0):
                 VAxis = np.dot(rotation_xy(alpha, beta), [1, 0, 0])
-                VAxis2 = np.dot(rotation_xy(alpha, beta), [0, 0, 1])
+                VAxis2 = np.dot(rotation_axis(VAxis, gamma), get_perpendicular_axis(VAxis))
 
                 # print('centre', center)
                 out_data = mainlib(total_electrons, valence_electrons, NBas, Norb, Nat, NTotShell, atomic_numbers, symbols, Alph,
@@ -228,29 +235,23 @@ class WfnSympy:
             fnull = open(os.devnull, 'w')
             os.dup2(fnull.fileno(), sys.stderr.fileno())
 
-            if center is None:
-                center_i = np.sum(coordinates, axis=0)/len(coordinates)
-                # print('center_i', center_i)
-                alpha, beta, c1, c2, c3 = minimize_axis(target_function, center_i, delta=0.05)
-                center = [c1, c2, c3]
-            else:
-                alpha, beta = minimize_axis(target_function, None, delta=0.05)
+            data = {'coordinates': coordinates, 'symbols': symbols, 'igroup': igroup, 'ngroup': ngroup}
+            alpha, beta, gamma, center = minimize_axis(target_function, center, data, delta=0.4)
 
             sys.stdout = old_stdout
             fnull.close()
 
             VAxis = np.dot(rotation_xy(alpha, beta), [1, 0, 0])
-            VAxis2 = np.dot(rotation_xy(alpha, beta), [0, 0, 1])
+            VAxis2 = np.dot(rotation_axis(VAxis, gamma), get_perpendicular_axis(VAxis))
 
         else:
-            if np.abs(np.dot(VAxis, [1, 0, 0])) < np.abs(np.dot(VAxis, [0, 1, 0])):
-                VAxis2 = np.cross(VAxis, [1, 0, 0])
-            else:
-                VAxis2 = np.cross(VAxis, [0, 1, 0])
+            if VAxis2 is None:
+                VAxis2 = get_perpendicular_axis(VAxis)
 
         # Add outputs
         self._center = center
         self._axis = VAxis
+        self._axis2 = VAxis2
 
         out_data = mainlib(total_electrons, valence_electrons, NBas, Norb, Nat, NTotShell, atomic_numbers, symbols, Alph,
                            COrb, NShell, coordinates, n_primitives, shell_type, igroup, ngroup, Ca, Cb, center, VAxis, VAxis2,

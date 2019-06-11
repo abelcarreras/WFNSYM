@@ -13,6 +13,15 @@ def rotation_xy(alpha, beta):
     return np.dot(Rx, Ry)
 
 
+# Rotation respect to axis a
+def rotation_axis(a, angle):
+    cos_1 = 1 - np.cos(angle)
+    R = [[np.cos(angle) + a[0]**2 * cos_1, a[0]*a[1] * cos_1 - a[2]*np.sin(angle), a[0]*a[2] * cos_1 + a[1]*np.sin(angle)],
+         [a[1]*a[0]*cos_1 + a[2]*np.sin(angle), np.cos(angle) + a[1]**2 * cos_1, a[1]*a[2] * cos_1 - a[0]*np.sin(angle)],
+         [a[2]*a[0]*cos_1 - a[1]*np.sin(angle), a[2]*a[1]*cos_1 + a[0]*np.sin(angle), np.cos(angle) + a[2]**2 *cos_1]]
+    return np.array(R)
+
+
 def target_function_test(alpha, beta):
     c_geom = np.sum(data['coordinates'], axis=0)/len(data['coordinates'])
     ax1 = np.dot(rotation_xy(alpha, beta), [1, 0, 0])
@@ -21,44 +30,80 @@ def target_function_test(alpha, beta):
     return c_geom, ax1, ax2
 
 
-def first_approximation(target_function, delta, center=None):
+def first_approximation(target_function, center, delta, min_gamma=False):
 
     x = y = np.arange(0.0, np.pi, delta)
     X, Y = np.meshgrid(x, y)
+    z = np.arange(0.0, np.pi, delta)
 
     min = 100
     xmin = 0
     ymin = 0
+    zmin = 0
     for vx, vy in zip(X, Y):
         for xx,yy in zip(vx, vy):
-            if center is None:
-                val = target_function(xx, yy)
+            if min_gamma:
+                for zz in z:
+                    val = target_function(xx, yy, center, gamma=zz)
+                    if val < min:
+                        min = val
+                        xmin = xx
+                        ymin = yy
+                        zmin = zz
+                        # print(xx, yy, zz, val)
             else:
-                val = target_function(xx, yy, center)
-            if val < min:
-                min = val
-                xmin = xx
-                ymin = yy
+                val = target_function(xx, yy, center, gamma=0.0)
+                if val < min:
+                    min = val
+                    xmin = xx
+                    ymin = yy
+                    zmin = 0.0
+                    # print(xx, yy, val)
 
-    return xmin, ymin, min
+    return xmin, ymin, zmin, min
 
 
-def minimize_axis(target_function, center_i, delta=0.05):
+def minimize_axis(target_function, center, data, delta=0.05):
     from scipy.optimize import fmin
 
-    xmin, ymin, val = first_approximation(target_function, delta, center=center_i)
-
+    # define optimization functions
     def minf(x):
-        if len(x) > 2:
-            center_i = [x[2], x[3], x[4]]
-            return target_function(x[0], x[1], center=center_i)
-        else:
-            return target_function(x[0], x[1])
+        return target_function(x[0], x[1], center)
+    def minf_c(x):  # center
+        return target_function(x[0], x[1], [x[2], x[3], x[4]])
+    def minf_g(x):  # gamma
+        return target_function(x[0], x[1], center, gamma=x[2])
+    def minf_cg(x): # center + gamma
+        return target_function(x[0], x[1], [x[3], x[4], x[5]], gamma=x[2])
 
-    if center_i is None:
-        return fmin(minf,[xmin, ymin])
+    # check if necessary optimize axis2
+    if data['igroup'] == 8:
+        minimize_ax2 = True
     else:
-        return fmin(minf,[xmin, ymin, center_i[0], center_i[1], center_i[2]])
+        minimize_ax2 = False
+
+    if center is None:
+        # simple initial center guess
+        coordinates = data['coordinates']
+        center = np.sum(coordinates, axis=0)/len(coordinates)
+
+        xmin, ymin, zmin, val = first_approximation(target_function, center, delta, min_gamma=minimize_ax2)
+
+        if minimize_ax2:
+            alpha, beta, gamma, c1, c2, c3 = fmin(minf_cg, [xmin, ymin, zmin, center[0], center[1], center[2]])
+            return alpha, beta, gamma, [c1, c2, c3]
+        else:
+            alpha, beta, c1, c2, c3 = fmin(minf_c, [xmin, ymin, center[0], center[1], center[2]])
+            return alpha, beta, 0, [c1, c2, c3]
+    else:
+        xmin, ymin, zmin, val = first_approximation(target_function, center, delta, min_gamma=minimize_ax2)
+        if minimize_ax2:
+            alpha, beta, gamma = fmin(minf_g, [xmin, ymin, zmin])
+            return alpha, beta, gamma, center
+        else:
+            alpha, beta = fmin(minf, [xmin, ymin])
+            return alpha, beta, 0, center
+
 
 
 if __name__ == "__main__":
