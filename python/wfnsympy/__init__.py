@@ -256,28 +256,28 @@ class WfnSympy:
 
             if center is None:
                 raise Exception('If VAxis, then center should be provided!')
+            if VAxis2 is None:
+                if igroup == 8:  # tetrahedron and octahedron groups
+                    from wfnsympy.optimize import minimize_axis2
+                    from wfnsympy.optimize import rotation_xy, rotation_axis
 
-            if igroup == 8:  # tetrahedron and octahedron groups
-                from wfnsympy.optimize import minimize_axis2
-                from wfnsympy.optimize import rotation_xy, rotation_axis
+                    def target_function(gamma, VAxis, center):
+                        VAxis2 = np.dot(rotation_axis(VAxis, gamma), get_perpendicular_axis(VAxis))
 
-                def target_function(gamma, VAxis, center):
+                        with captured_stdout():
+                            out_data = mainlib(total_electrons, valence_electrons, NBas, Norb, Nat, NTotShell, atomic_numbers, symbols, Alph,
+                                               COrb, NShell, coordinates, n_primitives, shell_type, igroup, ngroup, Ca, Cb, center, VAxis, VAxis2,
+                                               charge, multiplicity, do_operation, use_pure_d_functions)
+
+                        dgroup = out_data[0][0]
+
+                        return np.sum(np.abs(out_data[2][0:dgroup]))
+
+                    gamma = minimize_axis2(target_function, center, VAxis, delta=0.05)
                     VAxis2 = np.dot(rotation_axis(VAxis, gamma), get_perpendicular_axis(VAxis))
 
-                    with captured_stdout():
-                        out_data = mainlib(total_electrons, valence_electrons, NBas, Norb, Nat, NTotShell, atomic_numbers, symbols, Alph,
-                                           COrb, NShell, coordinates, n_primitives, shell_type, igroup, ngroup, Ca, Cb, center, VAxis, VAxis2,
-                                           charge, multiplicity, do_operation, use_pure_d_functions)
-
-                    dgroup = out_data[0][0]
-
-                    return np.sum(np.abs(out_data[2][0:dgroup]))
-
-                gamma = minimize_axis2(target_function, center, VAxis, delta=0.05)
-                VAxis2 = np.dot(rotation_axis(VAxis, gamma), get_perpendicular_axis(VAxis))
-
-            else:
-                VAxis2 = get_perpendicular_axis(VAxis)
+                else:
+                    VAxis2 = get_perpendicular_axis(VAxis)
 
         # Add outputs
         self._center = center
