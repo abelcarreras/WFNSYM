@@ -3,6 +3,27 @@ __version__ = '0.1.5'
 from wfnsympy.WFNSYMLIB import mainlib
 import numpy as np
 
+import sys
+
+
+class captured_stdout:
+    def __init__(self):
+        self.old_stdout = None
+        self.fnull = None
+
+    def __enter__(self):
+        import sys, os, tempfile
+        self.old_stdout = sys.stdout
+        #self.fnull = open(os.devnull, 'w')
+        self.F = tempfile.NamedTemporaryFile()
+        os.dup2(self.F.fileno(), sys.stderr.fileno())
+        return self.F
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        sys.stdout = self.old_stdout
+        #self.fnull.close()
+        self.F.close()
+
 
 def get_valence_electrons(atomic_numbers, charge):
     valence_electrons = 0
@@ -207,12 +228,6 @@ class WfnSympy:
         Norb = len(COrb)
         NBas = np.sum([shell_type_list['{}'.format(st)][1] for st in shell_type])
 
-        #silence function
-        #import sys, os
-        #old_stdout = sys.stdout
-        #fnull = open(os.devnull, 'w')
-        #os.dup2(fnull.fileno(), sys.stderr.fileno())
-
         # Axis optimization
         if VAxis is None:
             from wfnsympy.optimize import minimize_axis
@@ -223,29 +238,45 @@ class WfnSympy:
                 VAxis2 = np.dot(rotation_axis(VAxis, gamma), get_perpendicular_axis(VAxis))
 
                 # print('centre', center)
-                out_data = mainlib(total_electrons, valence_electrons, NBas, Norb, Nat, NTotShell, atomic_numbers, symbols, Alph,
-                                   COrb, NShell, coordinates, n_primitives, shell_type, igroup, ngroup, Ca, Cb, center, VAxis, VAxis2,
-                                   charge, multiplicity, do_operation, use_pure_d_functions)
+                with captured_stdout():
+                    out_data = mainlib(total_electrons, valence_electrons, NBas, Norb, Nat, NTotShell, atomic_numbers, symbols, Alph,
+                                       COrb, NShell, coordinates, n_primitives, shell_type, igroup, ngroup, Ca, Cb, center, VAxis, VAxis2,
+                                       charge, multiplicity, do_operation, use_pure_d_functions)
 
                 dgroup = out_data[0][0]
                 return np.sum(np.abs(out_data[2][0:dgroup]))
 
-            import sys, os
-            old_stdout = sys.stdout
-            fnull = open(os.devnull, 'w')
-            os.dup2(fnull.fileno(), sys.stderr.fileno())
-
             data = {'coordinates': coordinates, 'symbols': symbols, 'igroup': igroup, 'ngroup': ngroup}
             alpha, beta, gamma, center = minimize_axis(target_function, center, data, delta=0.4)
-
-            sys.stdout = old_stdout
-            fnull.close()
 
             VAxis = np.dot(rotation_xy(alpha, beta), [1, 0, 0])
             VAxis2 = np.dot(rotation_axis(VAxis, gamma), get_perpendicular_axis(VAxis))
 
         else:
-            if VAxis2 is None:
+
+            if center is None:
+                raise Exception('If VAxis, then center should be provided!')
+
+            if igroup == 8:  # tetrahedron and octahedron groups
+                from wfnsympy.optimize import minimize_axis2
+                from wfnsympy.optimize import rotation_xy, rotation_axis
+
+                def target_function(gamma, VAxis, center):
+                    VAxis2 = np.dot(rotation_axis(VAxis, gamma), get_perpendicular_axis(VAxis))
+
+                    with captured_stdout():
+                        out_data = mainlib(total_electrons, valence_electrons, NBas, Norb, Nat, NTotShell, atomic_numbers, symbols, Alph,
+                                           COrb, NShell, coordinates, n_primitives, shell_type, igroup, ngroup, Ca, Cb, center, VAxis, VAxis2,
+                                           charge, multiplicity, do_operation, use_pure_d_functions)
+
+                    dgroup = out_data[0][0]
+
+                    return np.sum(np.abs(out_data[2][0:dgroup]))
+
+                gamma = minimize_axis2(target_function, center, VAxis, delta=0.05)
+                VAxis2 = np.dot(rotation_axis(VAxis, gamma), get_perpendicular_axis(VAxis))
+
+            else:
                 VAxis2 = get_perpendicular_axis(VAxis)
 
         # Add outputs
@@ -253,11 +284,20 @@ class WfnSympy:
         self._axis = VAxis
         self._axis2 = VAxis2
 
-        out_data = mainlib(total_electrons, valence_electrons, NBas, Norb, Nat, NTotShell, atomic_numbers, symbols, Alph,
-                           COrb, NShell, coordinates, n_primitives, shell_type, igroup, ngroup, Ca, Cb, center, VAxis, VAxis2,
-                           charge, multiplicity, do_operation, use_pure_d_functions)
-        #fnull.close()
-        #sys.stdout = old_stdout
+        with captured_stdout() as E:
+            out_data = mainlib(total_electrons, valence_electrons, NBas, Norb, Nat, NTotShell, atomic_numbers, symbols, Alph,
+                               COrb, NShell, coordinates, n_primitives, shell_type, igroup, ngroup, Ca, Cb, center, VAxis, VAxis2,
+                               charge, multiplicity, do_operation, use_pure_d_functions)
+            E.seek(0)
+            capture = E.read()
+
+        capture = capture.decode().split('\n')
+
+        for i, c in enumerate(capture):
+            if 'ERROR. Axes not valid' in c:
+                self._axis = [float(v) for v in capture[i+3].split()[-3:]]
+                self._axis2 = [float(v) for v in capture[i+4].split()[-3:]]
+
 
         # Process outputs
         dgroup = out_data[0][0]
@@ -439,6 +479,10 @@ class WfnSympy:
     @property
     def axis(self):
         return self._axis
+
+    @property
+    def axis2(self):
+        return self._axis2
 
 symbol_map = {
     "H": 1,

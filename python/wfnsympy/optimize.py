@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.optimize import fmin
 
 
 def rotation_xy(alpha, beta):
@@ -16,9 +17,9 @@ def rotation_xy(alpha, beta):
 # Rotation respect to axis a
 def rotation_axis(a, angle):
     cos_1 = 1 - np.cos(angle)
-    R = [[np.cos(angle) + a[0]**2 * cos_1, a[0]*a[1] * cos_1 - a[2]*np.sin(angle), a[0]*a[2] * cos_1 + a[1]*np.sin(angle)],
-         [a[1]*a[0]*cos_1 + a[2]*np.sin(angle), np.cos(angle) + a[1]**2 * cos_1, a[1]*a[2] * cos_1 - a[0]*np.sin(angle)],
-         [a[2]*a[0]*cos_1 - a[1]*np.sin(angle), a[2]*a[1]*cos_1 + a[0]*np.sin(angle), np.cos(angle) + a[2]**2 *cos_1]]
+    R = [[a[0]*a[0]*cos_1 + np.cos(angle),      a[0]*a[1]*cos_1 - a[2]*np.sin(angle), a[0]*a[2]*cos_1 + a[1]*np.sin(angle)],
+         [a[1]*a[0]*cos_1 + a[2]*np.sin(angle), a[1]*a[1]*cos_1 + np.cos(angle),      a[1]*a[2]*cos_1 - a[0]*np.sin(angle)],
+         [a[2]*a[0]*cos_1 - a[1]*np.sin(angle), a[2]*a[1]*cos_1 + a[0]*np.sin(angle), a[2]*a[2]*cos_1 + np.cos(angle)]]
     return np.array(R)
 
 
@@ -63,8 +64,22 @@ def first_approximation(target_function, center, delta, min_gamma=False):
     return xmin, ymin, zmin, min
 
 
+def first_approximation_gamma_only(target_function, vaxis, center, delta):
+    z = np.arange(0.0, np.pi, delta)
+
+    min = 100
+    zmin = 0
+    for zz in z:
+        val = target_function(zz, vaxis, center)
+        if val < min:
+            min = val
+            zmin = zz
+            # print(xx, yy, zz, val)
+
+    return zmin, min
+
+
 def minimize_axis(target_function, center, data, delta=0.05):
-    from scipy.optimize import fmin
 
     # define optimization functions
     def minf(x):
@@ -104,6 +119,17 @@ def minimize_axis(target_function, center, data, delta=0.05):
             alpha, beta = fmin(minf, [xmin, ymin])
             return alpha, beta, 0, center
 
+
+def minimize_axis2(target_function, center, axis, delta=0.05):
+
+    # define optimization functions
+    def minf(x):
+        return target_function(x[0], axis, center)
+
+    zmin, val = first_approximation_gamma_only(target_function, axis, center, delta)
+
+    gamma = fmin(minf, [zmin])
+    return gamma[0]
 
 
 if __name__ == "__main__":
