@@ -177,8 +177,6 @@ class WfnSympy:
 
         # convert from Angstroms to Bohr
         coordinates = np.array(coordinates)/bohr_to_angstrom
-        if center is not None:
-            center = [c/bohr_to_angstrom for c in center]
 
         # get atomic numbers
         atomic_numbers = [symbol_map[i] for i in symbols]
