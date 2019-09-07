@@ -1,4 +1,4 @@
-__version__ = '0.1.5'
+__version__ = '0.1.6'
 
 from wfnsympy.WFNSYMLIB import mainlib
 import numpy as np
@@ -109,6 +109,64 @@ def get_perpendicular_axis(axis):
         return np.cross(axis, [1, 0, 0])
     else:
         return np.cross(axis, [0, 1, 0])
+
+
+def get_overlap_matrix(basis, coordinates):  # other arguments may be needed
+    from wfnsympy.WFNSYMLIB import overlap
+
+    i_angl = [0, 0, 0]
+    exponent = 1.2
+    R = [0.0, 0.0, 0.0]
+    a = overlap(i_angl, exponent, R)
+    print('overlap', a)
+
+    overlap_matrix = np.zeros(10, 10)  # example not actually working!!
+    return overlap_matrix
+
+
+# preliminary version (needs overlap_matrix) [not used for now]
+def center_of_charge(mo_coefficients, coordinates, basis, total_electrons, multiplicity):
+
+    overlap_matrix = get_overlap_matrix(basis, coordinates)
+
+    alpha_unpaired = multiplicity//2 + 1 if (total_electrons % 2) else multiplicity//2
+
+    alpha_electrons = total_electrons//2 + alpha_unpaired
+    beta_electrons = total_electrons - alpha_electrons
+    print('electrons', alpha_electrons, beta_electrons)
+
+    # get the basis functions corresponding to each atom (ini, fin)
+    ranges_per_atom = []
+    n_start = 0
+    for atoms in basis['atoms']:
+        n_functions = 0
+        for shell in atoms['shells']:
+            n_functions += shell['functions']
+        ranges_per_atom.append((n_start, n_start + n_functions))
+        n_start += n_functions
+
+    # localization on fragments analysis
+    number_of_atoms = len(coordinates)
+
+    charges = []
+    for atom in range(number_of_atoms):
+        charge_atom = 0
+        for orb in mo_coefficients:
+
+            orb_atom = np.zeros_like(orb)
+
+            orb_atom[ranges_per_atom[atom][0]:ranges_per_atom[atom][1]] = \
+                   orb[ranges_per_atom[atom][0]:ranges_per_atom[atom][1]]
+
+            charge_atom += np.dot(orb_atom, np.dot(overlap_matrix, orb_atom))
+
+        charges.append(charge_atom)
+
+    print('total_sum', np.sum(charges))
+
+    center = np.average(np.multiply(coordinates.T, charges).T, axis=0)
+
+    return center.tolist()
 
 
 class WfnSympy:
