@@ -31,6 +31,14 @@ python module WFNSYMLIB ! in
             real*8 dimension(100,3,3),intent(out) :: OutSymMat
 
         end subroutine mainlib
+
+        subroutine overlap(i_angl, exponent, R, integral)
+            integer dimension(3), intent(in) :: i_angl  ! Cartesian index
+            real*8 dimension(3), intent(in) ::  R  ! Position of the function
+            real*8, intent(in) :: exponent  ! Gaussian exponent
+            real*8, intent(out) :: integral  ! Integral value (scalar)
+        end subroutine overlap
+
    end interface
 end python module WFNSYMLIB
 

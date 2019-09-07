@@ -16,7 +16,10 @@ class captured_stdout:
         self.old_stdout = sys.stdout
         #self.fnull = open(os.devnull, 'w')
         self.F = tempfile.NamedTemporaryFile()
-        os.dup2(self.F.fileno(), sys.stderr.fileno())
+        try:
+            os.dup2(self.F.fileno(), sys.stderr.fileno())
+        except AttributeError:
+            pass
         return self.F
 
     def __exit__(self, exc_type, exc_value, traceback):
