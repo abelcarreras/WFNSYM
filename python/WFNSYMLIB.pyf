@@ -39,6 +39,19 @@ python module WFNSYMLIB ! in
             real*8, intent(out) :: integral  ! Integral value (scalar)
         end subroutine overlap
 
+       subroutine overlap_mat(S_AO, AtLab, RAt, NBas, NAt, NOrb, PureCart, NCShell, NShell, shell_type, n_prim, COrb, Alph)
+           integer :: NBas, NAt, NCShell, NOrb
+           logical :: PureCart
+
+           real*8 dimension(NBas*NBas),intent(out),depend(NBas) :: S_AO
+           character dimension(NAt),intent(in),depend(NAt) :: AtLab*2
+           real*8 dimension(NAt,3),intent(in),depend(NAt) :: RAt
+           integer dimension(NAt),intent(in),depend(NAt) :: NShell
+           integer dimension(NCShell),intent(in),depend(NCShell) :: n_prim, shell_type
+           real*8 dimension(NOrb),intent(in),depend(NOrb) :: Alph, COrb
+
+       end subroutine get_S_simple
+
    end interface
 end python module WFNSYMLIB
 

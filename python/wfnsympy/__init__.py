@@ -1,9 +1,10 @@
 __version__ = '0.1.6'
 
-from wfnsympy.WFNSYMLIB import mainlib
+from wfnsympy.WFNSYMLIB import mainlib, overlap_mat
 import numpy as np
-
 import sys
+
+bohr_to_angstrom = 0.529177249
 
 
 class captured_stdout:
@@ -114,23 +115,13 @@ def get_perpendicular_axis(axis):
         return np.cross(axis, [0, 1, 0])
 
 
-def get_overlap_matrix(basis, coordinates):  # other arguments may be needed
-    from wfnsympy.WFNSYMLIB import overlap
-
-    i_angl = [0, 0, 0]
-    exponent = 1.2
-    R = [0.0, 0.0, 0.0]
-    a = overlap(i_angl, exponent, R)
-    print('overlap', a)
-
-    overlap_matrix = np.zeros(10, 10)  # example not actually working!!
-    return overlap_matrix
-
-
 # preliminary version (needs overlap_matrix) [not used for now]
-def center_of_charge(mo_coefficients, coordinates, basis, total_electrons, multiplicity):
-
-    overlap_matrix = get_overlap_matrix(basis, coordinates)
+def center_of_charge(mo_coefficients_alpha, mo_coefficients_beta,
+                     coordinates, basis, total_electrons, multiplicity,
+                     overlap_matrix):
+    """
+    Returns the center of charge in Angstrom
+    """
 
     alpha_unpaired = multiplicity//2 + 1 if (total_electrons % 2) else multiplicity//2
 
@@ -154,20 +145,24 @@ def center_of_charge(mo_coefficients, coordinates, basis, total_electrons, multi
     charges = []
     for atom in range(number_of_atoms):
         charge_atom = 0
-        for orb in mo_coefficients:
-
+        # Alpha
+        for i in range(alpha_electrons):
+            orb = mo_coefficients_alpha[i]
             orb_atom = np.zeros_like(orb)
-
             orb_atom[ranges_per_atom[atom][0]:ranges_per_atom[atom][1]] = \
-                   orb[ranges_per_atom[atom][0]:ranges_per_atom[atom][1]]
-
-            charge_atom += np.dot(orb_atom, np.dot(overlap_matrix, orb_atom))
+                 orb[ranges_per_atom[atom][0]:ranges_per_atom[atom][1]]
+            charge_atom += np.dot(orb_atom, np.dot(overlap_matrix, orb))
+        # Beta
+        for i in range(beta_electrons):
+            orb = mo_coefficients_beta[i]
+            orb_atom = np.zeros_like(orb)
+            orb_atom[ranges_per_atom[atom][0]:ranges_per_atom[atom][1]] = \
+                orb[ranges_per_atom[atom][0]:ranges_per_atom[atom][1]]
+            charge_atom += np.dot(orb_atom, np.dot(overlap_matrix, orb))
 
         charges.append(charge_atom)
 
-    print('total_sum', np.sum(charges))
-
-    center = np.average(np.multiply(coordinates.T, charges).T, axis=0)
+    center = np.sum(np.multiply(coordinates.T, charges).T, axis=0)/np.sum(charges)
 
     return center.tolist()
 
@@ -193,8 +188,6 @@ class WfnSympy:
             raise ('point group note defined')
         else:
             igroup, ngroup = get_group_num_from_label(group)
-
-        bohr_to_angstrom = 0.529177249
 
         # define assignation of shell type to number and number of functions by shell
         shell_type_list = {'-1': ['sp', 4],
@@ -237,7 +230,7 @@ class WfnSympy:
             Cb = Ca
 
         # convert from Angstroms to Bohr
-        coordinates = np.array(coordinates)/bohr_to_angstrom
+        coordinates_bohr = np.array(coordinates) / bohr_to_angstrom
 
         # get atomic numbers
         atomic_numbers = [symbol_map[i] for i in symbols]
@@ -287,6 +280,19 @@ class WfnSympy:
         Norb = len(COrb)
         NBas = np.sum([shell_type_list['{}'.format(st)][1] for st in shell_type])
 
+        # get overlap matrix
+        out = overlap_mat(symbols, coordinates_bohr, NBas, Nat, Norb,
+                          use_pure_d_functions, NTotShell, NShell,
+                          shell_type, n_primitives, COrb, Alph)
+        overlap_matrix = np.array(out).reshape(NBas,NBas)
+
+        if center is None:
+            # raise Exception('If VAxis, then center should be provided!')
+            center = center_of_charge(alpha_mo_coeff, alpha_mo_coeff,
+                                      coordinates, basis,
+                                      total_electrons, multiplicity,
+                                      overlap_matrix)
+
         # Axis optimization
         if VAxis is None:
             from wfnsympy.optimize import minimize_axis
@@ -299,22 +305,19 @@ class WfnSympy:
                 # print('centre', center)
                 with captured_stdout():
                     out_data = mainlib(total_electrons, valence_electrons, NBas, Norb, Nat, NTotShell, atomic_numbers, symbols, Alph,
-                                       COrb, NShell, coordinates, n_primitives, shell_type, igroup, ngroup, Ca, Cb, center, VAxis, VAxis2,
+                                       COrb, NShell, coordinates_bohr, n_primitives, shell_type, igroup, ngroup, Ca, Cb, center, VAxis, VAxis2,
                                        charge, multiplicity, do_operation, use_pure_d_functions)
 
                 dgroup = out_data[0][0]
                 return np.sum(np.abs(out_data[2][0:dgroup]))
 
-            data = {'coordinates': coordinates, 'symbols': symbols, 'igroup': igroup, 'ngroup': ngroup}
+            data = {'coordinates': coordinates_bohr, 'symbols': symbols, 'igroup': igroup, 'ngroup': ngroup}
             alpha, beta, gamma, center = minimize_axis(target_function, center, data, delta=0.4)
 
             VAxis = np.dot(rotation_xy(alpha, beta), [1, 0, 0])
             VAxis2 = np.dot(rotation_axis(VAxis, gamma), get_perpendicular_axis(VAxis))
 
         else:
-
-            if center is None:
-                raise Exception('If VAxis, then center should be provided!')
             if VAxis2 is None:
                 if igroup == 8:  # tetrahedron and octahedron groups
                     from wfnsympy.optimize import minimize_axis2
@@ -325,7 +328,7 @@ class WfnSympy:
 
                         with captured_stdout():
                             out_data = mainlib(total_electrons, valence_electrons, NBas, Norb, Nat, NTotShell, atomic_numbers, symbols, Alph,
-                                               COrb, NShell, coordinates, n_primitives, shell_type, igroup, ngroup, Ca, Cb, center, VAxis, VAxis2,
+                                               COrb, NShell, coordinates_bohr, n_primitives, shell_type, igroup, ngroup, Ca, Cb, center, VAxis, VAxis2,
                                                charge, multiplicity, do_operation, use_pure_d_functions)
 
                         dgroup = out_data[0][0]
@@ -345,7 +348,7 @@ class WfnSympy:
 
         with captured_stdout() as E:
             out_data = mainlib(total_electrons, valence_electrons, NBas, Norb, Nat, NTotShell, atomic_numbers, symbols, Alph,
-                               COrb, NShell, coordinates, n_primitives, shell_type, igroup, ngroup, Ca, Cb, center, VAxis, VAxis2,
+                               COrb, NShell, coordinates_bohr, n_primitives, shell_type, igroup, ngroup, Ca, Cb, center, VAxis, VAxis2,
                                charge, multiplicity, do_operation, use_pure_d_functions)
             E.seek(0)
             capture = E.read()
@@ -364,7 +367,7 @@ class WfnSympy:
         nIR = out_data[0][2]
 
         self._dgroup = dgroup
-        self._atom_coor = np.array(coordinates)
+        self._atom_coor = np.array(coordinates_bohr)
 
         self._grim_coef = out_data[1][0:dgroup]
         self._csm_coef = out_data[2][0:dgroup]
@@ -459,7 +462,7 @@ class WfnSympy:
 
         print('Symmetry Transformed Atomic Coordinates (Angstroms)')
         if use_angstrom:
-            print(np.dot(self._atom_coor * 0.529177249, self._SymMat[nop].T))
+            print(np.dot(self._atom_coor * bohr_to_angstrom, self._SymMat[nop].T))
         else:
             print(np.dot(self._atom_coor, self._SymMat[nop].T))
 

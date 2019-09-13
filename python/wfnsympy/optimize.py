@@ -144,7 +144,7 @@ if __name__ == "__main__":
         ax1 = np.dot(rotation_xy(alpha, beta), [1, 0, 0])
         # ax2 = np.dot(rotation_xy(alpha, beta), [0, 0, 1])
 
-        pirrol = WfnSympy(coordinates=data['coordinates'],
+        pirrol = WfnSympy(coordinates_bohr=data['coordinates'],
                           symbols=data['symbols'],
                           basis=data['basis'],
                           center=c_geom,

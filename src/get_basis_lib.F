@@ -10,12 +10,14 @@ c                                                     c
 c    INPUT                                            c
 c      AtLab  atomic label                            c
 c      RAt    atomic position                         c
+c      Nprim  Number of primitives per shell          c
+c      Alph   exponents (uncontracted functions)      c
+c      COrb   coeffs                                  c
 c                                                     c
 c    OUTPUT                                           c
 c      ROrb   center  (uncontracted function)         c
 c      COrb   coeffs  (uncontracted function)         c
 c      iAng   angular indices uncontracted functions  c
-c      Alph   exponents (uncontracted functions)      c
 c      NC     contracted funcions                     c
 c      iLAO   l number for each AO                    c
 c      cLAO   l name   for each AO                    c

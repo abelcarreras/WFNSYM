@@ -234,3 +234,37 @@ c Compute Ovelap Matrix elements
 
       RETURN
       END
+
+
+       SUBROUTINE overlap_mat(S_AO, AtLab, RAt, NBas, NAt_2, NOrb,
+     & PureCart, NTotShell, NShell, shell_type, NPrim, COrb, Alph)
+c*****************************************************c
+c                                                     c
+c       Computes the overlap matrix                   c
+c                                                     c
+c       INPUT                                         c
+c******************************************************
+      IMPLICIT REAL*8  (a-h, o-z)
+      INTEGER :: iAng(NOrb,3),iContr(NBas),iAngv(3),iLAO(NBas)
+      INTEGER :: NPrim(NTotShell), NShell(NAt_2), shell_type(NTotShell)
+      REAL*8    :: RAt(NAt_2,3),ROrb(NOrb,3),COrb(NOrb),Alph(NOrb)
+      REAL*8 :: MatId(3,3), S_AO(NBas**2)
+      CHARACTER :: cLAO(NBas)*4
+      CHARACTER :: AtLab(NAt_2)*2
+      LOGICAL   :: PureCart
+      SAVE Zero,Half,One,Two,Four
+      DATA Zero,Half,One,Two,Four / 0d0,0.5d0,1d0,2d0,4d0  /
+
+      MatId(:,:) = Zero
+      DO I = 1,3
+        MatId(I,I) = One
+      ENDDO
+
+      CALL get_basis(AtLab,RAt,iAng,Alph,
+     & ROrb,COrb,iContr,iLAO,cLAO,NAt_2,NBas,NOrb,PureCart,
+     & NPrim, NTotShell, NShell, shell_type)
+
+      CALL make_S(S_AO,iAng,Alph,COrb,ROrb,iAng,Alph,COrb,ROrb,
+     & NBas,NBas2,NOrb,iContr,MatId,PureCart)
+
+      END
