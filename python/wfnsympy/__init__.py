@@ -2,7 +2,7 @@ __version__ = '0.1.6'
 
 from wfnsympy.WFNSYMLIB import mainlib, overlap_mat
 import numpy as np
-import sys
+import sys, io
 
 bohr_to_angstrom = 0.529177249
 
@@ -19,7 +19,7 @@ class captured_stdout:
         self.F = tempfile.NamedTemporaryFile()
         try:
             os.dup2(self.F.fileno(), sys.stderr.fileno())
-        except AttributeError:
+        except (AttributeError, io.UnsupportedOperation):
             pass
         return self.F
 

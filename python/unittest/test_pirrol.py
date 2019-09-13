@@ -10,7 +10,7 @@ class TestWfnsympy(unittest.TestCase):
 
         data = get_data_from_file_fchk('pirrol.in.fchk')
 
-        self.pirrol = WfnSympy(coordinates_bohr=data['coordinates'],
+        self.pirrol = WfnSympy(coordinates=data['coordinates'],
                                symbols=data['symbols'],
                                basis=data['basis'],
                                center=[0., 0., 0.],
