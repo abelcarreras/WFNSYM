@@ -4,10 +4,10 @@ from wfnsympy.WFNSYMLIB import mainlib, overlap_mat
 import numpy as np
 import sys, io
 
-bohr_to_angstrom = 0.529177249
+_bohr_to_angstrom = 0.529177249
 
 
-class captured_stdout:
+class _captured_stdout:
     def __init__(self):
         self.old_stdout = None
         self.fnull = None
@@ -47,7 +47,7 @@ def get_valence_electrons(atomic_numbers, charge):
     return valence_electrons
 
 
-def get_group_num_from_label(label):
+def _get_group_num_from_label(label):
 
     label_2 = label[0].upper()
     try:
@@ -94,7 +94,7 @@ def get_group_num_from_label(label):
         raise Exception('Label not found')
 
 
-def get_operation_num_from_label(label):
+def _get_operation_num_from_label(label):
     operations = {'I': 1,
                   'R': 2,
                   'C': 3,
@@ -115,10 +115,9 @@ def get_perpendicular_axis(axis):
         return np.cross(axis, [0, 1, 0])
 
 
-# preliminary version (needs overlap_matrix) [not used for now]
-def center_of_charge(mo_coefficients_alpha, mo_coefficients_beta,
-                     coordinates, basis, total_electrons, multiplicity,
-                     overlap_matrix):
+def _center_of_charge(mo_coefficients_alpha, mo_coefficients_beta,
+                      coordinates, basis, total_electrons, multiplicity,
+                      overlap_matrix):
     """
     Returns the center of charge in Angstrom
     """
@@ -187,7 +186,7 @@ class WfnSympy:
         if group is None:
             raise ('point group note defined')
         else:
-            igroup, ngroup = get_group_num_from_label(group)
+            igroup, ngroup = _get_group_num_from_label(group)
 
         # define assignation of shell type to number and number of functions by shell
         shell_type_list = {'-1': ['sp', 4],
@@ -230,7 +229,7 @@ class WfnSympy:
             Cb = Ca
 
         # convert from Angstroms to Bohr
-        coordinates_bohr = np.array(coordinates) / bohr_to_angstrom
+        coordinates_bohr = np.array(coordinates) / _bohr_to_angstrom
 
         # get atomic numbers
         atomic_numbers = [symbol_map[i] for i in symbols]
@@ -288,10 +287,10 @@ class WfnSympy:
 
         if center is None:
             # raise Exception('If VAxis, then center should be provided!')
-            center = center_of_charge(alpha_mo_coeff, alpha_mo_coeff,
-                                      coordinates, basis,
-                                      total_electrons, multiplicity,
-                                      overlap_matrix)
+            center = _center_of_charge(alpha_mo_coeff, alpha_mo_coeff,
+                                       coordinates, basis,
+                                       total_electrons, multiplicity,
+                                       overlap_matrix)
 
         # Axis optimization
         if VAxis is None:
@@ -303,7 +302,7 @@ class WfnSympy:
                 VAxis2 = np.dot(rotation_axis(VAxis, gamma), get_perpendicular_axis(VAxis))
 
                 # print('centre', center)
-                with captured_stdout():
+                with _captured_stdout():
                     out_data = mainlib(total_electrons, valence_electrons, NBas, Norb, Nat, NTotShell, atomic_numbers, symbols, Alph,
                                        COrb, NShell, coordinates_bohr, n_primitives, shell_type, igroup, ngroup, Ca, Cb, center, VAxis, VAxis2,
                                        charge, multiplicity, do_operation, use_pure_d_functions)
@@ -326,7 +325,7 @@ class WfnSympy:
                     def target_function(gamma, VAxis, center):
                         VAxis2 = np.dot(rotation_axis(VAxis, gamma), get_perpendicular_axis(VAxis))
 
-                        with captured_stdout():
+                        with _captured_stdout():
                             out_data = mainlib(total_electrons, valence_electrons, NBas, Norb, Nat, NTotShell, atomic_numbers, symbols, Alph,
                                                COrb, NShell, coordinates_bohr, n_primitives, shell_type, igroup, ngroup, Ca, Cb, center, VAxis, VAxis2,
                                                charge, multiplicity, do_operation, use_pure_d_functions)
@@ -346,7 +345,7 @@ class WfnSympy:
         self._axis = VAxis
         self._axis2 = VAxis2
 
-        with captured_stdout() as E:
+        with _captured_stdout() as E:
             out_data = mainlib(total_electrons, valence_electrons, NBas, Norb, Nat, NTotShell, atomic_numbers, symbols, Alph,
                                COrb, NShell, coordinates_bohr, n_primitives, shell_type, igroup, ngroup, Ca, Cb, center, VAxis, VAxis2,
                                charge, multiplicity, do_operation, use_pure_d_functions)
@@ -462,7 +461,7 @@ class WfnSympy:
 
         print('Symmetry Transformed Atomic Coordinates (Angstroms)')
         if use_angstrom:
-            print(np.dot(self._atom_coor * bohr_to_angstrom, self._SymMat[nop].T))
+            print(np.dot(self._atom_coor * _bohr_to_angstrom, self._SymMat[nop].T))
         else:
             print(np.dot(self._atom_coor, self._SymMat[nop].T))
 
