@@ -126,7 +126,7 @@ def _center_of_charge(mo_coefficients_alpha, mo_coefficients_beta,
 
     alpha_electrons = total_electrons//2 + alpha_unpaired
     beta_electrons = total_electrons - alpha_electrons
-    print('electrons', alpha_electrons, beta_electrons)
+    # print('electrons', alpha_electrons, beta_electrons)
 
     # get the basis functions corresponding to each atom (ini, fin)
     ranges_per_atom = []
