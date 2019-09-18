@@ -10,12 +10,14 @@ the electronic wave function of molecules
 Installation instructions
 ---------------------------------------------------------
 
-1. Requirements
+1a. Requirements
   - Lapack & Blas libraries
-  - Fortran77 compiler
+  - Fortran77 compiler (g77/ifort/gfortran)
   - cmake 2.6
-  - (optional) MKL
 
+1b. Additional requirements for python module
+  - Python 2.7.x/3.4+
+  - C compiler
 
 2a. Install as standalone binary
    ```
@@ -23,7 +25,7 @@ Installation instructions
    cd build
    make install
    ```
-2b. Compile as a python module
+2b. Install as a python module
    ```
    cd python
    python setup.py install --user
