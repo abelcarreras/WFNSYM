@@ -6,6 +6,15 @@ import sys, io
 
 _bohr_to_angstrom = 0.529177249
 
+# define assignation of shell type to number and number of functions by shell
+shell_type_list = {'-1': ['sp', 4],
+                   '0': ['s',  1],
+                   '1': ['p',  3],
+                   '2': ['d',  6],
+                   '3': ['f',  10],
+                   '-2': ['d_', 5],  # pure
+                   '-3': ['f_', 7]}  # pure
+
 
 class _captured_stdout:
     def __init__(self):
@@ -128,13 +137,18 @@ def _center_of_charge(mo_coefficients_alpha, mo_coefficients_beta,
     beta_electrons = total_electrons - alpha_electrons
     # print('electrons', alpha_electrons, beta_electrons)
 
+    type_to_nfunc = {}
+    for item in shell_type_list.items():
+        type_to_nfunc['{}'.format(item[1][0])] = int(item[1][1])
+
     # get the basis functions corresponding to each atom (ini, fin)
     ranges_per_atom = []
     n_start = 0
     for atoms in basis['atoms']:
         n_functions = 0
         for shell in atoms['shells']:
-            n_functions += shell['functions']
+            n_functions += type_to_nfunc[shell['shell_type']]
+
         ranges_per_atom.append((n_start, n_start + n_functions))
         n_start += n_functions
 
@@ -188,15 +202,6 @@ class WfnSympy:
         else:
             igroup, ngroup = _get_group_num_from_label(group)
 
-        # define assignation of shell type to number and number of functions by shell
-        shell_type_list = {'-1': ['sp', 4],
-                            '0': ['s',  1],
-                            '1': ['p',  3],
-                            '2': ['d',  6],
-                            '3': ['f',  10],
-                           '-2': ['d_', 5],  # pure
-                           '-3': ['f_', 7]}  # pure
-
         type_list_inverse = {}
         for item in shell_type_list.items():
             type_list_inverse['{}'.format(item[1][0])] = int(item[0])
@@ -229,6 +234,7 @@ class WfnSympy:
             Cb = Ca
 
         # convert from Angstroms to Bohr
+        coordinates = np.array(coordinates)
         coordinates_bohr = np.array(coordinates) / _bohr_to_angstrom
 
         # get atomic numbers
