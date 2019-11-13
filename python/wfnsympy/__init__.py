@@ -1,4 +1,4 @@
-__version__ = '0.22'
+__version__ = '0.2.1'
 
 from wfnsympy.WFNSYMLIB import mainlib, overlap_mat
 import numpy as np
