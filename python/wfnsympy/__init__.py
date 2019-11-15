@@ -194,7 +194,8 @@ class WfnSympy:
                  beta_mo_coeff=None,  # Nbas x Nbas
                  group=None,
                  do_operation=False,
-                 use_pure_d_functions=False):
+                 use_pure_d_functions=False,
+                 valence_only=False):
 
         # Transform group label to igroup, ngroup
         if group is None:
@@ -244,7 +245,10 @@ class WfnSympy:
         valence_electrons = get_valence_electrons(atomic_numbers, charge)
 
         # get total number of electrons
-        total_electrons = np.sum(atomic_numbers) - charge
+        if valence_only:
+            total_electrons = valence_electrons
+        else:
+            total_electrons = np.sum(atomic_numbers) - charge
 
         NShell = np.unique(atom_map, return_counts=True)[1]
 
@@ -303,11 +307,10 @@ class WfnSympy:
             from wfnsympy.optimize import minimize_axis
             from wfnsympy.optimize import rotation_xy, rotation_axis
 
-            def target_function(alpha, beta, center, gamma=0.0):
+            def target_function(alpha, beta, gamma=0.0):
                 VAxis = np.dot(rotation_xy(alpha, beta), [1, 0, 0])
                 VAxis2 = np.dot(rotation_axis(VAxis, gamma), get_perpendicular_axis(VAxis))
 
-                # print('centre', center)
                 with _captured_stdout():
                     out_data = mainlib(total_electrons, valence_electrons, NBas, Norb, Nat, NTotShell, atomic_numbers, symbols, Alph,
                                        COrb, NShell, coordinates_bohr, n_primitives, shell_type, igroup, ngroup, Ca, Cb, center, VAxis, VAxis2,
@@ -317,7 +320,7 @@ class WfnSympy:
                 return np.sum(np.abs(out_data[2][0:dgroup]))
 
             data = {'coordinates': coordinates_bohr, 'symbols': symbols, 'igroup': igroup, 'ngroup': ngroup}
-            alpha, beta, gamma, center = minimize_axis(target_function, center, data, delta=0.4)
+            alpha, beta, gamma = minimize_axis(target_function, data, delta=0.4)
 
             VAxis = np.dot(rotation_xy(alpha, beta), [1, 0, 0])
             VAxis2 = np.dot(rotation_axis(VAxis, gamma), get_perpendicular_axis(VAxis))
@@ -328,7 +331,7 @@ class WfnSympy:
                     from wfnsympy.optimize import minimize_axis2
                     from wfnsympy.optimize import rotation_xy, rotation_axis
 
-                    def target_function(gamma, VAxis, center):
+                    def target_function(gamma, VAxis):
                         VAxis2 = np.dot(rotation_axis(VAxis, gamma), get_perpendicular_axis(VAxis))
 
                         with _captured_stdout():
@@ -340,7 +343,7 @@ class WfnSympy:
 
                         return np.sum(np.abs(out_data[2][0:dgroup]))
 
-                    gamma = minimize_axis2(target_function, center, VAxis, delta=0.05)
+                    gamma = minimize_axis2(target_function, VAxis, delta=0.05)
                     VAxis2 = np.dot(rotation_axis(VAxis, gamma), get_perpendicular_axis(VAxis))
 
                 else:

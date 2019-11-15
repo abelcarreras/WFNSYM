@@ -31,13 +31,13 @@ def target_function_test(alpha, beta):
     return c_geom, ax1, ax2
 
 
-def first_approximation(target_function, center, delta, min_gamma=False):
+def first_approximation(target_function, delta, min_gamma=False):
 
     x = y = np.arange(0.0, np.pi, delta)
     X, Y = np.meshgrid(x, y)
     z = np.arange(0.0, np.pi, delta)
 
-    min = 100
+    min = None
     xmin = 0
     ymin = 0
     zmin = 0
@@ -45,16 +45,15 @@ def first_approximation(target_function, center, delta, min_gamma=False):
         for xx,yy in zip(vx, vy):
             if min_gamma:
                 for zz in z:
-                    val = target_function(xx, yy, center, gamma=zz)
-                    if val < min:
+                    val = target_function(xx, yy, gamma=zz)
+                    if min is None or val < min:
                         min = val
                         xmin = xx
                         ymin = yy
                         zmin = zz
-                        # print(xx, yy, zz, val)
             else:
-                val = target_function(xx, yy, center, gamma=0.0)
-                if val < min:
+                val = target_function(xx, yy, gamma=0.0)
+                if  min is None or val < min:
                     min = val
                     xmin = xx
                     ymin = yy
@@ -64,14 +63,14 @@ def first_approximation(target_function, center, delta, min_gamma=False):
     return xmin, ymin, zmin, min
 
 
-def first_approximation_gamma_only(target_function, vaxis, center, delta):
+def first_approximation_gamma_only(target_function, vaxis, delta):
     z = np.arange(0.0, np.pi, delta)
 
-    min = 100
+    min = None
     zmin = 0
     for zz in z:
-        val = target_function(zz, vaxis, center)
-        if val < min:
+        val = target_function(zz, vaxis)
+        if min is None or val < min:
             min = val
             zmin = zz
             # print(xx, yy, zz, val)
@@ -79,56 +78,36 @@ def first_approximation_gamma_only(target_function, vaxis, center, delta):
     return zmin, min
 
 
-def minimize_axis(target_function, center, data, delta=0.05):
+def minimize_axis(target_function, data, delta=0.05):
 
     # define optimization functions
     def minf(x):
-        return target_function(x[0], x[1], center)
-    def minf_c(x):  # center
-        return target_function(x[0], x[1], [x[2], x[3], x[4]])
-    def minf_g(x):  # gamma
-        return target_function(x[0], x[1], center, gamma=x[2])
-    def minf_cg(x): # center + gamma
-        return target_function(x[0], x[1], [x[3], x[4], x[5]], gamma=x[2])
+        return target_function(x[0], x[1])
 
-    # check if necessary optimize axis2
-    if data['igroup'] == 8:
-        minimize_ax2 = True
+    def minf_g(x):  # with gamma
+        return target_function(x[0], x[1], gamma=x[2])
+
+    # Check if second axis is needed
+    minimize_ax2 = True if data['igroup'] == 8 else False
+
+    xmin, ymin, zmin, _ = first_approximation(target_function, delta, min_gamma=minimize_ax2)
+    if minimize_ax2:
+        alpha, beta, gamma = fmin(minf_g, [xmin, ymin, zmin], disp=False)
+        return alpha, beta, gamma
     else:
-        minimize_ax2 = False
-
-    if center is None:
-        # simple initial center guess
-        coordinates = data['coordinates']
-        center = np.sum(coordinates, axis=0)/len(coordinates)
-
-        xmin, ymin, zmin, val = first_approximation(target_function, center, delta, min_gamma=minimize_ax2)
-
-        if minimize_ax2:
-            alpha, beta, gamma, c1, c2, c3 = fmin(minf_cg, [xmin, ymin, zmin, center[0], center[1], center[2]])
-            return alpha, beta, gamma, [c1, c2, c3]
-        else:
-            alpha, beta, c1, c2, c3 = fmin(minf_c, [xmin, ymin, center[0], center[1], center[2]])
-            return alpha, beta, 0, [c1, c2, c3]
-    else:
-        xmin, ymin, zmin, val = first_approximation(target_function, center, delta, min_gamma=minimize_ax2)
-        if minimize_ax2:
-            alpha, beta, gamma = fmin(minf_g, [xmin, ymin, zmin])
-            return alpha, beta, gamma, center
-        else:
-            alpha, beta = fmin(minf, [xmin, ymin])
-            return alpha, beta, 0, center
+        alpha, beta = fmin(minf, [xmin, ymin], disp=False)
+        return alpha, beta, 0
 
 
-def minimize_axis2(target_function, center, axis, delta=0.05):
+def minimize_axis2(target_function, axis, delta=0.05):
 
     # define optimization functions
     def minf(x):
-        return target_function(x[0], axis, center)
+        return target_function(x[0], axis)
 
-    zmin, val = first_approximation_gamma_only(target_function, axis, center, delta)
+    zmin, _ = first_approximation_gamma_only(target_function, axis, delta)
 
-    gamma = fmin(minf, [zmin])
+    gamma = fmin(minf, [zmin], disp=False)
     return gamma[0]
 
 
@@ -144,7 +123,7 @@ if __name__ == "__main__":
         ax1 = np.dot(rotation_xy(alpha, beta), [1, 0, 0])
         # ax2 = np.dot(rotation_xy(alpha, beta), [0, 0, 1])
 
-        pirrol = WfnSympy(coordinates_bohr=data['coordinates'],
+        pirrol = WfnSympy(coordinates=data['coordinates'],
                           symbols=data['symbols'],
                           basis=data['basis'],
                           center=c_geom,
@@ -157,4 +136,4 @@ if __name__ == "__main__":
         res = np.sum(np.sqrt(pirrol.csm_coef))
         return res
 
-    print(minimize_axis(target_function, center_i=[0, 0, 0], delta=0.05))
+    print(minimize_axis(target_function, data={'igroup': 2}, delta=0.05))
