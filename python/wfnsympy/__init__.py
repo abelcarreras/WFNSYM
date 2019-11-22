@@ -272,7 +272,8 @@ class WfnSympy:
         COrb = []
         for i, stype in enumerate(shell_type):
             COrb.append(coef_group[i])
-            if shell_type_list['{}'.format(stype)][0] == 'd' or shell_type_list['{}'.format(stype)][0] == 'f':
+            # if shell_type_list['{}'.format(stype)][0] == 'd' or shell_type_list['{}'.format(stype)][0] == 'f':
+            if 'd' in shell_type_list['{}'.format(stype)][0] or 'f' in shell_type_list['{}'.format(stype)][0]:
                 for _ in range(shell_type_list['{}'.format(stype)][1]-1):
                     COrb.append(coef_group[i])
             if shell_type_list['{}'.format(stype)][0] == 'sp':
