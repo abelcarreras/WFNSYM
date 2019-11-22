@@ -151,7 +151,7 @@ c        ELSEIF (OrbType.eq.'D ') THEN
              ENDDO
           ENDDO
           DO i = 1,NC
-c           Cartesian d-orbitals order in Q-Chem
+c           Cartesian d-orbitals order in .fchk
             xOrbType = DSQRT(8.d0)
             iAng(iOrb+i-1,1)      = 2  ! xx
             iAng(iOrb+i-1+NC,2)   = 2  ! yy
@@ -204,7 +204,6 @@ c           Pure d-orbitals order in .fchk
           iOrb = iOrb + NOrbSh
 
 c  F type functions
-c        ELSEIF (OrbType.eq.'F ') THEN
         ELSEIF  (shell_type(iShellC).eq.3) THEN
 
           NF = 10
@@ -230,7 +229,7 @@ c        ELSEIF (OrbType.eq.'F ') THEN
              ENDDO
           ENDDO
           DO i = 1,NC
-c           Cartesian f-orbitals order in Q-Chem
+c           Cartesian f-orbitals order in .fchk
             xOrbType = DSQRT(17.36656146d0)
             iAng(iOrb+i-1     ,1) = 3  ! xxx
             iAng(iOrb+i-1+1*NC,2) = 3  ! yyy
@@ -279,7 +278,7 @@ c           Cartesian f-orbitals order in Q-Chem
              ENDDO
           ENDDO
           DO i = 1,NC
-c           Pure f-orbitals order in Q-Chem
+c           Pure d-orbitals order in .fchk
             xOrbType = DSQRT(17.36656146d0)
             iAng(iOrb+i-1     ,1) = 3  ! xxx
             iAng(iOrb+i-1+1*NC,2) = 3  ! yyy

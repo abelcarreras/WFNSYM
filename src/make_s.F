@@ -83,7 +83,8 @@ c     Symmetry transform B-orbital
       SAVE Zero, One, Two, Three
       DATA Zero,One,Two,Three / 0.d0,1.d0,2.d0,3.d0 /
 
-      aux_stCvB(:) = 0.d0
+!     aux_stCvB(:) = 0.d0
+      CALL VRload(aux_stCvB,10,Zero)
       CALL lc_cartesian_orbitals(iAngvB,LCCB,NLCB,iAngBi)
       DO nb=1,NLCB
         iAngvBi(:) = iAngvB(nb,:)
