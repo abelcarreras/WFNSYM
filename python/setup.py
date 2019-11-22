@@ -29,7 +29,7 @@ else:
     i_dir = '../include/'
 
 wfnsymlib = Extension('wfnsympy.WFNSYMLIB',
-                      extra_compile_args=['-ffixed-form', '-ffixed-line-length-none'],
+                      # extra_compile_args=['-ffixed-form', '-ffixed-line-length-none'],
                       #include_dirs=include_dirs_numpy,
                       include_dirs=[i_dir],
                       libraries=['lapack', 'blas'],
