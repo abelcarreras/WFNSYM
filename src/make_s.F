@@ -1,6 +1,6 @@
 
       SUBROUTINE make_S(SAB,iAngA,AlphA,CA,RA,
-     & iAngB,AlphB,CB,RB,NBas,NBas2,NOrb,iContr,SM,PureCart)
+     & iAngB,AlphB,CB,RB,NBas,NBas2,NOrb,iContr,SM)
 c*****************************************************c
 c                                                     c
 c       Computes the overlap matrices between two     c
@@ -15,7 +15,6 @@ c        NOrb    : # uncontracted functions           c
 c        NBas    : # basis functions                  c
 c        iContr  : contraction vector                 c
 c        SM      : symmetry transf matrix             c
-c        PureCart: pure or cartesian d-orbs           c
 c        NN      : max dimension of product (F*F)     c
 c                                                     c
 c       OUTPUT                                        c
@@ -36,7 +35,6 @@ c*****************************************************c
      & AlphAB(NN),CAB(NN),RAB(NN,3),SAB(NBas2),
      & stCvB(NNF),SAux(3,3),XAux(3,3),SM(3,3),RvAB(3),
      & SFAux(NN),SF(NN), LCCA(3)
-	  LOGICAL  PureCart
       SAVE Zero, One, Two, Three
       DATA Zero,One,Two,Three / 0.d0,1.d0,2.d0,3.d0 /
 
@@ -60,8 +58,7 @@ c*****************************************************c
             iAngBi = iAngB(iB,:)
             iAngvAi = iAngvA(na,:)
             CALL transform_B(SAB,NBas2,iAngvAi,AlphvA,LCCA(na)*CvA,RvA,
-     &      AlphvB,CvB,RvB,iOff,
-     &      iAngBi,NOrb,iB,CB,SM,PureCart)
+     &      AlphvB,CvB,RvB,iOff,iAngBi,NOrb,iB,CB,SM)
             iB = iB + 1
           ENDDO
         ENDDO
@@ -76,15 +73,13 @@ c*****************************************************c
 
 c     Symmetry transform B-orbital
       SUBROUTINE transform_B(SAB,NBas2,iAngvA,AlphvA,CvA,RvA,
-     & AlphvB,CvB,RvB,iOff,
-     & iAngBi,NOrb,iB,CB,SM,PureCart)
+     & AlphvB,CvB,RvB,iOff,iAngBi,NOrb,iB,CB,SM)
       IMPLICIT REAL*8  (a-h, o-z)
       PARAMETER NN = 27
       INTEGER  iAngBi(3), iAngvA(3),iAngvB(3,3),iAng(10,3),iAngvBi(3),
      & iOff
       REAL*8   CB(NOrb),AlphvA,CvA,RvA(3),AlphvB,CvB,RvB(3),
      & SAB(NBas2),stCvB(10),SM(3,3),aux_stCvB(10), LCCB(3)
-	  LOGICAL  PureCart
       SAVE Zero, One, Two, Three
       DATA Zero,One,Two,Three / 0.d0,1.d0,2.d0,3.d0 /
 
@@ -93,7 +88,7 @@ c     Symmetry transform B-orbital
       DO nb=1,NLCB
         iAngvBi(:) = iAngvB(nb,:)
         CALL transf_orbital(stCvB,iAng,NvB,iAngvBi,
-     &  LCCB(nb)*CB(iB),SM,PureCart)
+     &  LCCB(nb)*CB(iB),SM)
         aux_stCvB = aux_stCvB + stCvB
       ENDDO
 
@@ -102,41 +97,23 @@ c     Symmetry transform B-orbital
         CvB = aux_stCvB(ivB)
         iAngvBi(:) = iAng(ivB,:)
         CALL om_elements(SABi,NN,iAngvA,
-     &  AlphvA,CvA,RvA,iAngvBi,AlphvB,CvB,RvB,PureCart)
+     &  AlphvA,CvA,RvA,iAngvBi,AlphvB,CvB,RvB)
         SAB(iOff) = SAB(iOff) + SABi
       ENDDO
-!     ELSE
-!         CALL transf_orbital(stCvB,iAng,NvB,iAngB,LCCB*CB(iB),SM,
-!    &    PureCart)
-!         aux_stCvB = stCvB
-!     ENDIF
-
-c Repeat for each transformed B-orbital
-!         DO ivB = 1,NvB
-!           sum = iAng(ivB,1)+iAng(ivB,2)+iAng(ivB,3)
-!           CvB = aux_stCvB(ivB)
-!           iAngvB(:) = iAng(ivB,:)
-!           CALL om_elements(SABi,NN,iAngvA,
-!    &      AlphvA,CvA,RvA,iAngvB,AlphvB,CvB,RvB,PureCart)
-!           SAB(iOff) = SAB(iOff) + SABi
-!        ENDDO
       END
 
       SUBROUTINE om_elements(SABi,NN,iAngvA,
-     & AlphvA,CvA,RvA,iAngvB,AlphvB,CvB,RvB,PureCart)
+     & AlphvA,CvA,RvA,iAngvB,AlphvB,CvB,RvB)
       INTEGER  iAngAB(NN,3),iAngvA(3),iAngvB(3),iAngvAB(3)
       REAL*8   AlphvA,CvA,RvA(3),AlphvB,CvB,RvB(3),
      & AlphAB(NN),CAB(NN),RAB(NN,3),SABi,RvAB(3), AlphvAB,S
-	  LOGICAL  PureCart
       SAVE Zero, One, Two, Three
       DATA Zero,One,Two,Three / 0.d0,1.d0,2.d0,3.d0 /
 
 c Make the AO * AO product
       SABi = 0
       CALL aos_product(iAngAB,AlphAB,CAB,RAB,NAB,NN,
-     &  iAngvA,AlphvA,CvA,RvA,
-     &  iAngvB,AlphvB,CvB,RvB,
-     &  PureCart)
+     &  iAngvA,AlphvA,CvA,RvA,iAngvB,AlphvB,CvB,RvB)
 c Compute Ovelap Matrix elements
       DO iAB = 1, NAB
          RvAB(:)    = RAB(iAB,:)
@@ -147,14 +124,12 @@ c Compute Ovelap Matrix elements
       ENDDO
       END
 
-      SUBROUTINE transf_orbital(stCvB,iAng,NvB,iAngBi,CBi,SM,
-     & PureCart)
+      SUBROUTINE transf_orbital(stCvB,iAng,NvB,iAngBi,CBi,SM)
       IMPLICIT REAL*8  (a-h, o-z)
       PARAMETER NN = 27, NOrb = 20
       INTEGER  iAngBi(3),iAng(10,3)
       REAL*8   CBi, stCvB(10),stCvB2(10),SAux(3,3),XAux(3,3),SM(3,3),
      & SFAux(NN),SF(NN)
-      LOGICAL  PureCart
       SAVE Zero, One, Two, Three
       DATA Zero,One,Two,Three / 0.d0,1.d0,2.d0,3.d0 /
 
@@ -297,7 +272,7 @@ c Compute Ovelap Matrix elements
 
 
       SUBROUTINE overlap_mat(S_AO, AtLab, RAt, NBas, NAt_2, NOrb,
-     & PureCart, NTotShell, NShell, shell_type, NPrim, COrb, Alph)
+     & NTotShell, NShell, shell_type, NPrim, COrb, Alph)
 c*****************************************************c
 c                                                     c
 c       Computes the overlap matrix                   c
@@ -311,7 +286,6 @@ c******************************************************
       REAL*8 :: MatId(3,3), S_AO(NBas**2)
       CHARACTER :: cLAO(NBas)*4
       CHARACTER :: AtLab(NAt_2)*2
-      LOGICAL   :: PureCart
       SAVE Zero,Half,One,Two,Four
       DATA Zero,Half,One,Two,Four / 0d0,0.5d0,1d0,2d0,4d0  /
 
@@ -321,10 +295,10 @@ c******************************************************
       ENDDO
 
       CALL get_basis(AtLab,RAt,iAng,Alph,
-     & ROrb,COrb,iContr,iLAO,cLAO,NAt_2,NBas,NOrb,PureCart,
+     & ROrb,COrb,iContr,iLAO,cLAO,NAt_2,NBas,NOrb,
      & NPrim, NTotShell, NShell, shell_type)
 
       CALL make_S(S_AO,iAng,Alph,COrb,ROrb,iAng,Alph,COrb,ROrb,
-     & NBas,NBas2,NOrb,iContr,MatId,PureCart)
+     & NBas,NBas2,NOrb,iContr,MatId)
 
       END

@@ -1,6 +1,6 @@
 
         SUBROUTINE get_basis(AtLab,RAt,iAng,Alph,
-     & ROrb,COrb,iContr,iLAO,cLAO,NAt,NBas,NOrb,PureCart,
+     & ROrb,COrb,iContr,iLAO,cLAO,NAt,NBas,NOrb,
      & NPrim, NTotShell, NShell, shell_type)
 c*****************************************************c
 c                                                     c
@@ -37,17 +37,10 @@ c*****************************************************c
       REAL*8    :: RAt(NAt,3),RAB(3),ROrb(NOrb,3),COrb(NOrb),Alph(NOrb)
      & , LCCA(3), LCCB(3)
       CHARACTER :: AtLab(*)*2,cLAO(NBas)*4,Aux*255
-      LOGICAL   :: PureCart
       SAVE Zero,Half,One,Two,Four
       DATA Zero,Half,One,Two,Four / 0d0,0.5d0,1d0,2d0,4d0  /
 
 c Initialize some variables
-      ND  = 6   ! cart d-orbitals
-      NF  = 10  ! cart f-orbitals
-      IF(PureCart) then
-          ND = 5 ! pure d-orbitals
-          NF = 7 ! pure f-orbitals
-      END IF
       iOrb   = 1
       iCount = 1
       iShellC = 0
@@ -137,26 +130,19 @@ c        ELSEIF (OrbType.eq.'SP') THEN
 
 c  D type functions
 c        ELSEIF (OrbType.eq.'D ') THEN
-        ELSEIF  (ABS(shell_type(iShellC)).eq.2) THEN
+        ELSEIF  (shell_type(iShellC).eq.2) THEN
+          ND = 6
 
           DO j = 0,ND-1
              iContr(iCount+j) = NC
              iLAO(iCount+j) = 2
           ENDDO
-          IF(PureCart) THEN
-            cLAO(iCount)   = 'd1  '
-            cLAO(iCount+1) = 'd2  '
-            cLAO(iCount+2) = 'd3  '
-            cLAO(iCount+3) = 'd4  '
-            cLAO(iCount+4) = 'd5  '
-          ELSE
-            cLAO(iCount)   = 'dx2 '
-            cLAO(iCount+1) = 'dy2 '
-            cLAO(iCount+2) = 'dz2 '
-            cLAO(iCount+3) = 'dxy '
-            cLAO(iCount+4) = 'dxz '
-            cLAO(iCount+5) = 'dyz '
-          ENDIF
+          cLAO(iCount)   = 'dx2 '
+          cLAO(iCount+1) = 'dy2 '
+          cLAO(iCount+2) = 'dz2 '
+          cLAO(iCount+3) = 'dxy '
+          cLAO(iCount+4) = 'dxz '
+          cLAO(iCount+5) = 'dyz '
           iCount=iCount+ND
           DO i = 1,ND*NC
              DO j = 1,3
@@ -165,65 +151,77 @@ c        ELSEIF (OrbType.eq.'D ') THEN
              ENDDO
           ENDDO
           DO i = 1,NC
-            IF(PureCart) THEN
-c             Pure d-orbitals order in Q-Chem
-              xOrbType = DSQRT(5.d0)
-              iAng(iOrb+i-1,3)      = 4  ! z2 from 2z2-x2-y2 (d0)
-              iAng(iOrb+i-1,1)      = -2 ! x2 from 2z2-x2-y2 (d0)
-              iAng(iOrb+i-1,2)      = -2 ! y2 from 2z2-x2-y2 (d0)
-              iAng(iOrb+i-1+NC,1)   = 1  ! xz  (d1)
-              iAng(iOrb+i-1+NC,3)   = 1  ! xz  (d1)
-              iAng(iOrb+i-1+2*NC,2) = 1  ! yz  (d-1)
-              iAng(iOrb+i-1+2*NC,3) = 1  ! yz  (d-1)
-              iAng(iOrb+i-1+3*NC,1) = 2  ! x2 from x2-y2 (d2)
-              iAng(iOrb+i-1+3*NC,2) = -2 ! y2 from x2-y2 (d2)
-              iAng(iOrb+i-1+4*NC,1) = 1  ! xy  (d-2)
-              iAng(iOrb+i-1+4*NC,2) = 1  ! xy  (d-2)
-            ELSE
-c             Cartesian d-orbitals order in Q-Chem
-              xOrbType = DSQRT(8.d0)
-              iAng(iOrb+i-1,1)      = 2  ! xx
-              iAng(iOrb+i-1+NC,2)   = 2  ! yy
-              iAng(iOrb+i-1+2*NC,3) = 2  ! zz
-              iAng(iOrb+i-1+3*NC,1) = 1  ! xy
-              iAng(iOrb+i-1+3*NC,2) = 1  ! xy
-              iAng(iOrb+i-1+4*NC,1) = 1  ! xz
-              iAng(iOrb+i-1+4*NC,3) = 1  ! xz
-              iAng(iOrb+i-1+5*NC,2) = 1  ! yz
-              iAng(iOrb+i-1+5*NC,3) = 1  ! yz
-            ENDIF
+c           Cartesian d-orbitals order in Q-Chem
+            xOrbType = DSQRT(8.d0)
+            iAng(iOrb+i-1,1)      = 2  ! xx
+            iAng(iOrb+i-1+NC,2)   = 2  ! yy
+            iAng(iOrb+i-1+2*NC,3) = 2  ! zz
+            iAng(iOrb+i-1+3*NC,1) = 1  ! xy
+            iAng(iOrb+i-1+3*NC,2) = 1  ! xy
+            iAng(iOrb+i-1+4*NC,1) = 1  ! xz
+            iAng(iOrb+i-1+4*NC,3) = 1  ! xz
+            iAng(iOrb+i-1+5*NC,2) = 1  ! yz
+            iAng(iOrb+i-1+5*NC,3) = 1  ! yz
+          ENDDO
+          NOrbSh = ND*NC
+          iOrb = iOrb + NOrbSh
+
+        ELSEIF (shell_type(iShellC) .eq. -2) THEN
+
+          ND = 5
+          DO j = 0,ND-1
+             iContr(iCount+j) = NC
+             iLAO(iCount+j) = 2
+          ENDDO
+          cLAO(iCount)   = 'd1  '
+          cLAO(iCount+1) = 'd2  '
+          cLAO(iCount+2) = 'd3  '
+          cLAO(iCount+3) = 'd4  '
+          cLAO(iCount+4) = 'd5  '
+          iCount=iCount+ND
+          DO i = 1,ND*NC
+             DO j = 1,3
+               iAng(iOrb+i-1,j) = 0
+               ROrb(iOrb+i-1,j) = RAt(k,j)
+             ENDDO
+          ENDDO
+          DO i = 1,NC
+c           Pure d-orbitals order in .fchk
+            xOrbType = DSQRT(5.d0)
+            iAng(iOrb+i-1,3)      = 4  ! z2 from 2z2-x2-y2 (d0)
+            iAng(iOrb+i-1,1)      = -2 ! x2 from 2z2-x2-y2 (d0)
+            iAng(iOrb+i-1,2)      = -2 ! y2 from 2z2-x2-y2 (d0)
+            iAng(iOrb+i-1+NC,1)   = 1  ! xz  (d1)
+            iAng(iOrb+i-1+NC,3)   = 1  ! xz  (d1)
+            iAng(iOrb+i-1+2*NC,2) = 1  ! yz  (d-1)
+            iAng(iOrb+i-1+2*NC,3) = 1  ! yz  (d-1)
+            iAng(iOrb+i-1+3*NC,1) = 2  ! x2 from x2-y2 (d2)
+            iAng(iOrb+i-1+3*NC,2) = -2 ! y2 from x2-y2 (d2)
+            iAng(iOrb+i-1+4*NC,1) = 1  ! xy  (d-2)
+            iAng(iOrb+i-1+4*NC,2) = 1  ! xy  (d-2)
           ENDDO
           NOrbSh = ND*NC
           iOrb = iOrb + NOrbSh
 
 c  F type functions
 c        ELSEIF (OrbType.eq.'F ') THEN
-        ELSEIF  (ABS(shell_type(iShellC)).eq.3) THEN
+        ELSEIF  (shell_type(iShellC).eq.3) THEN
 
-           DO j = 0,NF-1
-             iContr(iCount+j) = NC
-             iLAO(iCount+j) = 3
-           ENDDO
-           IF(PureCart) THEN
-            cLAO(iCount)   = 'f1  '
-            cLAO(iCount+1) = 'f2  '
-            cLAO(iCount+2) = 'f3  '
-            cLAO(iCount+3) = 'f4  '
-            cLAO(iCount+4) = 'f5  '
-            cLAO(iCount+5) = 'f6  '
-            cLAO(iCount+6) = 'f7  '
-           ELSE
-            cLAO(iCount)   = 'fxxx'
-            cLAO(iCount+1) = 'fxxy'
-            cLAO(iCount+2) = 'fxyy'
-            cLAO(iCount+3) = 'fyyy'
-            cLAO(iCount+4) = 'fxxz'
-            cLAO(iCount+5) = 'fxyz'
-            cLAO(iCount+6) = 'fyyz'
-            cLAO(iCount+7) = 'fxzz'
-            cLAO(iCount+8) = 'fyzz'
-            cLAO(iCount+9) = 'fzzz'
-          ENDIF
+          NF = 10
+          DO j = 0,NF-1
+            iContr(iCount+j) = NC
+            iLAO(iCount+j) = 3
+          ENDDO
+          cLAO(iCount)   = 'fxxx'
+          cLAO(iCount+1) = 'fxxy'
+          cLAO(iCount+2) = 'fxyy'
+          cLAO(iCount+3) = 'fyyy'
+          cLAO(iCount+4) = 'fxxz'
+          cLAO(iCount+5) = 'fxyz'
+          cLAO(iCount+6) = 'fyyz'
+          cLAO(iCount+7) = 'fxzz'
+          cLAO(iCount+8) = 'fyzz'
+          cLAO(iCount+9) = 'fzzz'
           iCount=iCount+NF
           DO i = 1,NF*NC
              DO j = 1,3
@@ -232,32 +230,75 @@ c        ELSEIF (OrbType.eq.'F ') THEN
              ENDDO
           ENDDO
           DO i = 1,NC
-            IF(PureCart) THEN
-c             Pure f-orbitals order in Q-Chem
-              WRITE(2,*)"ERROR. Pure F-orbitals not ready"
-        	  STOP
-            ELSE
-c             Cartesian f-orbitals order in Q-Chem
-              xOrbType = DSQRT(17.36656146d0)
-              iAng(iOrb+i-1     ,1) = 3  ! xxx
-              iAng(iOrb+i-1+1*NC,2) = 3  ! yyy
-              iAng(iOrb+i-1+2*NC,3) = 3  ! zzz
-              iAng(iOrb+i-1+3*NC,1) = 1  ! xyy
-              iAng(iOrb+i-1+3*NC,2) = 2  ! xyy
-              iAng(iOrb+i-1+4*NC,1) = 2  ! xxy
-              iAng(iOrb+i-1+4*NC,2) = 1  ! xxy
-              iAng(iOrb+i-1+5*NC,1) = 2  ! xxz
-              iAng(iOrb+i-1+5*NC,3) = 1  ! xxz
-              iAng(iOrb+i-1+6*NC,1) = 1  ! xzz
-              iAng(iOrb+i-1+6*NC,3) = 2  ! xzz
-              iAng(iOrb+i-1+7*NC,2) = 1  ! yzz
-              iAng(iOrb+i-1+7*NC,3) = 2  ! yzz
-              iAng(iOrb+i-1+8*NC,2) = 2  ! yyz
-              iAng(iOrb+i-1+8*NC,3) = 1  ! yyz
-              iAng(iOrb+i-1+9*NC,1) = 1  ! xyz
-              iAng(iOrb+i-1+9*NC,2) = 1  ! xyz
-              iAng(iOrb+i-1+9*NC,3) = 1  ! xyz
-            ENDIF
+c           Cartesian f-orbitals order in Q-Chem
+            xOrbType = DSQRT(17.36656146d0)
+            iAng(iOrb+i-1     ,1) = 3  ! xxx
+            iAng(iOrb+i-1+1*NC,2) = 3  ! yyy
+            iAng(iOrb+i-1+2*NC,3) = 3  ! zzz
+            iAng(iOrb+i-1+3*NC,1) = 1  ! xyy
+            iAng(iOrb+i-1+3*NC,2) = 2  ! xyy
+            iAng(iOrb+i-1+4*NC,1) = 2  ! xxy
+            iAng(iOrb+i-1+4*NC,2) = 1  ! xxy
+            iAng(iOrb+i-1+5*NC,1) = 2  ! xxz
+            iAng(iOrb+i-1+5*NC,3) = 1  ! xxz
+            iAng(iOrb+i-1+6*NC,1) = 1  ! xzz
+            iAng(iOrb+i-1+6*NC,3) = 2  ! xzz
+            iAng(iOrb+i-1+7*NC,2) = 1  ! yzz
+            iAng(iOrb+i-1+7*NC,3) = 2  ! yzz
+            iAng(iOrb+i-1+8*NC,2) = 2  ! yyz
+            iAng(iOrb+i-1+8*NC,3) = 1  ! yyz
+            iAng(iOrb+i-1+9*NC,1) = 1  ! xyz
+            iAng(iOrb+i-1+9*NC,2) = 1  ! xyz
+            iAng(iOrb+i-1+9*NC,3) = 1  ! xyz
+          ENDDO
+          NOrbSh = NF*NC
+          iOrb = iOrb + NOrbSh
+        ELSEIF  (shell_type(iShellC).eq.-3) THEN
+
+          WRITE(2,*)"ERROR. Pure F-orbitals not ready"
+          STOP
+
+          NF = 7
+          DO j = 0,NF-1
+            iContr(iCount+j) = NC
+            iLAO(iCount+j) = 3
+          ENDDO
+          cLAO(iCount)   = 'f1  '
+          cLAO(iCount+1) = 'f2  '
+          cLAO(iCount+2) = 'f3  '
+          cLAO(iCount+3) = 'f4  '
+          cLAO(iCount+4) = 'f5  '
+          cLAO(iCount+5) = 'f6  '
+          cLAO(iCount+6) = 'f7  '
+
+          iCount=iCount+NF
+          DO i = 1,NF*NC
+             DO j = 1,3
+               iAng(iOrb+i-1,j) = 0
+               ROrb(iOrb+i-1,j) = RAt(k,j)
+             ENDDO
+          ENDDO
+          DO i = 1,NC
+c           Pure f-orbitals order in Q-Chem
+            xOrbType = DSQRT(17.36656146d0)
+            iAng(iOrb+i-1     ,1) = 3  ! xxx
+            iAng(iOrb+i-1+1*NC,2) = 3  ! yyy
+            iAng(iOrb+i-1+2*NC,3) = 3  ! zzz
+            iAng(iOrb+i-1+3*NC,1) = 1  ! xyy
+            iAng(iOrb+i-1+3*NC,2) = 2  ! xyy
+            iAng(iOrb+i-1+4*NC,1) = 2  ! xxy
+            iAng(iOrb+i-1+4*NC,2) = 1  ! xxy
+            iAng(iOrb+i-1+5*NC,1) = 2  ! xxz
+            iAng(iOrb+i-1+5*NC,3) = 1  ! xxz
+            iAng(iOrb+i-1+6*NC,1) = 1  ! xzz
+            iAng(iOrb+i-1+6*NC,3) = 2  ! xzz
+            iAng(iOrb+i-1+7*NC,2) = 1  ! yzz
+            iAng(iOrb+i-1+7*NC,3) = 2  ! yzz
+            iAng(iOrb+i-1+8*NC,2) = 2  ! yyz
+            iAng(iOrb+i-1+8*NC,3) = 1  ! yyz
+            iAng(iOrb+i-1+9*NC,1) = 1  ! xyz
+            iAng(iOrb+i-1+9*NC,2) = 1  ! xyz
+            iAng(iOrb+i-1+9*NC,3) = 1  ! xyz
           ENDDO
           NOrbSh = NF*NC
           iOrb = iOrb + NOrbSh
@@ -274,7 +315,7 @@ c Include normalization factors
            ELSE
              shell = shell_type(iShellC)
            ENDIF
-           CALL norm_basis(iAngv,Alph(iA),COrb(iA),shell,PureCart)
+           CALL norm_basis(iAngv,Alph(iA),COrb(iA),shell)
         ENDDO
 
 c Normalize Shell
@@ -323,7 +364,7 @@ c Check consistency
       END
 
 
-      SUBROUTINE norm_basis(iAng,Alph,COrb,Shell,PureCart)
+      SUBROUTINE norm_basis(iAng,Alph,COrb,Shell)
 c*****************************************************c
 c                                                     c
 c       Updates COrb including the its                c
@@ -333,7 +374,6 @@ c       INPUT                                         c
 c         iAng  :   cartesian indices                 c
 c         Alph  :   gaussian exponent                 c
 c         COrb  :   gaussian coefficient              c
-c         PureCart: pure D-orbitals?                  c
 c                                                     c
 c       OUTPUT                                        c
 c         COrb  :   gaussian coeff updated            c
@@ -344,7 +384,6 @@ c                                                     c
 c*****************************************************c
       IMPLICIT REAL*8  (a-h, o-z)
       INTEGER    iAng(3)
-      LOGICAL    PureCart
       SAVE Zero,Half,One,Two,Four
       DATA Zero,Half,One,Two,Four / 0d0,0.5d0,1d0,2d0,4d0  /
 
@@ -359,21 +398,21 @@ c P orbital
         C = Two*DSQRT(Alph)*(Two*Alph/PI)**0.75d0
 
 c D orbital
-      ELSEIF(ABS(Shell) .eq. 2) THEN
+      ELSEIF(Shell .eq. 2) THEN
         C = Four*Alph*(Two*Alph/PI)**(0.75d0)
-        IF(.NOT.PureCart) THEN
-          DO i=1,3
-            IF(iAng(i).eq.2) THEN
-              C = C / DSQRT(3.d0)
-            ENDIF
-          ENDDO
-        ELSE
-          IF(iAng(1).eq. 2) THEN
-            C = C * DSQRT(0.75d0)/ DSQRT(3.d0)
+        DO i=1,3
+          IF(iAng(i).eq.2) THEN
+            C = C / DSQRT(3.d0)
           ENDIF
-          IF(iAng(3) .eq. 4) THEN
-            C = C * DSQRT(0.25d0)/ DSQRT(3.d0)
-          ENDIF
+        ENDDO
+
+      ELSEIF(Shell .eq. -2) THEN
+        C = Four*Alph*(Two*Alph/PI)**(0.75d0)
+        IF(iAng(1).eq. 2) THEN
+          C = C * DSQRT(0.75d0)/ DSQRT(3.d0)
+        ENDIF
+        IF(iAng(3) .eq. 4) THEN
+          C = C * DSQRT(0.25d0)/ DSQRT(3.d0)
         ENDIF
 
 c F orbital

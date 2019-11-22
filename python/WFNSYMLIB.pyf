@@ -4,11 +4,11 @@
 python module WFNSYMLIB ! in 
     interface  ! in :WFNSYMLIB
         subroutine mainlib(Etot, NEval, NBas, Norb, NAt, NCShell, iZAt, AtLab, Alph, COrb, NShell, RAt, n_prim, shell_type, &
-        igroup, ngroup, Ca, Cb, RCread, VAxis, VAxis2, iCharge, iMult, DoOp, PureCart, OutDim, OutGrim, OutCMS, OutSymLab, OutSDiagA, &
+        igroup, ngroup, Ca, Cb, RCread, VAxis, VAxis2, iCharge, iMult, DoOp, OutDim, OutGrim, OutCMS, OutSymLab, OutSDiagA, &
         OutSDiagB, OutWDiagA, OutWDiagB, OutTbl, OutIRLab, OutgIRA, OutgIRB, OutgIRwfA, OutgIRwfB, OutgIRwf, OutSymMat) ! in :WFNSYMLIB:lib_main.F
 
 !           Inputs
-            logical :: DoOp, PureCart
+            logical :: DoOp
             integer :: Etot, NEval, NBas, Norb, NAt, NCShell, igroup, ngroup, iCharge, iMult
 
             real*8 dimension(3),intent(in) :: RCread, VAxis, VAxis2
@@ -39,9 +39,8 @@ python module WFNSYMLIB ! in
             real*8, intent(out) :: integral  ! Integral value (scalar)
         end subroutine overlap
 
-       subroutine overlap_mat(S_AO, AtLab, RAt, NBas, NAt, NOrb, PureCart, NCShell, NShell, shell_type, n_prim, COrb, Alph)
+       subroutine overlap_mat(S_AO, AtLab, RAt, NBas, NAt, NOrb, NCShell, NShell, shell_type, n_prim, COrb, Alph)
            integer :: NBas, NAt, NCShell, NOrb
-           logical :: PureCart
 
            real*8 dimension(NBas*NBas),intent(out),depend(NBas) :: S_AO
            character dimension(NAt),intent(in),depend(NAt) :: AtLab*2

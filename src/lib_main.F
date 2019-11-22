@@ -5,7 +5,7 @@ c      PROGRAM Prog_Main
      & NAt_2, NTotShell, iZAt, AtLab, Alph, COrb, NShell,
      & RAt, NPrim, shell_type, igroup_2, ngroup_2, Ca, Cb,
      & RCread_2, VAxis_2, VAxis2_2, iCharge, iMult, DoOp,
-     & PureCart_2, OutDim, OutGrim, OutCSM, OutSymLab,
+     & OutDim, OutGrim, OutCSM, OutSymLab,
      & OutSDiagA, OutSDiagB, OutWDiagA, OutWDiagB, OutTbl,
      & OutIRLab, OutgIRA, OutgIRB,OutgIRwfA,OutgIRwfB,
      & OutgIRwf, OutSymMat)
@@ -58,7 +58,7 @@ c--------------------------------------------------------------
       REAL*8 :: Alph(Norb),  COrb(Norb), RAt(NAt_2, 3)
       REAL*8 :: Ca(NBas*NBas),  Cb(NBas*NBas)
       REAL*8 :: RCread_2(3), VAxis_2(3), VAxis2_2(3)
-      LOGICAL :: DoOp, PureCart_2
+      LOGICAL :: DoOp
 c     Output
       INTEGER :: OutDim(3)
       REAL*8 :: OutCSM(100), OutGrim(100)
@@ -87,7 +87,6 @@ c ----------- Added manual arguments-----------
       VAxis2 = VAxis2_2
       basis = 'STO-3G'
 
-      PureCart = PureCart_2
       basin = .TRUE.
       molecule = .TRUE.
       natom = .TRUE.
@@ -426,7 +425,7 @@ c     ALLOCATE(IpivA(NOa),IpivB(NOb))
 c Reading AO Basis Set
 c     write(iout,*)'reading AOs'
       CALL get_basis(AtLab,RAt,iAng,Alph,
-     & ROrb,COrb,iContr,iLAO,cLAO,NAt,NBas,NOrb,PureCart,
+     & ROrb,COrb,iContr,iLAO,cLAO,NAt,NBas,NOrb,
      & NPrim, NTotShell, NShell, shell_type)
 
 c Compute AO Overlap Matrix
@@ -437,7 +436,7 @@ c     write(iout,*)'computing AO overlap'
         MatId(I,I) = One
       ENDDO
       CALL make_S(S_AO,iAng,Alph,COrb,ROrb,iAng,Alph,COrb,ROrb,
-     & NBas,NBas2,NOrb,iContr,MatId,PureCart)
+     & NBas,NBas2,NOrb,iContr,MatId)
 
 #ifdef DEVELOPMENT
 c Print AO Overlap Matrix
@@ -717,7 +716,7 @@ c Symmetry Transform ROrb to stROrb
 c Compute Symmetry Overlap Matrix
 c	write(iout,*) 'calling make_S'
       CALL make_S(S_AO,iAng,Alph,COrb,ROrb,iAng,Alph,COrb,stROrb,
-     & NBas,NBas2,NOrb,iContr,SymMat,PureCart)
+     & NBas,NBas2,NOrb,iContr,SymMat)
 
 c Print Symmetry Overlap Matrix
       IF (NPrint .GE. 2) THEN

@@ -1,4 +1,4 @@
-__version__ = '0.2.1'
+__version__ = '0.2.2'
 
 from wfnsympy.WFNSYMLIB import mainlib, overlap_mat
 import numpy as np
@@ -194,7 +194,6 @@ class WfnSympy:
                  beta_mo_coeff=None,  # Nbas x Nbas
                  group=None,
                  do_operation=False,
-                 use_pure_d_functions=False,
                  valence_only=False):
 
         # Transform group label to igroup, ngroup
@@ -272,7 +271,6 @@ class WfnSympy:
         COrb = []
         for i, stype in enumerate(shell_type):
             COrb.append(coef_group[i])
-            # if shell_type_list['{}'.format(stype)][0] == 'd' or shell_type_list['{}'.format(stype)][0] == 'f':
             if 'd' in shell_type_list['{}'.format(stype)][0] or 'f' in shell_type_list['{}'.format(stype)][0]:
                 for _ in range(shell_type_list['{}'.format(stype)][1]-1):
                     COrb.append(coef_group[i])
@@ -291,8 +289,7 @@ class WfnSympy:
         NBas = np.sum([shell_type_list['{}'.format(st)][1] for st in shell_type])
 
         # get overlap matrix
-        out = overlap_mat(symbols, coordinates_bohr, NBas, Nat, Norb,
-                          use_pure_d_functions, NTotShell, NShell,
+        out = overlap_mat(symbols, coordinates_bohr, NBas, Nat, Norb,NTotShell, NShell,
                           shell_type, n_primitives, COrb, Alph)
         overlap_matrix = np.array(out).reshape(NBas,NBas)
 
@@ -315,7 +312,7 @@ class WfnSympy:
                 with _captured_stdout():
                     out_data = mainlib(total_electrons, valence_electrons, NBas, Norb, Nat, NTotShell, atomic_numbers, symbols, Alph,
                                        COrb, NShell, coordinates_bohr, n_primitives, shell_type, igroup, ngroup, Ca, Cb, center, VAxis, VAxis2,
-                                       charge, multiplicity, do_operation, use_pure_d_functions)
+                                       charge, multiplicity, do_operation)
 
                 dgroup = out_data[0][0]
                 return np.sum(np.abs(out_data[2][0:dgroup]))
@@ -338,7 +335,7 @@ class WfnSympy:
                         with _captured_stdout():
                             out_data = mainlib(total_electrons, valence_electrons, NBas, Norb, Nat, NTotShell, atomic_numbers, symbols, Alph,
                                                COrb, NShell, coordinates_bohr, n_primitives, shell_type, igroup, ngroup, Ca, Cb, center, VAxis, VAxis2,
-                                               charge, multiplicity, do_operation, use_pure_d_functions)
+                                               charge, multiplicity, do_operation)
 
                         dgroup = out_data[0][0]
 
@@ -358,7 +355,7 @@ class WfnSympy:
         with _captured_stdout() as E:
             out_data = mainlib(total_electrons, valence_electrons, NBas, Norb, Nat, NTotShell, atomic_numbers, symbols, Alph,
                                COrb, NShell, coordinates_bohr, n_primitives, shell_type, igroup, ngroup, Ca, Cb, center, VAxis, VAxis2,
-                               charge, multiplicity, do_operation, use_pure_d_functions)
+                               charge, multiplicity, do_operation)
             E.seek(0)
             capture = E.read()
 

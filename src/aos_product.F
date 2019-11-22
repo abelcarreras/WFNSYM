@@ -1,6 +1,6 @@
 
       SUBROUTINE aos_product(iAng,Alph,C,R,NAB,NN,
-     &   iAngvA,AlphA,CA,RvA,iAngvB,AlphB,CB,RvB,PureCart)
+     &   iAngvA,AlphA,CA,RvA,iAngvB,AlphB,CB,RvB)
 c*****************************************************c
 c                                                     c
 c       Computes the product of 2 AOs                 c
@@ -14,7 +14,6 @@ c       Alph_     exponents                           c
 c       C_        # product coefficients              c
 c       R_        function center                     c
 c       NN        product leading dimension           c
-c       PureCart  pure or cartesian d-orbitals        c
 c                                                     c
 c                                                     c
 c     OUTPUT:                                         c
@@ -35,7 +34,6 @@ c*****************************************************c
      &  iAng(NN,3),iAngFun(3),iAngX(3)
       REAL*8   :: Alph(NN),C(NN),R(NN,3),RX(3),
      &  RvA(3),RA(3),RvB(3),RB(3),RFun(3)
-	LOGICAL  :: PureCart
       SAVE Zero,Half,One,Two,Three,Four,Eight
       DATA Zero,Half,One,Two,Three,Four,Eight
      &    / 0d0, 0.5d0, 1d0, 2d0, 3d0, 4d0, 8d0 /
@@ -52,20 +50,6 @@ c Initialize some variables
       NAB = 0
       iAB = 1
 	iChange = 0
-	iMultA = 1
-	iMultB = 1
-	IF (PureCart) THEN
-	  IF(iAngA(1) .EQ. 2) THEN
-	    iMultA = 2
-	  ELSEIF(iAngA(3) .EQ. 2) THEN
-	    iMultA = 2
-	  ENDIF
-        IF(iAngB(1) .EQ. 2) THEN
-          iMultB = 2
-        ELSEIF(iAngB(3) .EQ. 2) THEN
-          iMultB = 2
-        ENDIF
-	ENDIF
 
       ijkA = iAngA(1) + iAngA(2) + iAngA(3)
       ijkB = iAngB(1) + iAngB(2) + iAngB(3)
