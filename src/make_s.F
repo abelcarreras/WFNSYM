@@ -26,15 +26,11 @@ c       DCC: 08/10  WFN-Sym F-orbs                    c
 c                                                     c
 c*****************************************************c
 	  IMPLICIT REAL*8  (a-h, o-z)
-      PARAMETER (NN = 27, NND = 6, NNF = 10)
       INTEGER  iAngA(NOrb,3),iAngB(NOrb,3),
      & iAngvA(3,3),iAngvAi(3),iAngvB(3),iAngBi(3),iContr(NBas)
       REAL*8   AlphA(NOrb),CA(NOrb),RA(NOrb,3),
      &         AlphB(NOrb),CB(NOrb),RB(NOrb,3),
-     & AlphvA,CvA,RvA(3),AlphvB,CvB,RvB(3),
-     & AlphAB(NN),CAB(NN),RAB(NN,3),SAB(NBas2),
-     & stCvB(NNF),SAux(3,3),XAux(3,3),SM(3,3),RvAB(3),
-     & SFAux(NN),SF(NN), LCCA(3)
+     & AlphvA,CvA,RvA(3),AlphvB,RvB(3),SAB(NBas2),SM(3,3),LCCA(3)
       SAVE Zero, One, Two, Three
       DATA Zero,One,Two,Three / 0.d0,1.d0,2.d0,3.d0 /
 
@@ -53,12 +49,12 @@ c*****************************************************c
         DO iMOB = 1,NBas
         iOff = iMOA+(iMOB-1)*NBas
           DO iCB = 1,iContr(iMOB)
-            RvB(:) = RB(iB,:)
+            RvB = RB(iB,:)
             AlphvB = AlphB(iB)
             iAngBi = iAngB(iB,:)
             iAngvAi = iAngvA(na,:)
             CALL transform_B(SAB,NBas2,iAngvAi,AlphvA,LCCA(na)*CvA,RvA,
-     &      AlphvB,CvB,RvB,iOff,iAngBi,NOrb,iB,CB,SM)
+     &      AlphvB,RvB,iOff,iAngBi,NOrb,iB,CB,SM)
             iB = iB + 1
           ENDDO
         ENDDO
@@ -73,9 +69,8 @@ c*****************************************************c
 
 c     Symmetry transform B-orbital
       SUBROUTINE transform_B(SAB,NBas2,iAngvA,AlphvA,CvA,RvA,
-     & AlphvB,CvB,RvB,iOff,iAngBi,NOrb,iB,CB,SM)
+     & AlphvB,RvB,iOff,iAngBi,NOrb,iB,CB,SM)
       IMPLICIT REAL*8  (a-h, o-z)
-      PARAMETER NN = 27
       INTEGER  iAngBi(3), iAngvA(3),iAngvB(3,3),iAng(10,3),iAngvBi(3),
      & iOff
       REAL*8   CB(NOrb),AlphvA,CvA,RvA(3),AlphvB,CvB,RvB(3),
@@ -87,7 +82,7 @@ c     Symmetry transform B-orbital
       CALL VRload(aux_stCvB,10,Zero)
       CALL lc_cartesian_orbitals(iAngvB,LCCB,NLCB,iAngBi)
       DO nb=1,NLCB
-        iAngvBi(:) = iAngvB(nb,:)
+        iAngvBi = iAngvB(nb,:)
         CALL transf_orbital(stCvB,iAng,NvB,iAngvBi,
      &  LCCB(nb)*CB(iB),SM)
         aux_stCvB = aux_stCvB + stCvB
@@ -96,8 +91,8 @@ c     Symmetry transform B-orbital
       DO ivB = 1,NvB
         sum = iAng(ivB,1)+iAng(ivB,2)+iAng(ivB,3)
         CvB = aux_stCvB(ivB)
-        iAngvBi(:) = iAng(ivB,:)
-        CALL om_elements(SABi,NN,iAngvA,
+        iAngvBi = iAng(ivB,:)
+        CALL om_elements(SABi,27,iAngvA,
      &  AlphvA,CvA,RvA,iAngvBi,AlphvB,CvB,RvB)
         SAB(iOff) = SAB(iOff) + SABi
       ENDDO
@@ -127,10 +122,9 @@ c Compute Ovelap Matrix elements
 
       SUBROUTINE transf_orbital(stCvB,iAng,NvB,iAngBi,CBi,SM)
       IMPLICIT REAL*8  (a-h, o-z)
-      PARAMETER NN = 27, NOrb = 20
       INTEGER  iAngBi(3),iAng(10,3)
       REAL*8   CBi, stCvB(10),stCvB2(10),SAux(3,3),XAux(3,3),SM(3,3),
-     & SFAux(NN),SF(NN)
+     & SFAux(27),SF(27)
       SAVE Zero, One, Two, Three
       DATA Zero,One,Two,Three / 0.d0,1.d0,2.d0,3.d0 /
 
@@ -202,7 +196,7 @@ c Compute Ovelap Matrix elements
  	    ENDDO
       ENDIF
       ENDDO
-      CALL VRload(SFAux,NN,Zero)
+      CALL VRload(SFAux,27,Zero)
       IF(IJK.EQ.1) THEN
           iOff = j1 + 3*(j1-1+3*(j1-1))
           SFAux(iOff) = One
