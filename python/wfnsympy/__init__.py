@@ -227,6 +227,7 @@ class WfnSympy:
                     p_c_coefficients.append(pc)
 
         # Create MO coefficients in contiguous list
+        n_molecular_orbitals = len(alpha_mo_coeff)
         Ca = np.ascontiguousarray(alpha_mo_coeff).flatten().tolist()
         if beta_mo_coeff is not None:
             Cb = np.ascontiguousarray(beta_mo_coeff).flatten().tolist()
@@ -272,6 +273,9 @@ class WfnSympy:
         for i, stype in enumerate(shell_type):
             COrb.append(coef_group[i])
             if 'd' in shell_type_list['{}'.format(stype)][0] or 'f' in shell_type_list['{}'.format(stype)][0]:
+                for _ in range(shell_type_list['{}'.format(stype)][1]-1):
+                    COrb.append(coef_group[i])
+            if shell_type_list['{}'.format(stype)][0] == 'p':
                 for _ in range(shell_type_list['{}'.format(stype)][1]-1):
                     COrb.append(coef_group[i])
             if shell_type_list['{}'.format(stype)][0] == 'sp':
@@ -380,8 +384,8 @@ class WfnSympy:
 
         self._SymLab = [''.join(line).strip() for line in np.array(out_data[3][0:dgroup],dtype='str')]
 
-        self._mo_SOEVs_a = out_data[4][:, 0:dgroup]
-        self._mo_SOEVs_b = out_data[5][:, 0:dgroup]
+        self._mo_SOEVs_a = out_data[4][:n_molecular_orbitals, 0:dgroup]
+        self._mo_SOEVs_b = out_data[5][:n_molecular_orbitals, 0:dgroup]
 
         self._wf_SOEVs_a = out_data[6][0:dgroup]
         self._wf_SOEVs_b = out_data[7][0:dgroup]
@@ -391,8 +395,8 @@ class WfnSympy:
 
         self._IRLab = [''.join(line).strip() for line in np.array(out_data[9][0:nIR],dtype='str')]
 
-        self._mo_IRd_a = out_data[10][:, 0:nIR]
-        self._mo_IRd_b = out_data[11][:, 0:nIR]
+        self._mo_IRd_a = out_data[10][:n_molecular_orbitals, 0:nIR]
+        self._mo_IRd_b = out_data[11][:n_molecular_orbitals, 0:nIR]
 
         self._wf_IRd_a = out_data[12][0:nIR]
         self._wf_IRd_b = out_data[13][0:nIR]

@@ -280,24 +280,23 @@ c           Cartesian f-orbitals order in .fchk
           DO i = 1,NC
 c           Pure d-orbitals order in .fchk
             xOrbType = DSQRT(17.36656146d0)
-            iAng(iOrb+i-1     ,1) = 3  ! xxx
-            iAng(iOrb+i-1+1*NC,2) = 3  ! yyy
-            iAng(iOrb+i-1+2*NC,3) = 3  ! zzz
-            iAng(iOrb+i-1+3*NC,1) = 1  ! xyy
-            iAng(iOrb+i-1+3*NC,2) = 2  ! xyy
-            iAng(iOrb+i-1+4*NC,1) = 2  ! xxy
-            iAng(iOrb+i-1+4*NC,2) = 1  ! xxy
-            iAng(iOrb+i-1+5*NC,1) = 2  ! xxz
-            iAng(iOrb+i-1+5*NC,3) = 1  ! xxz
-            iAng(iOrb+i-1+6*NC,1) = 1  ! xzz
-            iAng(iOrb+i-1+6*NC,3) = 2  ! xzz
-            iAng(iOrb+i-1+7*NC,2) = 1  ! yzz
-            iAng(iOrb+i-1+7*NC,3) = 2  ! yzz
-            iAng(iOrb+i-1+8*NC,2) = 2  ! yyz
-            iAng(iOrb+i-1+8*NC,3) = 1  ! yyz
-            iAng(iOrb+i-1+9*NC,1) = 1  ! xyz
-            iAng(iOrb+i-1+9*NC,2) = 1  ! xyz
-            iAng(iOrb+i-1+9*NC,3) = 1  ! xyz
+            iAng(iOrb+i-1     ,1) = 2  ! -z(xx + yy)
+            iAng(iOrb+i-1     ,2) = 2  ! -z(xx + yy)
+            iAng(iOrb+i-1     ,3) = 1  ! -z(xx + yy)
+            iAng(iOrb+i-1+1*NC,1) = 3  ! -x(xx + yy)
+            iAng(iOrb+i-1+1*NC,2) = 2  ! -x(xx + yy)
+            iAng(iOrb+i-1+2*NC,1) = 2  ! -y(xx + yy)
+            iAng(iOrb+i-1+2*NC,2) = 3  ! -y(xx + yy)
+            iAng(iOrb+i-1+3*NC,1) = 2  ! z(xx - yy)
+            iAng(iOrb+i-1+3*NC,2) = -2  ! z(xx - yy)
+            iAng(iOrb+i-1+3*NC,3) = 1  ! z(xx - yy)
+            iAng(iOrb+i-1+4*NC,1) = 1  ! xyz
+            iAng(iOrb+i-1+4*NC,2) = 1  ! xyz
+            iAng(iOrb+i-1+4*NC,3) = 1  ! xyz
+            iAng(iOrb+i-1+5*NC,1) = 3  ! x(xx - yy)
+            iAng(iOrb+i-1+5*NC,2) = -2  ! x(xx - yy)
+            iAng(iOrb+i-1+6*NC,1) = 2  ! x(xx - yy)
+            iAng(iOrb+i-1+6*NC,2) = -3  ! x(xx - yy)
           ENDDO
           NOrbSh = NF*NC
           iOrb = iOrb + NOrbSh
@@ -354,10 +353,10 @@ c Check consistency
         WRITE(2,*) 'ERROR. NOrb inconsistency in get_basis'
         stop
       ENDIF
-      IF((iCount-1).ne.NBas) THEN
-        WRITE(2,*) 'ERROR. NBas inconsistency in get_basis'
-        stop
-      ENDIF
+!     IF((iCount-1).ne.NBas) THEN
+!       WRITE(2,*) 'ERROR. NBas inconsistency in get_basis'
+!       stop
+!     ENDIF
 
       RETURN
       END
@@ -452,5 +451,26 @@ c F orbital
           iAngv(3,:) = (/0,0,0/)
           LCC(:) = (/1.d0,-1.d0,0.d0/)
           NLC = 2
+        ELSEIF ((iAngi(1).EQ.2).AND.(iAngi(3).EQ.1)) THEN
+          iAngv(1,:) = (/2,0,1/)
+          iAngv(2,:) = (/0,2,1/)
+          iAngv(3,:) = (/0,0,0/)
+          LCC(:) = (/-1.d0,-1.d0,0.d0/)
+          NLC = 2
+          IF ((iAngi(2).EQ.-2)) LCC(1) = 1.d0
+        ELSEIF (iAngi(1).EQ.3) THEN
+          iAngv(1,:) = (/3,0,0/)
+          iAngv(2,:) = (/1,2,0/)
+          iAngv(3,:) = (/0,0,0/)
+          LCC(:) = (/-1.d0,-1.d0,0.d0/)
+          NLC = 2
+          IF ((iAngi(2).EQ.-2)) LCC(1) = 1.d0
+        ELSEIF (ABS(iAngi(2)).EQ.3) THEN
+          iAngv(1,:) = (/2,1,0/)
+          iAngv(2,:) = (/0,3,0/)
+          iAngv(3,:) = (/0,0,0/)
+          LCC(:) = (/-1.d0,-1.d0,0.d0/)
+          NLC = 2
+          IF ((iAngi(2).EQ.-3)) LCC(1) = 1.d0
         ENDIF
       END

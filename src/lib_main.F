@@ -1,7 +1,7 @@
 #include "wfnsym.h"
 
 c      PROGRAM Prog_Main
-      SUBROUTINE mainlib(NEtot, NEval, NBas, Norb,
+      SUBROUTINE mainlib(NEtot, NEval, NBas, NMo, Norb,
      & NAt_2, NTotShell, iZAt, AtLab, Alph, COrb, NShell,
      & RAt, NPrim, shell_type, igroup_2, ngroup_2, Ca, Cb,
      & RCread_2, VAxis_2, VAxis2_2, iCharge, iMult, DoOp,
@@ -56,7 +56,7 @@ c--------------------------------------------------------------
       INTEGER :: iZAt(NAt_2), NPrim(NTotShell)
       CHARACTER :: AtLab(NAt_2)*2
       REAL*8 :: Alph(Norb),  COrb(Norb), RAt(NAt_2, 3)
-      REAL*8 :: Ca(NBas*NBas),  Cb(NBas*NBas)
+!     REAL*8 :: Ca(18*NBas),  Cb(18*NBas)
       REAL*8 :: RCread_2(3), VAxis_2(3), VAxis2_2(3)
       LOGICAL :: DoOp
 c     Output

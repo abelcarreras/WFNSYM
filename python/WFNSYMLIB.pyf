@@ -3,7 +3,7 @@
 
 python module WFNSYMLIB ! in 
     interface  ! in :WFNSYMLIB
-        subroutine mainlib(Etot, NEval, NBas, Norb, NAt, NCShell, iZAt, AtLab, Alph, COrb, NShell, RAt, n_prim, shell_type, &
+        subroutine mainlib(Etot, NEval, NBas, NMo, Norb, NAt, NCShell, iZAt, AtLab, Alph, COrb, NShell, RAt, n_prim, shell_type, &
         igroup, ngroup, Ca, Cb, RCread, VAxis, VAxis2, iCharge, iMult, DoOp, OutDim, OutGrim, OutCMS, OutSymLab, OutSDiagA, &
         OutSDiagB, OutWDiagA, OutWDiagB, OutTbl, OutIRLab, OutgIRA, OutgIRB, OutgIRwfA, OutgIRwfB, OutgIRwf, OutSymMat) ! in :WFNSYMLIB:lib_main.F
 
@@ -11,8 +11,9 @@ python module WFNSYMLIB ! in
             logical :: DoOp
             integer :: Etot, NEval, NBas, Norb, NAt, NCShell, igroup, ngroup, iCharge, iMult
 
+            integer, check(len(Ca)>=NMo),depend(Ca), intent(hide) :: NMo=len(Ca)
             real*8 dimension(3),intent(in) :: RCread, VAxis, VAxis2
-            real*8 dimension(NBas*NBas),intent(in),depend(NBas) :: Ca, Cb
+            real*8 dimension(NMo),intent(in),depend(NMo) :: Ca, Cb
             real*8 dimension(Norb),intent(in),depend(Norb) :: Alph, COrb
             real*8 dimension(NAt,3),intent(in),depend(NAt) :: RAt
             integer dimension(NAt),intent(in),depend(NAt) :: iZAt, NShell
