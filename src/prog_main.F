@@ -352,6 +352,10 @@ c     ALLOCATE(IpivA(NOa),IpivB(NOb))
 
 c Reading AO Basis Set
 c     write(iout,*)'reading AOs'
+	  IF(PureCart) THEN
+	    WRITE(2,*)"ERROR. Pure orbitals not ready"
+	    STOP
+	  ENDIF
       CALL get_basis(Basis,AtLab,RAt,iAng,Alph,
      & ROrb,COrb,iContr,iLAO,cLAO,NAt,NBas,NOrb,PureCart)
 
@@ -363,7 +367,7 @@ c     write(iout,*)'computing AO overlap'
         MatId(I,I) = One
       ENDDO
       CALL make_S(S_AO,iAng,Alph,COrb,ROrb,iAng,Alph,COrb,ROrb,
-     & NBas,NBas2,NOrb,iContr,MatId,PureCart)
+     & NBas,NBas2,NOrb,iContr,MatId)
 
 #ifdef DEVELOPMENT
 c Print AO Overlap Matrix
@@ -634,7 +638,7 @@ c Symmetry Transform ROrb to stROrb
 c Compute Symmetry Overlap Matrix
 c	write(iout,*) 'calling make_S'
       CALL make_S(S_AO,iAng,Alph,COrb,ROrb,iAng,Alph,COrb,stROrb,
-     & NBas,NBas2,NOrb,iContr,SymMat,PureCart)
+     & NBas,NBas2,NOrb,iContr,SymMat)
 
 c Print Symmetry Overlap Matrix
       IF (NPrint .GE. 2) THEN
