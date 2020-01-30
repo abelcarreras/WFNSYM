@@ -16,7 +16,7 @@ Installation instructions
   - cmake 2.6
 
 1b. Additional requirements for python module
-  - Python 2.7.x/3.4+
+  - Python 2.7.x/3.5+
   - C compiler
 
 2a. Install as standalone binary
