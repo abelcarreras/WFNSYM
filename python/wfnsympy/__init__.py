@@ -2,7 +2,6 @@ __version__ = '0.2.3'
 
 from wfnsympy.WFNSYMLIB import mainlib, overlap_mat
 import numpy as np
-import sys, io
 
 _bohr_to_angstrom = 0.529177249
 
@@ -22,9 +21,9 @@ class _captured_stdout:
         self.fnull = None
 
     def __enter__(self):
-        import sys, os, tempfile
-        self.old_stdout = sys.stdout
-        #self.fnull = open(os.devnull, 'w')
+        import sys, os, io, tempfile
+        self.old_error = os.dup(sys.stderr.fileno())
+        # self.fnull = open(os.devnull, 'w')
         self.F = tempfile.NamedTemporaryFile()
         try:
             os.dup2(self.F.fileno(), sys.stderr.fileno())
@@ -33,10 +32,9 @@ class _captured_stdout:
         return self.F
 
     def __exit__(self, exc_type, exc_value, traceback):
-        sys.stdout = self.old_stdout
-        #self.fnull.close()
+        import sys, os
+        os.dup2(self.old_error, sys.stderr.fileno())
         self.F.close()
-
 
 def get_valence_electrons(atomic_numbers, charge):
     valence_electrons = 0
