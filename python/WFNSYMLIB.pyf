@@ -11,7 +11,7 @@ python module WFNSYMLIB ! in
             logical :: DoOp
             integer :: Etot, NEval, NBas, Norb, NAt, NCShell, igroup, ngroup, iCharge, iMult
 
-            integer, check(len(Ca)>=NMo),depend(Ca), intent(hide) :: NMo=len(Ca)
+            integer, check(len(Ca)/NBas>=NMo),depend(Ca), intent(hide) :: NMo=len(Ca)/NBas
             real*8 dimension(3),intent(in) :: RCread, VAxis, VAxis2
             real*8 dimension(NMo),intent(in),depend(NMo) :: Ca, Cb
             real*8 dimension(Norb),intent(in),depend(Norb) :: Alph, COrb

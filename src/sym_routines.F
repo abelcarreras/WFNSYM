@@ -1,5 +1,5 @@
 
-      SUBROUTINE sym_oper(SymMat,iOper,Axis,Angles,VAxis,iunit)
+      SUBROUTINE sym_oper(SymMat,iOper,iRot,Axis,Angles,VAxis,iunit)
 c*****************************************************c
 c                                                     c
 c       Builds the operation matrix to be             c
@@ -25,7 +25,7 @@ c*****************************************************c
       SAVE Zero,Half,One,Two,Four
       DATA Zero,Half,One,Two,Four / 0d0,.5d0,1d0,2d0,4d0 /
 
-      COMMON /intvar1/ NAt,iRot,NPrint,Ncenter,IAxis,IAxis2,IAx_Thresh
+      COMMON /intvar1/ NAt,NPrint,Ncenter,IAxis,IAxis2,IAx_Thresh
 
       IF (iOper.EQ.1) THEN
         CALL VRload(SymMat,9,Zero)
@@ -73,8 +73,10 @@ c*****************************************************c
       END
 
 
-      SUBROUTINE sym_group(SymGrp,iGroup,nGroup,dGroup,nIR,
-     &    Axis,Angles,VAxis,Axis2,Angles2,VAxis2,IAx_Thresh,iunit)
+!     SUBROUTINE sym_group(SymGrp,iGroup,nGroup,dGroup,nIR,
+!    &    Axis,Angles,VAxis,Axis2,Angles2,VAxis2,IAx_Thresh,iunit)
+      SUBROUTINE sym_group(SymGrp,iGroup,nGroup,dGroup,
+     &    VAxis,VAxis2,iunit)
 c*****************************************************c
 c                                                     c
 c       Builds the group matrix to be                 c
@@ -84,7 +86,6 @@ c       INPUT                                         c
 c        iGroup  : group index                        c
 c        nGroup  : group order                        c
 c        dGroup  : non-redundant operations           c
-c        nIR     : # irred. representations           c
 c        Axis    : axis control                       c
 c        VAxis   : orientation axis                   c
 c        Angles  : angles control                     c
@@ -112,6 +113,9 @@ c Set PrRot and ImRot to be used in rotation calls
 
 c Set matrices to zero (to be safe)
       SymGrp(:,:,:) = Zero
+      Angles = .FALSE.
+      Angles2 = .FALSE.
+      IAx_Thresh = 9
 
 c Set thresh between axis
       Thresh = 10.d0**(-IAx_Thresh)
@@ -134,7 +138,7 @@ c Define the rest
 
 c Cn: Cn,Cnh,Cnv,Dn,Dnh,Dnd
       ELSEIF(iGroup.GE.1 .AND. iGroup.LE.6) THEN
-        CALL rotation(nGroup,VAxis,SymMat,ANGLES,.TRUE.) 
+        CALL rotation(nGroup,VAxis,SymMat,ANGLES,.TRUE.)
         SAux0(:,:) = SymMat(:,:) 
         SymGrp(:,:,2) = SAux0(:,:)
         DO iG = 3,1+nGroup/2
@@ -142,7 +146,7 @@ c Cn: Cn,Cnh,Cnv,Dn,Dnh,Dnd
           SAux0(:,:) = SAux1(:,:)
           SymGrp(:,:,iG) = SAux0(:,:)
         ENDDO
-c s_h,Sn: Cnh,Dnh 
+c s_h,Sn: Cnh,Dnh
         IF(iGroup.EQ.2 .OR. iGroup.EQ.5) THEN
           iOff = nGroup/2+1
           IF(iGroup.EQ.5) iOff = iOff + nGroup
@@ -470,6 +474,11 @@ c Groups with Cn (Cn,Cnh,Cnv,Dn,Dnh,Dnd)
           Lab(2) = ' 2C6  '
           Lab(3) = ' 2C3  '
           Lab(4) = '  C2  '
+        ELSEIF (nGroup .EQ. 9) THEN
+          Lab(2) = ' 2C9  '
+          Lab(3) = ' 2C9^2'
+          Lab(4) = ' 2C3  '
+          Lab(5) = ' 2C9^4'
         ENDIF
 c Groups with s_h and Sn (Cnh,Dnh)
         IF(iGroup.EQ.2 .OR. iGroup.EQ.5) THEN 

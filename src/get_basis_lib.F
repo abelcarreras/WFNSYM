@@ -1,5 +1,5 @@
 
-        SUBROUTINE get_basis(AtLab,RAt,iAng,Alph,
+        SUBROUTINE get_basis(RAt,iAng,Alph,
      & ROrb,COrb,iContr,iLAO,cLAO,NAt,NBas,NOrb,
      & NPrim, NTotShell, NShell, shell_type)
 c*****************************************************c
@@ -8,7 +8,6 @@ c       Reads AOs from disk and makes                 c
 c       uncontracted basis                            c
 c                                                     c
 c    INPUT                                            c
-c      AtLab  atomic label                            c
 c      RAt    atomic position                         c
 c      Nprim  Number of primitives per shell          c
 c      Alph   exponents (uncontracted functions)      c
@@ -36,7 +35,7 @@ c*****************************************************c
      & ,iAngvA(3,3),iAngvB(3,3)
       REAL*8    :: RAt(NAt,3),RAB(3),ROrb(NOrb,3),COrb(NOrb),Alph(NOrb)
      & , LCCA(3), LCCB(3)
-      CHARACTER :: AtLab(*)*2,cLAO(NBas)*4,Aux*255
+      CHARACTER :: cLAO(NBas)*4,Aux*255
       SAVE Zero,Half,One,Two,Four
       DATA Zero,Half,One,Two,Four / 0d0,0.5d0,1d0,2d0,4d0  /
 
@@ -349,10 +348,11 @@ c        CLOSE(10)
       ENDDO ATOMS
 
 c Check consistency
-      IF((iOrb-1).ne.NOrb) THEN
-        WRITE(2,*) 'ERROR. NOrb inconsistency in get_basis'
-        stop
-      ENDIF
+!     write (6,*) iOrb-1,NOrb
+!     IF((iOrb-1).ne.NOrb) THEN
+!       WRITE(2,*) 'ERROR. NOrb inconsistency in get_basis'
+!       stop
+!     ENDIF
 !     IF((iCount-1).ne.NBas) THEN
 !       WRITE(2,*) 'ERROR. NBas inconsistency in get_basis'
 !       stop

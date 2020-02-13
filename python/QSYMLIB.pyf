@@ -1,0 +1,68 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module QSYMLIB ! in
+    interface  ! in :QSYMLIB
+        subroutine denslib(atlab,r,n_elec,ldens,alfa2,coef2,nprim,nshell,shell_type,&
+        coef_mol,rcread_2,vaxis_2,vaxis2_2,nmos,naos,norbx,igroup,ngroup,dooper,norb,nat_2,ntotshell,&
+        OutDim,OutCSM_i,OutCSM,OutSymLab,OutSassembly) ! in :QSYMLIB:lib_main.F
+            character dimension(nat_2) :: atlab*2
+            real*8 dimension(nat_2,3),depend(nat_2) :: r
+            integer :: n_elec,ldens,nmos,naos,norbx,igroup,ngroup
+            real*8 dimension(norb) :: alfa2
+            real*8 dimension(norb),depend(norb) :: coef2
+            integer dimension(ntotshell) :: nprim
+            integer dimension(nat_2),depend(nat_2) :: nshell
+            integer dimension(ntotshell),depend(ntotshell) :: shell_type
+            real*8 dimension(nmos*naos) :: coef_mol
+            real*8 dimension(3) :: rcread_2
+            real*8 dimension(3) :: vaxis_2,vaxis2_2
+            integer, optional,check(len(alfa2)>=norb),depend(alfa2) :: norb=len(alfa2)
+            integer, optional,check(shape(atlab,0)==nat_2),depend(atlab) :: nat_2=shape(atlab,0)
+            integer, optional,check(len(nprim)>=ntotshell),depend(nprim) :: ntotshell=len(nprim)
+            logical :: dooper
+
+!           Outputs
+            integer dimension(3),intent(out) :: OutDim
+            real*8 dimension(100), intent(out) :: OutCSM_i
+            real*8, intent(out) :: OutCSM,OutSassembly
+            character dimension(100),intent(out) :: OutSymLab*6
+        end subroutine denslib
+
+        subroutine electronic_integral(elec_total,rc,alphdens,iangdens,rdens,&
+        cdens,ldens,ndens,n_elec) ! in :QSYMLIB:lib_main.F
+            real*8, intent(out) :: elec_total
+            real*8 dimension(3), intent(out) :: rc
+            real*8 dimension(ldens) :: alphdens
+            integer dimension(ldens,3),depend(ldens) :: iangdens
+            real*8 dimension(ldens,3),depend(ldens) :: rdens
+            real*8 dimension(ldens),depend(ldens) :: cdens
+            integer, optional,check(len(alphdens)>=ldens),depend(alphdens) :: ldens=len(alphdens)
+            integer :: ndens, n_elec
+        end subroutine electronic_integral
+
+        subroutine center_charge(r,n_elec,ldens,alfa2,coef2,nprim,nshell,shell_type,&
+        coef_mol,nmos,naos,norbx,norb,nat_2,ntotshell,outrc) ! in :QSYMLIB:lib_main.F
+            real*8 dimension(nat_2,3) :: r
+            integer :: n_elec
+            integer :: ldens
+            real*8 dimension(norb) :: alfa2
+            real*8 dimension(norb),depend(norb) :: coef2
+            integer dimension(ntotshell) :: nprim
+            integer dimension(nat_2),depend(nat_2) :: nshell
+            integer dimension(ntotshell),depend(ntotshell) :: shell_type
+            real*8 dimension(nmos*naos),depend(nmos,naos) :: coef_mol
+            integer :: nmos
+            integer :: naos
+            integer :: norbx
+            integer, optional,check(len(alfa2)>=norb),depend(alfa2) :: norb=len(alfa2)
+            integer, optional,check(shape(r,0)==nat_2),depend(r) :: nat_2=shape(r,0)
+            integer, optional,check(len(nprim)>=ntotshell),depend(nprim) :: ntotshell=len(nprim)
+            real*8 dimension(3), intent(out) :: outrc
+        end subroutine center_charge
+
+    end interface
+end python module QSYMLIB
+
+! This file was auto-generated with f2py (version:2).
+! See http://cens.ioc.ee/projects/f2py2e/

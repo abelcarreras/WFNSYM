@@ -83,6 +83,19 @@ ADD_LIBRARY ("WFNSYMLIB" "STATIC"
                 "src/read_routines.F"
                 "src/sym_routines.F")
 
+ADD_LIBRARY ("QSYMLIB.pyf" "STATIC",
+             "src/center_dens.F",
+             "src/dens_basis_lib.F",
+             "src/make_dens.F",
+             "src/norma.F",
+             "src/make_s.F",
+             "src/overlap.F",
+             "src/plotDens1D.F",
+             "src/lib_main.F",
+             "src/self_inversion.F",
+             "src/sym_transform.F",
+             "src/sym_overlap.F",
+             "src/VRoutines.F")
 
 # MKL library
 if(WITH_MKL)

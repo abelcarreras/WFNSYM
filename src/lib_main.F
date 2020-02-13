@@ -56,7 +56,7 @@ c--------------------------------------------------------------
       INTEGER :: iZAt(NAt_2), NPrim(NTotShell)
       CHARACTER :: AtLab(NAt_2)*2
       REAL*8 :: Alph(Norb),  COrb(Norb), RAt(NAt_2, 3)
-!     REAL*8 :: Ca(18*NBas),  Cb(18*NBas)
+      REAL*8 :: CA(NMo*NBas),  CB(NMo*NBas)
       REAL*8 :: RCread_2(3), VAxis_2(3), VAxis2_2(3)
       LOGICAL :: DoOp
 c     Output
@@ -132,139 +132,10 @@ c Check angles in VAxis & VAxis
         ENDIF
       ENDIF
 
-c     print in output
-c      IF(iGroup.GE.0 .AND. iGroup.LE.9) THEN
-c        WRITE(iout,106) Group, SubG
-c      ELSE
-c        WRITE(iout,107) Group, SubG
-c        STOP
-c      ENDIF
-
-c 107   FORMAT(3X,'* ERROR * INCORRECT SYMMETRY GROUP: ',2X,A1,A3)
-c 106   FORMAT('MEASURES OF THE SYMMETRY GROUP: ',2X,A1,A3)
-
       ALLOCATE(stRAt(NAt,3))
-
-c ----------------------------------------
-
-c      call nextline(iunit)
-c      read(iunit,"(a)") line
-c      if((line(1:1).eq.'$').and.(len_trim(title).eq.0)) then
-c        title(1:79)=line(2:80)
-c        call nextline(iunit)
-c        read(iunit,"(a)") line
-c      end if
-c      WRITE(iout,"(A)") title
-c      WRITE(iout,*) ' '
-
-c      do while (keyctrl)
-c        if((line(1:1).eq.'%').and.(len_trim(line).gt.1)) then
-c          write(6,*) 'molecule', molecule, MolCHK
-c          call options(line,iout)
-c          write(6,*) 'molecule2', molecule, MolCHK
-c          IF (molecule .and. .not.MolCHK) THEN
-c            MolCHK = .true.
-c            ALLOCATE(AtLab(NAt),RAt(NAt,3),stRAt(NAt,3),iZAt(NAt))
-c            READ(iunit,*) iCharge, iMult
-c            DO k = 1,NAt
-c              READ(iunit,'(A2)',advance='no') AtLab(k)
-c              READ(iunit,*) (RAt(k,j),j=1,3)
-c            ENDDO
-c          ENDIF
-c          IF(.not.AngCHK) THEN
-c            IF (AXIS) THEN
-c              Dot = VAxis(1)**2 + VAxis(2)**2 + VAxis(3)**2
-c              Dot = 1.d0 / DSQRT(Dot)
-c              VAxis(1) = Dot * VAxis(1)
-c              VAxis(2) = Dot * VAxis(2)
-c              VAxis(3) = Dot * VAxis(3)
-c              AngCHK = .true.
-c            ELSEIF (ANGLES) THEN
-c              VAxis(1) = VAxis(1) * PI / 180.d0
-c              VAxis(2) = VAxis(2) * PI / 180.d0
-c              AngCHK = .true.
-c            ENDIF
-c          ENDIF
-c          IF(.not.AngCHK2) THEN
-c            IF (AXIS2) THEN
-c              Dot = VAxis2(1)**2 + VAxis2(2)**2 + VAxis2(3)**2
-c              Dot = 1.d0 / DSQRT(Dot)
-c              VAxis2(:) = Dot * VAxis2(:)
-c              AngCHK2 = .true.
-c            ELSEIF (ANGLES2) THEN
-c              VAxis2(1:2) = VAxis2(1:2) * PI / 180.d0
-c              AngCHK2 = .true.
-c            ENDIF
-c          ENDIF
-c          IF (readRN .and. .not.NAtCenCHK) THEN
-c            DEALLOCATE(Icenter)
-c            ALLOCATE(Icenter(Ncenter))
-c            READ(iunit,*) (Icenter(k),k=1,Ncenter)
-c            NAtCenCHK = .true.
-c          ENDIF
-
-c          call nextline(iunit)
-c          read(iunit,"(a)") line
-c        else
-c          keyctrl=.false.
-c        end if
-c      end do
 
 c Define Axes thresh
       IF(.NOT.Ax_Thresh) IAx_Thresh = 9
-
-c Check consistency
-c      IF(.not.DoOper .AND. .not.DoGroup) THEN
-c        WRITE(iout,*) 'ERROR. Define Operation or Group'
-c        stop
-c      ELSEIF(DoOper.AND.DoGroup) THEN
-c        WRITE(iout,*) 'ERROR. Only define Operation or Group'
-c        stop
-c      ENDIF
-c      IF(NO_CENTER) readRD = .FALSE.
-c      IF(.not.basin) THEN
-c        WRITE(iout,*) 'ERROR. Basis Set not defined'
-c        stop
-c      ENDIF
-c      IF(.not.natom) THEN
-c        WRITE(iout,*) 'ERROR. Number of atoms not defined'
-c        stop
-c      ENDIF
-c      IF(.not.molecule) THEN
-c        WRITE(iout,*) 'ERROR. Coordinates not defined'
-c        stop
-c      ENDIF
-c      IF(readRD .AND. .not.dipCHK) THEN
-c        WRITE(iout,*) 'ERROR. Molecular Dipole (a.u.) not found'
-c        stop
-c      ENDIF
-c      IF((iOper.GE.2 .AND. iOper.LE.4).AND.
-c     &   (.NOT.ANGLES.AND..NOT.AXIS.AND.
-c     &    .NOT.AxVec.AND..NOT.AxPlane)) THEN
-c        WRITE(iout,*) 'ERROR. No axis orientation indicated'
-c        stop
-c      ENDIF
-
-c      WRITE(iout,'("Basis: ",A8)') Basis(1:8)
-
-c      write(6,*) 'igroup', igroup, 'ngroup', ngroup
-c Get some dimensions
-c      write(iout,*)'Reading dimensions'
-c      CALL get_dim(NEtot,NEval,NBas,NOrb,Basis,AtLab,NAt,iZAt,PureCart)
-
-c      write (6,*) 'NEtot', NEtot
-c      write (6,*) 'NBas', NBas
-c      write (6,*) 'NEval', NEval
-c      write (6,*) 'NOrb', NOrb
-c      do i = 1, NAt
-c        write(6,*) 'AtLab ', AtLab(i)
-c      enddo
-c      do i = 1, NAt
-c        write(6,*) 'iZAt ',iZAt (i)
-c      enddo
-c      do i = 1, NAt
-c        write(6,*) 'iZAt ',iZAt (i)
-c      enddo
 
 
 c Set up some variables
@@ -281,19 +152,6 @@ c Set up some variables
         STOP
       ENDIF
 
-c Writing Coordinates and transform them to AU unities
-c      WRITE(iout,100)
-c      WRITE(iout,*)'Atomic Coordinates (Angstroms)'
-c      WRITE(iout,100)
-c      DO k = 1,NAt
-c        WRITE(iout,'(A2,4X,3(F12.8,1X))')
-c     &        AtLab(k),(RAt(k,j)/ANGSBOHR, j=1,3)
-c        DO j = 1,3
-c          RAt(k,j) = RAt(k,j)*ANGSBOHR
-c        ENDDO
-c      ENDDO
-c      WRITE(iout,100)
-c      WRITE(iout,*)' '
 
 c Where do we center the molecule?
       IF (NO_CENTER) THEN
@@ -369,13 +227,12 @@ c Do the same for secondary axis
 c Define Symmetry-Operation or Symmetry-Group Matrix
       IF(DoOper) THEN
         ALLOCATE(SymGrp(0,0,0))
-        CALL sym_oper(SymMat,iOper,AXIS,ANGLES,VAxis,iout)
+        CALL sym_oper(SymMat,iOper,iRot,AXIS,ANGLES,VAxis,iout)
         dGroup = 1
         hGroup = 1
       ELSEIF(DoGroup) THEN
         ALLOCATE(SymGrp(3,3,dGroup))
-        CALL sym_group(SymGrp,iGroup,nGroup,dGroup,nIR,
-     &       AXIS,ANGLES,VAxis,AXIS2,ANGLES2,VAxis2,IAx_Thresh,iout)
+        CALL sym_group(SymGrp,iGroup,nGroup,dGroup,VAxis,VAxis2,iout)
       ENDIF
 
 c Make operation labels of the group
@@ -424,7 +281,7 @@ c     ALLOCATE(IpivA(NOa),IpivB(NOb))
 
 c Reading AO Basis Set
 c     write(iout,*)'reading AOs'
-      CALL get_basis(AtLab,RAt,iAng,Alph,
+      CALL get_basis(RAt,iAng,Alph,
      & ROrb,COrb,iContr,iLAO,cLAO,NAt,NBas,NOrb,
      & NPrim, NTotShell, NShell, shell_type)
 
@@ -444,19 +301,6 @@ c Print AO Overlap Matrix
       CALL PrintMatrix(S_AO,cLAO,.TRUE.,.TRUE.,NBas,line,iout)
 #endif
 
-c	CALL VRcopy(Xaux,S_AO,NBas2)
-
-c Print Basis data
-c      WRITE(iout,100)
-c      WRITE(iout,790)
-c      WRITE(iout,791) NEtot
-c      WRITE(iout,792) Ncore*2
-c      WRITE(iout,793) NEval
-c      WRITE(iout,794) NOa,NOb
-c      WRITE(iout,795) NOva,NOvb
-c      WRITE(iout,796) NBas
-c      WRITE(iout,797) NOrb
-c      WRITE(iout,100)
 
 c Allocate space for MOs
 c      ALLOCATE(CA(NBas2))
@@ -472,51 +316,6 @@ c      ELSE
 c        WRITE(iout,*)'Restricted Wave Function'
       ENDIF
 
-c Get MO coefficients or make UHFNO
-c      iOff = 0
-c      IF(Unrestricted) THEN
-c        CALL get_mos(CA,CB,NBas2,iOff,input,1)
-c        CA = CA_2
-c        CB = CB_2
-c      ELSEIF(UHFNO) THEN
-c        write(iout,*)'calling make_uhfno'
-c        CALL make_uhfno(CA,CB,WOcc,S_AO,NBas,input)
-c        write(iout,*)'make_uhfno done'
-c        DEALLOCATE(CB)
-
-c        write(iout,*)'UHF-NO occupancies'
-c        DO I = 1,NBas
-c          write(iout,'(1x,I3,1x,f9.6)') I, WOcc(I)
-c        ENDDO
-
-c        write(iout,*)'print uhfnos into molden file'
-c        CALL make_molden(NAt,iZAt,AtLab,RAt,Basis,input,
-c     &       NBAS,NBas,CA,WOcc,PureCart)
-c      ELSE
-c        CALL get_mos(CA,CA,NBas2,iOff,input,0)
-c        CA = CA_2
-c      ENDIF
-
-c Print MOs
-c      IF (NPrint .GE. 1) THEN
-c        line = 'Alpha Molecular Orbitals'
-c        CALL PrintMatrix(CA,cLAO,.TRUE.,.FALSE.,NBas,line,iout)
-c        IF(Unrestricted) THEN
-c          line = 'Beta Molecular Orbitals'
-c          CALL PrintMatrix(CB,cLAO,.TRUE.,.FALSE.,NBas,line,iout)
-c        ENDIF
-c      ENDIF
-
-c Write transformation matrix and atomic coordinates
-c      WRITE(iout,*)' '
-c      WRITE(iout,*)'Standard Atomic Coordinates (Angstroms)'
-c      WRITE(iout,100)
-c      DO k = 1,NAt
-c        WRITE(iout,'(A2,4X,3(F12.6,1X))')
-c     &        AtLab(k),(RAt(k,j)/ANGSBOHR,j=1,3)
-c      ENDDO
-c      WRITE(iout,100)
-c      WRITE(iout,*)' '
 
 c Set group matrices (if necessary)
       IF(DoSymOrb) THEN

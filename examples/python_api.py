@@ -5,7 +5,7 @@ import numpy as np
 # data = get_data_from_file_fchk('pirrol.in.fchk')
 data = get_data_from_file_fchk('methane.fchk')
 
-pirrol = WfnSympy(coordinates_bohr=data['coordinates'],
+pirrol = WfnSympy(coordinates=data['coordinates'],
                   symbols=data['symbols'],
                   basis=data['basis'],
                   alpha_mo_coeff=data['mo_coefficients']['alpha'],
