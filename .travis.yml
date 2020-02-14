@@ -32,12 +32,11 @@ install:
 
 script:
     - cd unittest
-    - python -m unittest discover
-#    - coverage run --source=../wfnsympy -m unittest discover . test_pirrol.py
+    - coverage run --source=../wfnsympy -m unittest discover . test_pirrol.py
 
-#after_success:
-#    - coveralls
-#    - cd ..
+after_success:
+    - coveralls
+    - cd ..
 
 deploy:
   - provider: pypi
