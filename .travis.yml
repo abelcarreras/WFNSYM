@@ -32,7 +32,8 @@ install:
 
 script:
     - cd unittest
-    - coverage run --source=../wfnsympy -m unittest discover . test_pirrol.py
+    - coverage run -m unittest discover
+#    - coverage run --source=../wfnsympy -m unittest discover . test_pirrol.py
 
 after_success:
     - coveralls
