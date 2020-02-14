@@ -25,6 +25,7 @@ install:
     - sudo apt-get install libblas-dev liblapack-dev
     - sudo apt-get install gfortran
     - cd python
+    - pip install pytest-cov
     - pip install coverage
     - pip install coveralls
     - pip install -r requirements.txt
@@ -32,8 +33,8 @@ install:
 
 script:
     - cd unittest
-    - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then coverage run --source=../wfnsympy -m unittest discover . test_pirrol.py; fi
-    - coverage run -m unittest discover
+    - py.test test.py --cov=test_pirrol.py
+#    - coverage run -m unittest discover
 #    - coverage run --source=../wfnsympy -m unittest discover . test_pirrol.py
 
 after_success:
