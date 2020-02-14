@@ -80,5 +80,5 @@ qsymlib = Extension('wfnsympy.QSYMLIB',
 setup(name='qsympy',
       version=get_version_number(),
       description='qsympy',
-      packages=['qsympy'],
+      packages=['wfnsympy'],
       ext_modules=[qsymlib])
