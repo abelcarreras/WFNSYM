@@ -32,7 +32,7 @@ install:
 
 script:
     - cd unittest
-    - coverage run --source=../wfnsympy -m unittest discover . "test_*.py"
+    - coverage run --source=../wfnsympy -m unittest discover . test_pirrol.py
 
 after_success:
     - coveralls
