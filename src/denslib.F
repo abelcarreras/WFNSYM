@@ -257,7 +257,6 @@ c Define Symmetry-Operation or Symmetry-Group Matrix
       ENDIF
       ALLOCATE(S_sym(dGroup))
 
-!     CALL SymLabels(OutSymLab,iGroup,nGroup,dGroup)
       IF(DoOper) THEN
         IF(iGroup.EQ.1) THEN
           OutSymLab(1) = ' Inv. '
