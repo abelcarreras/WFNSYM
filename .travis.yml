@@ -33,7 +33,8 @@ install:
 
 script:
     - cd unittest
-    - py.test test.py --cov=test_pirrol.py
+    - py.test test_pirrol.py
+    - coverage report -m
 #    - coverage run -m unittest discover
 #    - coverage run --source=../wfnsympy -m unittest discover . test_pirrol.py
 
