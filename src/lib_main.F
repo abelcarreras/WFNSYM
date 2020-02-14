@@ -695,122 +695,6 @@ c      WRITE(iout,*)
 
       ENDIF ! DoGroup
 
-c Re-define level of printing results
-c      IF(HighPrec) THEN
-c        FMT1 = "('----------')"
-c        FMT2 = "(1X,F9.5)"
-c        FMT3 = "(3X,A6,1X)"
-c      ENDIF
-
-c Print Alpha MOs S values for the whole group
-c      WRITE(iout,*)' '
-c      WRITE(iout,*)'Alpha MOs: Symmetry Overlap Expectation Values'
-c      WRITE(iout,'(4X)',advance='no')
-c      DO i = 1,dGroup
-c        WRITE(iout,FMT1,advance='no')
-c      ENDDO
-c      WRITE(iout,*)
-c      WRITE(iout,'(3X)',advance='no')
-c      DO i = 1,dGroup
-c        WRITE(iout,FMT3,advance='no') SymLab(i)
-c      ENDDO
-c      WRITE(iout,*)
-c      WRITE(iout,'(3X)',advance='no')
-c      DO i = 1,dGroup
-c        WRITE(iout,FMT1,advance='no')
-c      ENDDO
-c      WRITE(iout,*)
-c      DO i = 1,NBas
-c        WRITE(iout,'(I3)',advance='no') i
-c        iOp = 1
-c        DO iG = 1,dGroup
-c          WRITE(iout,FMT2,advance='no') SDiagA(i+(iOp-1)*NBas)
-c          iOp = iOp + iSymMu(iG)
-c        ENDDO
-c        WRITE(iout,*)
-c      ENDDO
-c      WRITE(iout,'(3X)',advance='no')
-c      DO i = 1,dGroup
-c        WRITE(iout,FMT1,advance='no')
-c      ENDDO
-cc Print Beta MOs S values for the whole group
-c      WRITE(iout,*)' '
-c      WRITE(iout,*)'Beta MOs: Symmetry Overlap Expectation Values'
-c      WRITE(iout,'(3X)',advance='no')
-c      DO i = 1,dGroup
-c        WRITE(iout,FMT1,advance='no')
-c      ENDDO
-c      WRITE(iout,*)
-c      WRITE(iout,'(4X)',advance='no')
-c      DO i = 1,dGroup
-c        WRITE(iout,FMT3,advance='no') SymLab(i)
-c      ENDDO
-c      WRITE(iout,*)
-c      WRITE(iout,'(3X)',advance='no')
-c      DO i = 1,dGroup
-c        WRITE(iout,FMT1,advance='no')
-c      ENDDO
-c      WRITE(iout,*)
-c      DO i = 1,NBas
-c        WRITE(iout,'(I3)',advance='no') i
-c        iOp = 1
-c        DO iG = 1,dGroup
-c          WRITE(iout,FMT2,advance='no') SDiagB(i+(iOp-1)*NBas)
-c          iOp = iOp + iSymMu(iG)
-c        ENDDO
-c        WRITE(iout,*)
-c      ENDDO
-c      WRITE(iout,'(3X)',advance='no')
-c      DO i = 1,dGroup
-c        WRITE(iout,FMT1,advance='no')
-c      ENDDO
-c Print WaveFunction S values for the whole group
-c      WRITE(iout,*)' '
-c      WRITE(iout,*)'WaveFunction: Symmetry Overlap Expectation Values'
-c      WRITE(iout,'(4X)',advance='no')
-c      DO i = 1,dGroup
-c        WRITE(iout,FMT1,advance='no')
-c      ENDDO
-c      WRITE(iout,*)
-c      WRITE(iout,'(5X)',advance='no')
-c      DO i = 1,dGroup
-c        WRITE(iout,FMT3,advance='no') SymLab(i)
-c      ENDDO
-c      WRITE(iout,*)
-c      WRITE(iout,'(4X)',advance='no')
-c      DO i = 1,dGroup
-c        WRITE(iout,FMT1,advance='no')
-c      ENDDO
-c      WRITE(iout,*)
-c      WRITE(iout,"('a-WF')",advance='no')
-c      iOp = 1
-c      DO iG = 1,dGroup
-c        WRITE(iout,FMT2,advance='no') WDiagA(iOp)
-c        iOp = iOp + iSymMu(iG)
-c      ENDDO
-c      WRITE(iout,*)
-c      IF(NOb.NE.0) THEN
-c        WRITE(iout,"('b-WF')",advance='no')
-c        iOp = 1
-c        DO iG = 1,dGroup
-c          WRITE(iout,FMT2,advance='no') WDiagB(iOp)
-c          iOp = iOp + iSymMu(iG)
-c        ENDDO
-c      ENDIF
-c      WRITE(iout,*)
-c      WRITE(iout,"(' WFN')",advance='no')
-c      iOp = 1
-c      DO iG = 1,dGroup
-c        WRITE(iout,FMT2,advance='no') WDiag(iOp)
-c        iOp = iOp + iSymMu(iG)
-c      ENDDO
-c      WRITE(iout,*)
-c      WRITE(iout,'(4X)',advance='no')
-c      DO i = 1,dGroup
-c        WRITE(iout,FMT1,advance='no')
-c      ENDDO
-c      WRITE(iout,*)
-
 c*********************c
 c Grimme's CSM values c
 c*********************c
@@ -826,45 +710,6 @@ c Compute Grimme's CSM
         ENDDO
         csm(iG) = 100.d0 * csm(iG)/dfloat(NOa+NOb)
       ENDDO
-
-c Print results
-c      WRITE(iout,*)' '
-c      WRITE(iout,"(' WaveFunction: CSM-like values ')")
-c      WRITE(iout,'(4X)',advance='no')
-c      DO i = 1,dGroup
-c        WRITE(iout,FMT1,advance='no')
-c      ENDDO
-c      WRITE(iout,*)
-c      WRITE(iout,'(4X)',advance='no')
-c      DO i = 1,dGroup
-c        WRITE(iout,FMT3,advance='no') SymLab(i)
-c      ENDDO
-c      WRITE(iout,*)
-c      WRITE(iout,'(4X)',advance='no')
-c      DO i = 1,dGroup
-c        WRITE(iout,FMT1,advance='no')
-c      ENDDO
-c      WRITE(iout,*)
-
-c      WRITE(iout,"('Grim')",advance='no')
-c      iOp = 1
-c      DO iG = 1,dGroup
-c        WRITE(iout,FMT2,advance='no') csm(iOp)
-c        iOp = iOp + iSymMu(iG)
-c      ENDDO
-c      WRITE(iout,*)
-c      WRITE(iout,"('CSM ')",advance='no')
-c      iOp = 1
-c      DO iG = 1,dGroup
-c        WRITE(iout,FMT2,advance='no') 100.*(One-WDiag(iOp))
-c        iOp = iOp + iSymMu(iG)
-c      ENDDO
-c      WRITE(iout,*)
-c      WRITE(iout,'(4X)',advance='no')
-c      DO i = 1,dGroup
-c        WRITE(iout,FMT1,advance='no')
-c      ENDDO
-c      WRITE(iout,*)
 
 c     Set output data
       iOp = 1
@@ -1013,103 +858,6 @@ c     ENDDO
         ij = ij + IRMul(iIR)
       ENDDO
 
-c Print Alpha MOs Irred. Repr. projections
-c      IF(HighPrec) THEN
-c        FMT3 = "(3X,A3,4X)"
-c      ELSE
-c        FMT3 = "(2X,A3,3X)"
-c      ENDIF
-c      WRITE(iout,*)' '
-c      WRITE(iout,*)'Alpha MOs: Irred. Rep. Decomposition'
-c      WRITE(iout,'(3X)',advance='no')
-c      DO i = 1,nIR
-c        WRITE(iout,FMT1,advance='no')
-c      ENDDO
-c      WRITE(iout,*)
-c      WRITE(iout,'(5X)',advance='no')
-c      DO i = 1,nIR
-c        WRITE(iout,FMT3,advance='no') IRLab(i)
-c      ENDDO
-c      WRITE(iout,*)
-c      WRITE(iout,'(3X)',advance='no')
-c      DO i = 1,nIR
-c        WRITE(iout,FMT1,advance='no')
-c      ENDDO
-c      WRITE(iout,*)
-c      DO i = 1,NBas
-c        WRITE(iout,'(I3)',advance='no') i
-c        Dot = Zero
-c        DO iIR = 1,nIR
-c          WRITE(iout,FMT2,advance='no')
-c     &    gIRA(i,iIR)
-c        ENDDO
-c        WRITE(iout,*)
-c      ENDDO
-c      WRITE(iout,'(3X)',advance='no')
-c      DO i = 1,nIR
-c        WRITE(iout,FMT1,advance='no')
-c      ENDDO
-c      WRITE(iout,*)
-c Print Beta MOs Irred. Repr. projections
-c      WRITE(iout,*)'Beta MOs: Irred. Rep. Decomposition'
-c      WRITE(iout,'(3X)',advance='no')
-c      DO i = 1,nIR
-c        WRITE(iout,FMT1,advance='no')
-c      ENDDO
-c      WRITE(iout,*)
-c      WRITE(iout,'(5X)',advance='no')
-c      DO i = 1,nIR
-c        WRITE(iout,FMT3,advance='no') IRLab(i)
-c      ENDDO
-c      WRITE(iout,*)
-c      WRITE(iout,'(3X)',advance='no')
-c      DO i = 1,nIR
-c        WRITE(iout,FMT1,advance='no')
-c      ENDDO
-c      WRITE(iout,*)
-c      DO i = 1,NBas
-c        WRITE(iout,'(I3)',advance='no') i
-c        Dot = Zero
-c        DO iIR = 1,nIR
-c          WRITE(iout,FMT2,advance='no')
-c     &    gIRB(i,iIR)
-c        ENDDO
-c        WRITE(iout,*)
-c      ENDDO
-c      WRITE(iout,'(3X)',advance='no')
-c      DO i = 1,nIR
-c        WRITE(iout,FMT1,advance='no')
-c      ENDDO
-c      WRITE(iout,*)
-c Print WaveFunction Irred. Repr. projections
-c      WRITE(iout,*)'WaveFunction: Irred. Rep. Decomposition'
-c      WRITE(iout,'(4X)',advance='no')
-c      DO i = 1,nIR
-c        WRITE(iout,FMT1,advance='no')
-c      ENDDO
-c      WRITE(iout,*)
-c      WRITE(iout,"('a-WF')",advance='no')
-c      DO iIR = 1,nIR
-c        WRITE(iout,FMT2,advance='no') gIRwfA(iIR)
-c      ENDDO
-c      WRITE(iout,*)
-c      IF(NOb.NE.0) THEN
-c        WRITE(iout,"('b-WF')",advance='no')
-c        DO iIR = 1,nIR
-c          WRITE(iout,FMT2,advance='no') gIRwfB(iIR)
-c        ENDDO
-c      ENDIF
-c      WRITE(iout,*)
-c      WRITE(iout,"(' WFN')",advance='no')
-c      DO iG = 1,nIR
-c        WRITE(iout,FMT2,advance='no') gIRwf(iG)
-c      ENDDO
-c      WRITE(iout,*)
-c      WRITE(iout,'(4X)',advance='no')
-c      DO i = 1,nIR
-c        WRITE(iout,FMT1,advance='no')
-c      ENDDO
-
       ENDIF ! DoGroup
 
       DO i = 1,NBas
@@ -1172,13 +920,6 @@ c     CALL DSYEV('V','U',NBas,SGrpA,NBas,WOrbA,work,lwork,Info)
         CALL DSYEV('V','U',NOb,SGrpB,NOb,WOrbB,work,lwork,Info)
       ENDIF
       DEALLOCATE(work)
-
-c Print eigenvalues (closed shell)
-c      write(iout,*) 'Info = ',Info
-c      write(iout,*)'Symmetry Eigenvalues'
-c      DO I = 1,NOa
-c        write(iout,'(1x,I3,1x,f9.6)') I, WOrbA(I)
-c      ENDDO
 
 c Transform SGrpX(NOx,NOx) to SOrbX(NBas,NOx)
       ALLOCATE(SOrbA(NBas*NOa))
@@ -1292,7 +1033,7 @@ c     Generate outputs
       OutDim(2) = hGroup
       OutDim(3) = nIR
 
- 1    END
+      END
 
 
       REAL*8 FUNCTION TimeSec(H,Min,Sec,mSec)
