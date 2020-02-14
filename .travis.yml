@@ -32,7 +32,7 @@ install:
 
 script:
     - cd unittest
-    - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then coverage run --source=../cosymlib -m unittest discover . "test_*.py"; fi
+    - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then coverage run --source=../wfnsympy -m unittest discover . "test_*.py"; fi
     - coverage run --source=../wfnsympy -m unittest discover . "test_*.py"
 
 after_success:
