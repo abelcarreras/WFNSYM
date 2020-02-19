@@ -481,6 +481,16 @@ class WfnSympy:
             self._calculate_wfnsym()
         return self._SymMat
 
+    def get_csm_dens(self):
+        if self._csm_dens is None:
+            self.get_csm_density()
+        return self._csm_dens
+
+    def get_csm_dens_coef(self):
+        if self._csm_dens_coef is None:
+            self.get_csm_density()
+        return self._csm_coef
+
     # Print Outputs
     def print_CSM(self):
         print('\nWaveFunction: CSM-like values')
@@ -560,9 +570,9 @@ class WfnSympy:
 
     def print_dens_CSM(self):
         print('\nDensity: CSM-like values')
+        print('Total CSM {:3.3f}'.format(self.csm_dens))
         print('     '+'  '.join(['{:^7}'.format(s) for s in self.SymLab]))
-        print('C-Index ' + '  '.join(['{:7.3f}'.format(s) for s in self._csm_dens_coef]))
-        print('Total CSM {:3.3f}'.format(self._csm_dens))
+        print('C-Index ' + '  '.join(['{:7.3f}'.format(s) for s in self.csm_dens_coef]))
         # print('Self Assembly {:3.4f}'.format(self._self_assembly))
 
     def print_info(self):
@@ -585,6 +595,14 @@ class WfnSympy:
     @property
     def csm_coef(self):
         return self.get_csm_wfn()
+
+    @property
+    def csm_dens_coef(self):
+        return self.get_csm_dens_coef()
+
+    @property
+    def csm_dens(self):
+        return self.get_csm_dens()
 
     @property
     def SymLab(self):
