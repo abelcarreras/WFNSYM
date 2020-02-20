@@ -1,4 +1,4 @@
-__version__ = '0.2.6'
+__version__ = '0.2.7'
 
 from wfnsympy.WFNSYMLIB import mainlib, overlap_mat
 from wfnsympy.QSYMLIB import denslib, center_charge
@@ -156,7 +156,6 @@ class WfnSympy:
         self._center = center
         self._axis = VAxis
         self._axis2 = VAxis2
-        self._csm_dens = None
         self._charge = charge
         self._multiplicity = multiplicity
 
@@ -181,6 +180,9 @@ class WfnSympy:
         self._wf_IRd_a = None
         self._wf_IRd_b = None
         self._wf_IRd = None
+
+        self._csm_dens = None
+        self._csm_dens_coef = None
 
         type_list_inverse = {}
         for item in shell_type_list.items():
@@ -208,13 +210,6 @@ class WfnSympy:
 
         # convert from Angstroms to Bohr
         self._coordinates = np.array(coordinates)
-        # for idc, coord in enumerate(self._coordinates):
-        #     print('{}  {:3.8f} {:3.8f} {:3.8f}'.format(symbols[idc], coord[0], coord[1], coord[2]))
-        # quit()
-        # print(self._coordinates)
-        # for ids, symbol in enumerate(symbols):
-        #     print(symbol + '   ' + '  '.join(['{:3.8f}'.format(s) for s in self._coordinates[ids]]))
-        # quit()
 
         # get atomic numbers
         self._atomic_numbers = [symbol_map[i] for i in symbols]
@@ -489,7 +484,7 @@ class WfnSympy:
     def get_csm_dens_coef(self):
         if self._csm_dens_coef is None:
             self.get_csm_density()
-        return self._csm_coef
+        return self._csm_dens_coef
 
     # Print Outputs
     def print_CSM(self):
@@ -580,9 +575,6 @@ class WfnSympy:
         print('Electrons: {}'.format(self._total_electrons))
         print('Number of atomic orbitals: {}'.format(self._n_aos))
         print('Number of molecular orbitals: {}'.format(self._n_mos))
-        # print('     '+'  '.join(['{:^7}'.format(s) for s in self._SymLab]))
-        # print('CSM ' + '  '.join(['{:7.3f}'.format(s) for s in self._csm_dens_coef]))
-        # print('Total CSM {:3.3f}'.format(self._csm_dens))
 
     @property
     def dgroup(self):
