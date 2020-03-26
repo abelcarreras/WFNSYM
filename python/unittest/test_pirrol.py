@@ -9,6 +9,8 @@ class TestWfnsympy(unittest.TestCase):
     def setUp(self):
         data = get_data_from_file_fchk('pirrol.in.fchk')
         print('setUp inside')
+        self.pirrol = None
+        return
         self.pirrol = WfnSympy(coordinates=data['coordinates'],
                                symbols=data['symbols'],
                                basis=data['basis'],
