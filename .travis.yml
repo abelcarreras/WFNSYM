@@ -41,7 +41,7 @@ script:
     - coverage run --source=../wfnsympy -m unittest discover . test_pirrol.py
 
 after_success:
-#    - coveralls
+    - coveralls
     - cd ..
 
 deploy:
