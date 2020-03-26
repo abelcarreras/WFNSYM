@@ -23,10 +23,9 @@ class _captured_stdout:
 
     def __enter__(self):
         import sys, os, io, tempfile
-        self.old_error = os.dup(sys.stderr.fileno())
-        # self.fnull = open(os.devnull, 'w')
         self.F = tempfile.NamedTemporaryFile()
         try:
+            self.old_error = os.dup(sys.stderr.fileno())
             os.dup2(self.F.fileno(), sys.stderr.fileno())
         except (AttributeError, io.UnsupportedOperation):
             pass
@@ -34,7 +33,10 @@ class _captured_stdout:
 
     def __exit__(self, exc_type, exc_value, traceback):
         import sys, os
-        os.dup2(self.old_error, sys.stderr.fileno())
+        try:
+            os.dup2(self.old_error, sys.stderr.fileno())
+        except AttributeError:
+            pass
         self.F.close()
 
 def get_valence_electrons(atomic_numbers, charge):
