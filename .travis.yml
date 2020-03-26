@@ -29,7 +29,7 @@ install:
     - cd python
 #    - pip install pytest-cov
     - pip install coverage
-#    - pip install coveralls
+    - pip install coveralls
     - pip install -r requirements.txt
     - pip install -e .
 
