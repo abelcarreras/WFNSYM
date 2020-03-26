@@ -3,7 +3,6 @@ from distutils.dir_util import copy_tree
 from distutils.errors import DistutilsFileError
 import os
 
-# Make python package
 
 # get version number
 def get_version_number():
@@ -30,7 +29,7 @@ else:
 
 wfnsymlib = Extension('wfnsympy.WFNSYMLIB',
                       # extra_compile_args=['-ffixed-form', '-ffixed-line-length-none'],
-                      #include_dirs=include_dirs_numpy,
+                      # include_dirs=include_dirs_numpy,
                       include_dirs=[i_dir],
                       libraries=['lapack', 'blas'],
                       sources=['WFNSYMLIB.pyf',
@@ -49,31 +48,24 @@ wfnsymlib = Extension('wfnsympy.WFNSYMLIB',
                                s_dir + 'overlap.F',
                                s_dir + 'read_routines.F',
                                s_dir + 'sym_routines.F'])
-#
-# setup(name='wfnsympy',
-#       version=get_version_number(),
-#       description='wfnsympy',
-#       author='Abel Carreras',
-#       author_email='abelcarreras83@gmail.com',
-#       packages=['wfnsympy'],
-#       ext_modules=[wfnsymlib])
 
 qsymlib = Extension('wfnsympy.QSYMLIB',
-                     include_dirs=[i_dir],
-                     libraries=['lapack', 'blas'],
-                     sources=['QSYMLIB.pyf',
-                              s_dir + 'center_dens.F',
-                              s_dir + 'dens_basis_lib.F',
-                              s_dir + 'make_dens.F',
-                              s_dir + 'group_dim.F',
-                              s_dir + 'norma.F',
-                              s_dir + 'overlap.F',
-                              s_dir + 'denslib.F',
-                              s_dir + 'self_similarity.F',
-                              s_dir + 'sym_transform.F',
-                              s_dir + 'sym_overlap.F',
-                              s_dir + 'sym_routines.F',
-                              s_dir + 'VRoutines.F'])
+                    include_dirs=[i_dir],
+                    libraries=['lapack', 'blas'],
+                    sources=['QSYMLIB.pyf',
+                             s_dir + 'center_dens.F',
+                             s_dir + 'dens_basis_lib.F',
+                             s_dir + 'make_dens.F',
+                             s_dir + 'group_dim.F',
+                             s_dir + 'norma.F',
+                             s_dir + 'overlap.F',
+                             s_dir + 'denslib.F',
+                             s_dir + 'self_similarity.F',
+                             s_dir + 'sym_transform.F',
+                             s_dir + 'sym_overlap.F',
+                             s_dir + 'sym_routines.F',
+                             s_dir + 'VRoutines.F'])
+
 setup(name='wfnsympy',
       version=get_version_number(),
       description='wfnsympy',
@@ -81,9 +73,3 @@ setup(name='wfnsympy',
       author_email='abelcarreras83@gmail.com',
       packages=['wfnsympy'],
       ext_modules=[wfnsymlib, qsymlib])
-
-# setup(name='qsympy',
-#       version=get_version_number(),
-#       description='qsympy',
-#       packages=['wfnsympy'],
-#       ext_modules=[qsymlib])
