@@ -6,7 +6,7 @@ os:
 python:
   - "2.7"
 #  - "3.4"
-#  - "3.5"
+  - "3.5"
   - "3.6"
 
 branches:
@@ -26,7 +26,7 @@ install:
     - cd python
 #    - pip install pytest-cov
     - pip install coverage
-    - pip install coveralls
+    - pip install python-coveralls
     - pip install -r requirements.txt
     - pip install -e .
 
