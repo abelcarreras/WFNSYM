@@ -19,6 +19,8 @@ class TestWfnsympy(unittest.TestCase):
                                charge=0,
                                multiplicity=1,
                                group='C6v')
+        print(self.pirrol.SymLab)
+        print(self.pirrol.csm_coef)
         print('setUp outside')
 
     def test_symlab(self):
