@@ -72,5 +72,6 @@ setup(name='wfnsympy',
       long_description_content_type='text/markdown',
       author='Abel Carreras',
       author_email='abelcarreras83@gmail.com',
+      install_requires=['numpy', 'scipy'],
       packages=['wfnsympy'],
       ext_modules=[wfnsymlib, qsymlib])
