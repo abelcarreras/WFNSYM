@@ -3,6 +3,7 @@ __version__ = '0.2.7'
 from wfnsympy.WFNSYMLIB import mainlib, overlap_mat
 from wfnsympy.QSYMLIB import denslib, center_charge
 import numpy as np
+import sys, os, io, tempfile
 
 _bohr_to_angstrom = 0.529177249
 
@@ -22,21 +23,18 @@ class _captured_stdout:
         self.fnull = None
 
     def __enter__(self):
-        import sys, os, io, tempfile
         self.F = tempfile.NamedTemporaryFile()
         try:
             self.old_error = os.dup(sys.stderr.fileno())
             os.dup2(self.F.fileno(), sys.stderr.fileno())
         except (AttributeError, io.UnsupportedOperation):
-            pass
+            self.old_error = None
         return self.F
 
     def __exit__(self, exc_type, exc_value, traceback):
-        import sys, os
-        try:
+        if self.old_error is not None:
             os.dup2(self.old_error, sys.stderr.fileno())
-        except AttributeError:
-            pass
+
         self.F.close()
 
 def get_valence_electrons(atomic_numbers, charge):
