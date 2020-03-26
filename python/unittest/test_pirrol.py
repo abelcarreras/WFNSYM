@@ -8,7 +8,7 @@ class TestWfnsympy(unittest.TestCase):
 
     def setUp(self):
         data = get_data_from_file_fchk('pirrol.in.fchk')
-
+        print('setUp inside')
         self.pirrol = WfnSympy(coordinates=data['coordinates'],
                                symbols=data['symbols'],
                                basis=data['basis'],
@@ -19,10 +19,13 @@ class TestWfnsympy(unittest.TestCase):
                                charge=0,
                                multiplicity=1,
                                group='C6v')
+        print('setUp outside')
 
     def test_symlab(self):
+        print('test_symlab inside')
         symlab_test = ['E', '2C6', '2C3', 'C2', 's_v1', 's_d1', 's_v2', 's_d2', 's_v3', 's_d3']
         self.assertEqual(self.pirrol.SymLab, symlab_test)
+        print('test_symlab inside')
 
     def test_csm_coef(self):
         csm_coef_test = [5.331142e-07, 9.999894e+01, 1.000000e+02, 1.000000e+02,
