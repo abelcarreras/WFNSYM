@@ -136,8 +136,6 @@ class WfnSympy:
                  charge=0,
                  multiplicity=1,
                  beta_mo_coeff=None,  # Nbas x Nbas
-                 first_orbital=None,
-                 last_orbital=None,
                  group=None,
                  do_operation=False,
                  valence_only=False):
@@ -217,26 +215,24 @@ class WfnSympy:
 
         # get total number of electrons
         if valence_only:
-            total_electrons = self._valence_electrons
+            self._total_electrons = self._valence_electrons
         else:
-            total_electrons = np.sum(self._atomic_numbers) - self._charge
+            self._total_electrons = np.sum(self._atomic_numbers) - self._charge
 
-        if first_orbital is not None and last_orbital is None:
-            last_orbital = first_orbital
-        elif first_orbital is None and last_orbital is None:
-            first_orbital = 1
-            last_orbital = int(total_electrons/2)
-        self._total_electrons = 2 * (last_orbital - first_orbital + 1)
 
         # Create MO coefficients in contiguous list
-        alpha_mo_coeff = alpha_mo_coeff[first_orbital - 1:last_orbital]
-        self._n_mos = len(alpha_mo_coeff)
+        self._n_mo = len(alpha_mo_coeff)
         self._ca = np.ascontiguousarray(alpha_mo_coeff).flatten().tolist()
         if beta_mo_coeff is not None:
-            beta_mo_coeff = beta_mo_coeff[first_orbital - 1:last_orbital]
             self._cb = np.ascontiguousarray(beta_mo_coeff).flatten().tolist()
         else:
             self._cb = self._ca
+
+        if self._total_electrons > self._n_mo * 2:
+            self._total_electrons = self._n_mo * 2
+
+        if self._valence_electrons > self._total_electrons:
+            self._valence_electrons = self._total_electrons
 
         self._n_shell = np.unique(atom_map, return_counts=True)[1]
 
@@ -285,17 +281,77 @@ class WfnSympy:
         self._n_atoms = len(self._symbols)
         self._ntot_shell = len(atom_map)
         self._n_uncontr_orbitals = len(self._uncontracted_coefficients)
-        self._n_aos = np.sum([shell_type_list['{}'.format(st)][1] for st in self._shell_type])
+        self._n_bas = np.sum([shell_type_list['{}'.format(st)][1] for st in self._shell_type])
+
         self._n_c_mos = n_s + 3*n_p + 8*n_d
         self._l_dens = int(n_s*(n_s + 1)/2 + 2*n_s*(3*n_p) + 2*3*n_p*(3*n_p + 1) + n_s*n_d*(3*5 + 4*3) +
                      140*n_p*n_d + 284*n_d*n_d + 26*n_d)
 
+        self._axis, self._axis2 = self.get_v_axis()
+
+
+
+        # Start calculation
+        if self._dgroup is None:
+            with _captured_stdout() as E:
+                coordinates_bohr = np.array(self._coordinates) / _bohr_to_angstrom
+                out_data = mainlib(self._total_electrons, self._valence_electrons, self._n_bas, self._n_uncontr_orbitals,
+                                   self._n_atoms, self._ntot_shell, self._atomic_numbers, self._symbols, self._alpha,
+                                   self._uncontracted_coefficients, self._n_shell, coordinates_bohr,
+                                   self._n_primitives, self._shell_type, self._igroup, self._ngroup,
+                                   self._ca, self._cb, self.get_center(), self._axis, self._axis2,
+                                   self._charge, self._multiplicity, self._do_operation)
+                E.seek(0)
+                capture = E.read()
+
+            capture = capture.decode().split('\n')
+            #for l in capture:
+            #    print(l)
+            #print('data: ', out_data)
+
+            for i, c in enumerate(capture):
+                if 'ERROR. Axes not valid' in c:
+                    self._axis = [float(v) for v in capture[i+3].split()[-3:]]
+                    self._axis2 = [float(v) for v in capture[i+4].split()[-3:]]
+
+            # Process outputs
+            dgroup = out_data[0][0]
+            # hGroup = out_data[0][1]
+            nIR = out_data[0][2]
+
+            self._dgroup = dgroup
+            self._atom_coor = np.array(coordinates_bohr)
+
+            self._grim_coef = out_data[1][0:dgroup]
+            self._csm_coef = out_data[2][0:dgroup]
+
+            self._SymLab = [''.join(line).strip() for line in np.array(out_data[3][0:dgroup],dtype='str')]
+
+            self._mo_SOEVs_a = out_data[4][:self._n_mo, 0:dgroup]
+            self._mo_SOEVs_b = out_data[5][:self._n_mo, 0:dgroup]
+
+            self._wf_SOEVs_a = out_data[6][0:dgroup]
+            self._wf_SOEVs_b = out_data[7][0:dgroup]
+            self._wf_SOEVs = np.prod([self._wf_SOEVs_a, self._wf_SOEVs_b], axis=0)
+
+            self._ideal_gt = out_data[8][:nIR, :dgroup]
+
+            self._IRLab = [''.join(line).strip() for line in np.array(out_data[9][0:nIR],dtype='str')]
+
+            self._mo_IRd_a = out_data[10][:self._n_mo, 0:nIR]
+            self._mo_IRd_b = out_data[11][:self._n_mo, 0:nIR]
+
+            self._wf_IRd_a = out_data[12][0:nIR]
+            self._wf_IRd_b = out_data[13][0:nIR]
+            self._wf_IRd = out_data[14][0:nIR]
+
+            self._SymMat = out_data[15][0:dgroup]
 
     def get_center(self):
         if self._center is None:
             self._center = center_charge(self._coordinates, self._total_electrons, self._l_dens, self._alpha,
                                          self._uncontracted_coefficients, self._n_primitives, self._n_shell,
-                                         self._shell_type, self._ca, self._n_mos, self._n_aos, self._n_c_mos)
+                                         self._shell_type, self._ca, self._n_mo, self._n_bas, self._n_c_mos)
         return self._center
 
     def get_v_axis(self):
@@ -311,7 +367,7 @@ class WfnSympy:
                     out_data = denslib(self._symbols, self._coordinates, self._total_electrons, self._l_dens,
                                        self._alpha, self._uncontracted_coefficients,
                                        self._n_primitives, self._n_shell, self._shell_type, self._ca, self.get_center(),
-                                       VAxis, VAxis2, self._n_mos, self._n_aos, self._n_c_mos, self._igroup,
+                                       VAxis, VAxis2, self._n_mo, self._n_bas, self._n_c_mos, self._igroup,
                                        self._ngroup, self._do_operation)
 
                 return np.abs(out_data[2])
@@ -335,7 +391,7 @@ class WfnSympy:
                                            self._alpha, self._uncontracted_coefficients,
                                            self._n_primitives, self._n_shell, self._shell_type, self._ca,
                                            self.get_center(), VAxis, VAxis2,
-                                           self._n_mos, self._n_aos, self._n_c_mos, self._igroup,
+                                           self._n_mo, self._n_bas, self._n_c_mos, self._igroup,
                                            self._ngroup, self._do_operation)
 
                     return np.abs(out_data[2])
@@ -352,7 +408,7 @@ class WfnSympy:
                 dens_data = denslib(self._symbols, self._coordinates, self._total_electrons, self._l_dens, self._alpha,
                                     self._uncontracted_coefficients, self._n_primitives, self._n_shell,
                                     self._shell_type, self._ca, self.get_center(), self.get_v_axis()[0],
-                                    self.get_v_axis()[1], self._n_mos, self._n_aos, self._n_c_mos, self._igroup,
+                                    self.get_v_axis()[1], self._n_mo, self._n_bas, self._n_c_mos, self._igroup,
                                     self._ngroup, self._do_operation)
                 E.seek(0)
                 capture = E.read()
@@ -380,99 +436,6 @@ class WfnSympy:
                     self._axis = [float(v) for v in capture[i+3].split()[-3:]]
                     self._axis2 = [float(v) for v in capture[i+4].split()[-3:]]
         return self._csm_dens
-
-    def _calculate_wfnsym(self):
-        if self._dgroup is None:
-            with _captured_stdout() as E:
-                coordinates_bohr = np.array(self._coordinates) / _bohr_to_angstrom
-                out_data = mainlib(self._total_electrons, self._valence_electrons, self._n_aos, self._n_uncontr_orbitals,
-                                   self._n_atoms, self._ntot_shell, self._atomic_numbers, self._symbols, self._alpha,
-                                   self._uncontracted_coefficients, self._n_shell, coordinates_bohr,
-                                   self._n_primitives, self._shell_type, self._igroup, self._ngroup,
-                                   self._ca, self._cb, self.get_center(), self.get_v_axis()[0], self.get_v_axis()[1],
-                                   self._charge, self._multiplicity, self._do_operation)
-                E.seek(0)
-                capture = E.read()
-
-            capture = capture.decode().split('\n')
-
-            for i, c in enumerate(capture):
-                if 'ERROR. Axes not valid' in c:
-                    self._axis = [float(v) for v in capture[i+3].split()[-3:]]
-                    self._axis2 = [float(v) for v in capture[i+4].split()[-3:]]
-
-            # Process outputs
-            dgroup = out_data[0][0]
-            # hGroup = out_data[0][1]
-            nIR = out_data[0][2]
-
-            self._dgroup = dgroup
-            self._atom_coor = np.array(coordinates_bohr)
-
-            self._grim_coef = out_data[1][0:dgroup]
-            self._csm_coef = out_data[2][0:dgroup]
-
-            self._SymLab = [''.join(line).strip() for line in np.array(out_data[3][0:dgroup],dtype='str')]
-
-            self._mo_SOEVs_a = out_data[4][:self._n_mos, 0:dgroup]
-            self._mo_SOEVs_b = out_data[5][:self._n_mos, 0:dgroup]
-
-            self._wf_SOEVs_a = out_data[6][0:dgroup]
-            self._wf_SOEVs_b = out_data[7][0:dgroup]
-            self._wf_SOEVs = np.prod([self._wf_SOEVs_a, self._wf_SOEVs_b], axis=0)
-
-            self._ideal_gt = out_data[8][:nIR, :dgroup]
-
-            self._IRLab = [''.join(line).strip() for line in np.array(out_data[9][0:nIR],dtype='str')]
-
-            self._mo_IRd_a = out_data[10][:self._n_mos, 0:nIR]
-            self._mo_IRd_b = out_data[11][:self._n_mos, 0:nIR]
-
-            self._wf_IRd_a = out_data[12][0:nIR]
-            self._wf_IRd_b = out_data[13][0:nIR]
-            self._wf_IRd = out_data[14][0:nIR]
-
-            self._SymMat = out_data[15][0:dgroup]
-
-    def get_csm_wfn(self):
-        if self._csm_coef is None:
-            self._calculate_wfnsym()
-        return self._csm_coef
-
-    def get_grim_wfn(self):
-        if self._grim_coef is None:
-            self._calculate_wfnsym()
-        return self._grim_coef
-
-    def get_mo_soevs(self):
-        if self._mo_SOEVs_a is None:
-            self._calculate_wfnsym()
-        return self._mo_SOEVs_a, self._mo_SOEVs_b
-
-    def get_wfn_soevs(self):
-        if self._mo_SOEVs_a is None:
-            self._calculate_wfnsym()
-        return self._wf_SOEVs_a, self._wf_SOEVs_b, self._wf_SOEVs
-
-    def get_mo_ird(self):
-        if self._mo_IRd_a is None:
-            self._calculate_wfnsym()
-        return self._mo_IRd_a, self._mo_IRd_b
-
-    def get_wfn_ird(self):
-        if self._mo_IRd_a is None:
-            self._calculate_wfnsym()
-        return self._wf_IRd_a, self._wf_IRd_b, self._wf_IRd
-
-    def get_ideal_group_table(self):
-        if self._SymLab is None:
-            self._calculate_wfnsym()
-        return self._SymLab, self._ideal_gt, self._IRLab
-
-    def get_sym_matrix(self):
-        if self._SymMat is None:
-            self._calculate_wfnsym()
-        return self._SymMat
 
     def get_csm_dens(self):
         if self._csm_dens is None:
@@ -518,7 +481,7 @@ class WfnSympy:
 
     def print_alpha_mo_IRD(self):
         print('\nAlpha MOs: Irred. Rep. Decomposition')
-        print('     '+'  '.join(['{:^7}'.format(s) for s in self._IRLab]))
+        print('     '+'  '.join(['{:^7}'.format(s) for s in self.IRLab]))
         for i, line in enumerate(self._mo_IRd_a):
             print('{:4d}'.format(i+1) + '  '.join(['{:7.3f}'.format(s) for s in line]))
 
@@ -571,8 +534,8 @@ class WfnSympy:
     def print_info(self):
         print('\nInformation:')
         print('Electrons: {}'.format(self._total_electrons))
-        print('Number of atomic orbitals: {}'.format(self._n_aos))
-        print('Number of molecular orbitals: {}'.format(self._n_mos))
+        print('Number of Basis_dunctions: {}'.format(self._n_bas))
+        print('Number of molecular orbitals: {}'.format(self._n_mo))
 
     @property
     def dgroup(self):
@@ -580,75 +543,75 @@ class WfnSympy:
 
     @property
     def grim_coef(self):
-        return self.get_grim_wfn()
+        return self._grim_coef
 
     @property
     def csm_coef(self):
-        return self.get_csm_wfn()
+        return self._csm_coef
 
     @property
     def csm_dens_coef(self):
-        return self.get_csm_dens_coef()
+        return self._csm_dens_coef
 
     @property
     def csm_dens(self):
-        return self.get_csm_dens()
+        return self._csm_dens
 
     @property
     def SymLab(self):
-        return self.get_ideal_group_table()[0]
+        return self._SymLab
 
     @property
     def mo_SOEVs_a(self):
-        return self.get_mo_soevs()[0]
+        return self._mo_SOEVs_a
 
     @property
     def mo_SOEVs_b(self):
-        return self.get_mo_soevs()[1]
+        return self._mo_SOEVs_b
 
     @property
     def wf_SOEVs_a(self):
-        return self.get_wfn_soevs()[0]
+        return self._wf_SOEVs_a
 
     @property
     def wf_SOEVs_b(self):
-        return self.get_wfn_soevs()[1]
+        return self._wf_SOEVs_b
 
     @property
     def wf_SOEVs(self):
-        return self.get_wfn_soevs()[2]
+        return self._wf_SOEVs
 
     @property
     def ideal_gt(self):
-        return self.get_ideal_group_table()[1]
+        return self._ideal_gt
 
     @property
     def IRLab(self):
-        return self.get_ideal_group_table()[2]
+        return self._IRLab
 
     @property
     def mo_IRd_a(self):
-        return self.get_mo_ird()[0]
+        return self._mo_IRd_a
 
     @property
     def mo_IRd_b(self):
-        return self.get_mo_ird()[1]
+        return self._mo_IRd_b
 
     @property
     def wf_IRd_a(self):
-        return self.get_wfn_ird()[0]
+        return self._wf_IRd_a
 
     @property
     def wf_IRd_b(self):
-        return self.get_wfn_ird()[1]
+        return self._wf_IRd_b
 
     @property
     def wf_IRd(self):
-        return self.get_wfn_ird()[2]
+        return self._wf_IRd
 
     @property
     def SymMat(self):
-        return self.get_sym_matrix()
+        return self._SymMat
 
     @property
     def center(self):
@@ -656,11 +619,12 @@ class WfnSympy:
 
     @property
     def axis(self):
-        return self.get_v_axis()[0]
+        return self._axis
 
     @property
     def axis2(self):
-        return self.get_v_axis()[1]
+        return self._axis2
+
 
 symbol_map = {
     "H": 1,

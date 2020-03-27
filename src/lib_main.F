@@ -74,7 +74,6 @@ c Include files
       INCLUDE 'common_var.ins'
       INCLUDE 'init_var.ins'
 
-
 c ----------- Added manual arguments-----------
       iout = 0
       igroup = igroup_2
@@ -350,164 +349,7 @@ c      ENDDO
         ENDDO
       ENDDO
 
-
-#if 0
-      WRITE(iout,"('@@@ Operation-vectors',I2,':',1X,A6)") iG,SymLab(iG)
-      IF(DoGroup) SymMat(:,:) = SymGrp(:,:,iG)
-      DO i = 1,3
-      DO j = 1,3
-        WRITE(iout,'(2(1X,F12.8))') SymMat(i,j),SymMat(j,i)
-      ENDDO
-      ENDDO
-      WRITE(iout,*)' '
-c Define X,Y,Z transformation
-      write(iout,*)'X,Y,Z oper ',iG
-      write(iout,'(1x,f15.9)') SymMat(1,1)
-      write(iout,'(1x,f15.9)') SymMat(2,2)
-      write(iout,'(1x,f15.9)') SymMat(3,3)
-c Define X,Y matrix transformation
-      write(iout,*)'X,Y matrix ',iG
-      write(iout,'(2(1x,f15.9))') SymMat(1,1),SymMat(1,1)
-      write(iout,'(2(1x,f15.9))') SymMat(1,2),SymMat(2,1)
-      write(iout,'(2(1x,f15.9))') SymMat(2,1),SymMat(1,2)
-      write(iout,'(2(1x,f15.9))') SymMat(2,2),SymMat(2,2)
-c Define X,Y,Z matrix transformation
-      write(iout,*)'X,Y,Z matrix ',iG
-      write(iout,'(2(1x,f15.9))') SymMat(1,1),SymMat(1,1)
-      write(iout,'(2(1x,f15.9))') SymMat(1,2),SymMat(2,1)
-      write(iout,'(2(1x,f15.9))') SymMat(1,3),SymMat(3,1)
-      write(iout,'(2(1x,f15.9))') SymMat(2,1),SymMat(1,2)
-      write(iout,'(2(1x,f15.9))') SymMat(2,2),SymMat(2,2)
-      write(iout,'(2(1x,f15.9))') SymMat(2,3),SymMat(3,2)
-      write(iout,'(2(1x,f15.9))') SymMat(3,1),SymMat(1,3)
-      write(iout,'(2(1x,f15.9))') SymMat(3,2),SymMat(2,3)
-      write(iout,'(2(1x,f15.9))') SymMat(3,3),SymMat(3,3)
-c--------------------------------------------
-c Z^2, X2-Y2 matrix transformation
-      write(iout,*)'Z2,X2-Y2 matrix ',iG
-c Define Z^2 transformation (2Z^2-X^2-Y^2)
-      XMat0(:,:) = Zero
-      XMat0(1,1) = -One/DSQRT(6.d0)
-      XMat0(2,2) = XMat0(1,1)
-      XMat0(3,3) = -Two*XMat0(1,1)
-      CALL AtimsB(XMat1,XMat0,SymMat, 3,3,3, 3,3,3, 3)
-      CALL AtimsB(XMat2,SymMat,XMat1, 3,3,3, 3,3,3, 1)
-      Dot11 = XMat0(1,1)*XMat2(1,1) + XMat0(2,2)*XMat2(2,2)
-     &    + XMat0(3,3)*XMat2(3,3)
-c Define X^2-Y^2 transformation
-      XMat3(:,:) = Zero
-      XMat3(1,1) = One/DSQRT(Two)
-      XMat3(2,2) = -XMat3(1,1)
-      Dot21 = XMat3(1,1)*XMat2(1,1) + XMat3(2,2)*XMat2(2,2)
-     &    + XMat3(3,3)*XMat2(3,3)
-      CALL AtimsB(XMat1,XMat3,SymMat, 3,3,3, 3,3,3, 3)
-      CALL AtimsB(XMat2,SymMat,XMat1, 3,3,3, 3,3,3, 1)
-      Dot12 = XMat0(1,1)*XMat2(1,1) + XMat0(2,2)*XMat2(2,2)
-     &    + XMat0(3,3)*XMat2(3,3)
-      Dot22 = XMat3(1,1)*XMat2(1,1) + XMat3(2,2)*XMat2(2,2)
-     &    + XMat3(3,3)*XMat2(3,3)
-      write(iout,'(2(1x,f15.9))') Dot11,Dot11
-      write(iout,'(2(1x,f15.9))') Dot12,Dot21
-      write(iout,'(2(1x,f15.9))') Dot21,Dot12
-      write(iout,'(2(1x,f15.9))') Dot22,Dot22
-c--------------------------------------------
-c XY, X^2-Y^2 transformation matrix
-      write(iout,*)'XY,X2-Y2 matrix ',iG
-c Define XY transformation
-      XMat0(:,:) = Zero
-      XMat0(1,2) = One/DSQRT(Two)
-      XMat0(2,1) = XMat0(1,2)
-      CALL AtimsB(XMat1,XMat0,SymMat, 3,3,3, 3,3,3, 3)
-      CALL AtimsB(XMat2,SymMat,XMat1, 3,3,3, 3,3,3, 1)
-      Dot11 = XMat0(1,2)*XMat2(1,2) + XMat0(2,1)*XMat2(2,1)
-c Define X^2-Y^2 transformation
-      XMat3(:,:) = Zero
-      XMat3(1,1) = One/DSQRT(Two)
-      XMat3(2,2) = -XMat3(1,1)
-      Dot21 = XMat3(1,1)*XMat2(1,1) + XMat3(2,2)*XMat2(2,2)
-      CALL AtimsB(XMat1,XMat3,SymMat, 3,3,3, 3,3,3, 3)
-      CALL AtimsB(XMat2,SymMat,XMat1, 3,3,3, 3,3,3, 1)
-      Dot12 = XMat0(1,2)*XMat2(1,2) + XMat0(2,1)*XMat2(2,1)
-      Dot22 = XMat3(1,1)*XMat2(1,1) + XMat3(2,2)*XMat2(2,2)
-      write(iout,'(2(1x,f15.9))') Dot11,Dot11
-      write(iout,'(2(1x,f15.9))') Dot12,Dot21
-      write(iout,'(2(1x,f15.9))') Dot21,Dot12
-      write(iout,'(2(1x,f15.9))') Dot22,Dot22
-c--------------------------------------------
-c XZ, YZ matrix transformation
-      write(iout,*)'XZ,YZ matrix ',iG
-c Define XZ transformation
-      XMat0(:,:) = Zero
-      XMat0(1,3) = One/DSQRT(2.d0)
-      XMat0(3,1) = XMat0(1,3)
-      CALL AtimsB(XMat1,XMat0,SymMat, 3,3,3, 3,3,3, 3)
-      CALL AtimsB(XMat2,SymMat,XMat1, 3,3,3, 3,3,3, 1)
-      Dot11 = XMat0(1,3)*XMat2(1,3) + XMat0(3,1)*XMat2(3,1)
-c Define YZ transformation
-      XMat3(:,:) = Zero
-      XMat3(2,3) = One/DSQRT(Two)
-      XMat3(3,2) = XMat3(2,3)
-      Dot21 = XMat3(2,3)*XMat2(2,3) + XMat3(3,2)*XMat2(3,2)
-      CALL AtimsB(XMat1,XMat3,SymMat, 3,3,3, 3,3,3, 3)
-      CALL AtimsB(XMat2,SymMat,XMat1, 3,3,3, 3,3,3, 1)
-      Dot12 = XMat0(1,3)*XMat2(1,3) + XMat0(3,1)*XMat2(3,1)
-      Dot22 = XMat3(2,3)*XMat2(2,3) + XMat3(3,2)*XMat2(3,2)
-      write(iout,'(2(1x,f15.9))') Dot11,Dot11
-      write(iout,'(2(1x,f15.9))') Dot12,Dot21
-      write(iout,'(2(1x,f15.9))') Dot21,Dot12
-      write(iout,'(2(1x,f15.9))') Dot22,Dot22
-c--------------------------------------------
-c XY,XZ,YZ matrix transformation
-      write(iout,*)'XY,XZ,YZ matrix ',iG
-c Define XY transformation
-      XMat0(:,:) = Zero
-      XMat0(1,2) = One/DSQRT(2.d0)
-      XMat0(2,1) = XMat0(1,2)
-      CALL AtimsB(XMat1,XMat0,SymMat, 3,3,3, 3,3,3, 3)
-      CALL AtimsB(YMat0,SymMat,XMat1, 3,3,3, 3,3,3, 1)
-      Dot00 = XMat0(1,2)*YMat0(1,2) + XMat0(2,1)*YMat0(2,1)
-c Define XZ transformation
-      XMat1(:,:) = Zero
-      XMat1(1,3) = One/DSQRT(2.d0)
-      XMat1(3,1) = XMat1(1,3)
-      CALL AtimsB(XMat2,XMat1,SymMat, 3,3,3, 3,3,3, 3)
-      CALL AtimsB(YMat1,SymMat,XMat2, 3,3,3, 3,3,3, 1)
-      Dot11 = XMat1(1,3)*YMat1(1,3) + XMat1(3,1)*YMat1(3,1)
-c Define YZ transformation
-      XMat2(:,:) = Zero
-      XMat2(2,3) = One/DSQRT(Two)
-      XMat2(3,2) = XMat2(2,3)
-      CALL AtimsB(XMat3,XMat2,SymMat, 3,3,3, 3,3,3, 3)
-      CALL AtimsB(YMat2,SymMat,XMat3, 3,3,3, 3,3,3, 1)
-      Dot22 = XMat2(2,3)*YMat2(2,3) + XMat2(3,2)*YMat2(3,2)
-      Dot01 = XMat0(1,2)*YMat1(1,2) + XMat0(2,1)*YMat1(2,1)
-      Dot10 = XMat1(1,3)*YMat0(1,3) + XMat1(3,1)*YMat0(3,1)
-      Dot02 = XMat0(1,2)*YMat2(1,2) + XMat0(2,1)*YMat2(2,1)
-      Dot20 = XMat2(2,3)*YMat0(2,3) + XMat2(3,2)*YMat0(3,2)
-      Dot12 = XMat1(1,3)*YMat2(1,3) + XMat2(3,1)*YMat2(3,1)
-      Dot21 = XMat2(2,3)*YMat1(2,3) + XMat1(3,2)*YMat1(3,2)
-      write(iout,'(2(1x,f15.9))') Dot11,Dot11
-      write(iout,'(2(1x,f15.9))') Dot12,Dot21
-      write(iout,'(2(1x,f15.9))') Dot13,Dot31
-      write(iout,'(2(1x,f15.9))') Dot21,Dot12
-      write(iout,'(2(1x,f15.9))') Dot22,Dot22
-      write(iout,'(2(1x,f15.9))') Dot23,Dot32
-      write(iout,'(2(1x,f15.9))') Dot31,Dot13
-      write(iout,'(2(1x,f15.9))') Dot32,Dot23
-      write(iout,'(2(1x,f15.9))') Dot33,Dot33
-c--------------------------------------------
-#endif
-
       CALL AtimsB(stRAt,RAt,SymMat, NAt,3,3, NAt,NAt,3, 3)
-c      WRITE(iout,*)' '
-c      WRITE(iout,*)'Symmetry Transformed Atomic Coordinates (Angstroms)'
-c      WRITE(iout,100)
-c      DO k = 1,NAt
-c        WRITE(iout,'(A2,4X,3(F12.6,1X))')
-c     &        AtLab(k),(stRAt(k,j)/ANGSBOHR,j=1,3)
-c      ENDDO
-c      WRITE(iout,100)
-c      WRITE(iout,*)' '
 
 c Symmetry Transform ROrb to stROrb
       CALL AtimsB(stROrb,ROrb,SymMat, NOrb,3,3, NOrb,NOrb,3, 3)
@@ -581,16 +423,16 @@ c Copy the diagonal of S_MO_ to SDiag_
       ENDDO
 
 c Print Alpha MOs S value
-#ifdef DEVELOPMENT
-      WRITE(iout,*)' '
-      WRITE(iout,*)'MOs: SOEVs  alpha  /  beta'
-      WRITE(iout,*)'--------------------------'
-      DO i = 1,NBas
-        WRITE(iout,'(I3,7X,F8.4,2X,F8.4)') i,
-     &  S_MOa(i+(i-1)*NBas),S_MOb(i+(i-1)*NBas)
-      ENDDO
-      WRITE(iout,*)' '
-#endif
+      IF (NPrint .GE. 2) THEN
+        WRITE(iout,*)' '
+        WRITE(iout,*)'MOs: SOEVs  alpha  /  beta'
+        WRITE(iout,*)'--------------------------'
+        DO i = 1,NBas
+          WRITE(iout,'(I3,7X,F8.4,2X,F8.4)') i,
+     &    S_MOa(i+(i-1)*NBas),S_MOb(i+(i-1)*NBas)
+        ENDDO
+        WRITE(iout,*)' '
+      ENDIF
 
 c Compute the wave function symmetry
       CALL DGETRF(NOa,NOa,S_MOa,NBas,IpivA,Info)

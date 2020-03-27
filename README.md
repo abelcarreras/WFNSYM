@@ -3,13 +3,13 @@
 [![PyPI version](https://badge.fury.io/py/wfnsympy.svg)](https://badge.fury.io/py/wfnsympy)
 
 WFNSYM
-=========
+======
 This software calculates continuous symmetry measures (CSM) of 
 the electronic wave function of molecules
 
 
 Installation instructions
----------------------------------------------------------
+-------------------------
 
 1a. Requirements
   - LAPACK & Blas libraries

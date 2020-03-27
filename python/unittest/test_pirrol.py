@@ -14,12 +14,10 @@ class TestWfnsympy(unittest.TestCase):
                                center=[0., 0., 0.],
                                VAxis=[1., 0., 0.],
                                # VAxis2=[0., 0., 1.],
-                               alpha_mo_coeff=data['mo_coefficients']['alpha'],
+                               alpha_mo_coeff=data['mo_coefficients']['alpha'][:18],
                                charge=0,
                                multiplicity=1,
                                group='C6v')
-        print(self.pirrol.SymLab)
-        print(self.pirrol.csm_coef)
 
     def test_symlab(self):
         symlab_test = ['E', '2C6', '2C3', 'C2', 's_v1', 's_d1', 's_v2', 's_d2', 's_v3', 's_d3']

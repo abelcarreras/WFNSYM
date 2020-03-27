@@ -42,14 +42,15 @@ class TestWfnsympy(unittest.TestCase):
                                                 [ 0.7581074140, 0.0000000000, -0.6785995734]],
                                    symbols=['O', 'H', 'H'],
                                    basis=basis,
-                                   alpha_mo_coeff=mo_coefficients,
+                                   alpha_mo_coeff=mo_coefficients[:5],
                                    charge=0,
                                    multiplicity=1,
                                    group='C2v')
 
+        self.wf_results.print_alpha_mo_IRD()
+
     def test_csm_coef(self):
         csm_coef_test = [0, 0, 0, 0]
-
         np.testing.assert_allclose(csm_coef_test, self.wf_results.csm_coef, atol=1e-5)
 
     def test_mo_SOEVs_a(self):
