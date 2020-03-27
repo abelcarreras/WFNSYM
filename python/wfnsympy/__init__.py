@@ -1,4 +1,4 @@
-__version__ = '0.2.8'
+__version__ = '0.2.9'
 
 from wfnsympy.WFNSYMLIB import mainlib, overlap_mat
 from wfnsympy.QSYMLIB import denslib, center_charge
@@ -287,9 +287,58 @@ class WfnSympy:
         self._l_dens = int(n_s*(n_s + 1)/2 + 2*n_s*(3*n_p) + 2*3*n_p*(3*n_p + 1) + n_s*n_d*(3*5 + 4*3) +
                      140*n_p*n_d + 284*n_d*n_d + 26*n_d)
 
-        self._axis, self._axis2 = self.get_v_axis()
+        # Check center
+        if self._center is None:
+            self._center = center_charge(self._coordinates, self._total_electrons, self._l_dens, self._alpha,
+                                         self._uncontracted_coefficients, self._n_primitives, self._n_shell,
+                                         self._shell_type, self._ca, self._n_mo, self._n_bas, self._n_c_mos)
 
+        # Check axis
+        if self._axis is None:
+            from wfnsympy.optimize import minimize_axis
+            from wfnsympy.optimize import rotation_xy, rotation_axis
 
+            def target_function(alpha, beta, gamma=0.0):
+                VAxis = np.dot(rotation_xy(alpha, beta), [1, 0, 0])
+                VAxis2 = np.dot(rotation_axis(VAxis, gamma), get_perpendicular_axis(VAxis))
+
+                with _captured_stdout():
+                    out_data = denslib(self._symbols, self._coordinates, self._total_electrons, self._l_dens,
+                                       self._alpha, self._uncontracted_coefficients,
+                                       self._n_primitives, self._n_shell, self._shell_type, self._ca, self._center,
+                                       VAxis, VAxis2, self._n_mo, self._n_bas, self._n_c_mos, self._igroup,
+                                       self._ngroup, self._do_operation)
+
+                return np.abs(out_data[2])
+
+            data = {'coordinates': self._coordinates, 'symbols': self._symbols, 'igroup': self._igroup,
+                    'ngroup': self._ngroup}
+            alpha, beta, gamma = minimize_axis(target_function, data, delta=0.4)
+
+            self._axis = np.dot(rotation_xy(alpha, beta), [1, 0, 0])
+            self._axis2 = np.dot(rotation_axis(self._axis, gamma), get_perpendicular_axis(self._axis))
+        elif self._axis2 is None:
+            if self._igroup == 8:  # tetrahedron and octahedron groups
+                from wfnsympy.optimize import minimize_axis2
+                from wfnsympy.optimize import rotation_xy, rotation_axis
+
+                def target_function(gamma, VAxis):
+                    VAxis2 = np.dot(rotation_axis(VAxis, gamma), get_perpendicular_axis(VAxis))
+
+                    with _captured_stdout():
+                        out_data = denslib(self._symbols, self._coordinates, self._total_electrons, self._l_dens,
+                                           self._alpha, self._uncontracted_coefficients,
+                                           self._n_primitives, self._n_shell, self._shell_type, self._ca,
+                                           self._center, VAxis, VAxis2,
+                                           self._n_mo, self._n_bas, self._n_c_mos, self._igroup,
+                                           self._ngroup, self._do_operation)
+
+                    return np.abs(out_data[2])
+
+                gamma = minimize_axis2(target_function, self._axis, delta=0.05)
+                self._axis2 = np.dot(rotation_axis(self._axis, gamma), get_perpendicular_axis(self._axis))
+            else:
+                self._axis2 = get_perpendicular_axis(self._axis)
 
         # Start calculation
         if self._dgroup is None:
@@ -299,7 +348,7 @@ class WfnSympy:
                                    self._n_atoms, self._ntot_shell, self._atomic_numbers, self._symbols, self._alpha,
                                    self._uncontracted_coefficients, self._n_shell, coordinates_bohr,
                                    self._n_primitives, self._shell_type, self._igroup, self._ngroup,
-                                   self._ca, self._cb, self.get_center(), self._axis, self._axis2,
+                                   self._ca, self._cb, self._center, self._axis, self._axis2,
                                    self._charge, self._multiplicity, self._do_operation)
                 E.seek(0)
                 capture = E.read()
@@ -347,68 +396,13 @@ class WfnSympy:
 
             self._SymMat = out_data[15][0:dgroup]
 
-    def get_center(self):
-        if self._center is None:
-            self._center = center_charge(self._coordinates, self._total_electrons, self._l_dens, self._alpha,
-                                         self._uncontracted_coefficients, self._n_primitives, self._n_shell,
-                                         self._shell_type, self._ca, self._n_mo, self._n_bas, self._n_c_mos)
-        return self._center
-
-    def get_v_axis(self):
-        if self._axis is None:
-            from wfnsympy.optimize import minimize_axis
-            from wfnsympy.optimize import rotation_xy, rotation_axis
-
-            def target_function(alpha, beta, gamma=0.0):
-                VAxis = np.dot(rotation_xy(alpha, beta), [1, 0, 0])
-                VAxis2 = np.dot(rotation_axis(VAxis, gamma), get_perpendicular_axis(VAxis))
-
-                with _captured_stdout():
-                    out_data = denslib(self._symbols, self._coordinates, self._total_electrons, self._l_dens,
-                                       self._alpha, self._uncontracted_coefficients,
-                                       self._n_primitives, self._n_shell, self._shell_type, self._ca, self.get_center(),
-                                       VAxis, VAxis2, self._n_mo, self._n_bas, self._n_c_mos, self._igroup,
-                                       self._ngroup, self._do_operation)
-
-                return np.abs(out_data[2])
-
-            data = {'coordinates': self._coordinates, 'symbols': self._symbols, 'igroup': self._igroup,
-                    'ngroup': self._ngroup}
-            alpha, beta, gamma = minimize_axis(target_function, data, delta=0.4)
-
-            self._axis = np.dot(rotation_xy(alpha, beta), [1, 0, 0])
-            self._axis2 = np.dot(rotation_axis(self._axis, gamma), get_perpendicular_axis(self._axis))
-        elif self._axis2 is None:
-            if self._igroup == 8:  # tetrahedron and octahedron groups
-                from wfnsympy.optimize import minimize_axis2
-                from wfnsympy.optimize import rotation_xy, rotation_axis
-
-                def target_function(gamma, VAxis):
-                    VAxis2 = np.dot(rotation_axis(VAxis, gamma), get_perpendicular_axis(VAxis))
-
-                    with _captured_stdout():
-                        out_data = denslib(self._symbols, self._coordinates, self._total_electrons, self._l_dens,
-                                           self._alpha, self._uncontracted_coefficients,
-                                           self._n_primitives, self._n_shell, self._shell_type, self._ca,
-                                           self.get_center(), VAxis, VAxis2,
-                                           self._n_mo, self._n_bas, self._n_c_mos, self._igroup,
-                                           self._ngroup, self._do_operation)
-
-                    return np.abs(out_data[2])
-
-                gamma = minimize_axis2(target_function, self._axis, delta=0.05)
-                self._axis2 = np.dot(rotation_axis(self._axis, gamma), get_perpendicular_axis(self._axis))
-            else:
-                self._axis2 = get_perpendicular_axis(self._axis)
-        return self._axis, self._axis2
-
     def get_csm_density(self):
         if self._csm_dens is None:
             with _captured_stdout() as E:
                 dens_data = denslib(self._symbols, self._coordinates, self._total_electrons, self._l_dens, self._alpha,
                                     self._uncontracted_coefficients, self._n_primitives, self._n_shell,
-                                    self._shell_type, self._ca, self.get_center(), self.get_v_axis()[0],
-                                    self.get_v_axis()[1], self._n_mo, self._n_bas, self._n_c_mos, self._igroup,
+                                    self._shell_type, self._ca, self._center, self._axis,
+                                    self._axis2, self._n_mo, self._n_bas, self._n_c_mos, self._igroup,
                                     self._ngroup, self._do_operation)
                 E.seek(0)
                 capture = E.read()
@@ -435,11 +429,6 @@ class WfnSympy:
                 if 'ERROR. Axes not valid' in c:
                     self._axis = [float(v) for v in capture[i+3].split()[-3:]]
                     self._axis2 = [float(v) for v in capture[i+4].split()[-3:]]
-        return self._csm_dens
-
-    def get_csm_dens(self):
-        if self._csm_dens is None:
-            self.get_csm_density()
         return self._csm_dens
 
     def get_csm_dens_coef(self):
@@ -520,14 +509,14 @@ class WfnSympy:
 
     def print_axis(self):
         print('\nDensity: axis values')
-        print('axis  : '+'  '.join(['{:4.8f}'.format(s) for s in self.get_v_axis()[0]]))
+        print('axis  : '+'  '.join(['{:4.8f}'.format(s) for s in self._axis]))
         print('axis2 : '+'  '.join(['{:4.8f}'.format(s) for s in self._axis2]))
-        print('center: '+'  '.join(['{:4.8f}'.format(s) for s in self.get_center()]))
+        print('center: '+'  '.join(['{:4.8f}'.format(s) for s in self._center]))
 
     def print_dens_CSM(self):
         print('\nDensity: CSM-like values')
         print('Total CSM {:3.3f}'.format(self.csm_dens))
-        print('     '+'  '.join(['{:^7}'.format(s) for s in self.SymLab]))
+        print('         ' + '  '.join(['{:^7}'.format(s) for s in self.SymLab]))
         print('C-Index ' + '  '.join(['{:7.3f}'.format(s) for s in self.csm_dens_coef]))
         # print('Self Assembly {:3.4f}'.format(self._self_assembly))
 
@@ -551,11 +540,13 @@ class WfnSympy:
 
     @property
     def csm_dens_coef(self):
+        if self._csm_dens_coef is None:
+            self.get_csm_density()
         return self._csm_dens_coef
 
     @property
     def csm_dens(self):
-        return self._csm_dens
+        return self.get_csm_density()
 
     @property
     def SymLab(self):
@@ -615,7 +606,7 @@ class WfnSympy:
 
     @property
     def center(self):
-        return self.get_center()
+        return self._center
 
     @property
     def axis(self):
