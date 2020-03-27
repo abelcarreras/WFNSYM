@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/abelcarreras/WFNSYM.svg?branch=development)](https://travis-ci.org/abelcarreras/WFNSYM)
-[![Coverage Status](https://coveralls.io/repos/github/abelcarreras/WFNSYM/badge.svg?branch=development)](https://coveralls.io/github/abelcarreras/WFNSYM?branch=development)
+[![Build Status](https://travis-ci.org/abelcarreras/WFNSYM.svg?branch=master)](https://travis-ci.org/abelcarreras/WFNSYM)
+[![Coverage Status](https://coveralls.io/repos/github/abelcarreras/WFNSYM/badge.svg?branch=master)](https://coveralls.io/github/abelcarreras/WFNSYM?branch=master)
 
 WFNSYM
 =========
