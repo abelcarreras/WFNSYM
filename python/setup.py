@@ -2,6 +2,7 @@ from numpy.distutils.core import setup, Extension
 from distutils.dir_util import copy_tree
 from distutils.errors import DistutilsFileError
 import os
+from shutil import copyfile
 
 
 # get version number
@@ -16,6 +17,7 @@ if 'USER' in os.environ and os.environ['USER'] == 'travis':
     print('Testing in travis')
     copy_tree('../src', './src', update=True)
     copy_tree('../include', './include', update=True)
+    copyfile(os.path.abspath('../README.md'), os.path.abspath('./README.md'))
 
 if os.path.isdir('./src') and os.path.isdir('./include'):
     print('exists')
@@ -68,7 +70,7 @@ qsymlib = Extension('wfnsympy.QSYMLIB',
 setup(name='wfnsympy',
       version=get_version_number(),
       description='wfnsympy',
-      long_description=open('../README.md').read(),
+      long_description=open('README.md').read(),
       long_description_content_type='text/markdown',
       author='Abel Carreras',
       author_email='abelcarreras83@gmail.com',
