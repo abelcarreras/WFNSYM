@@ -209,8 +209,8 @@ class WfnSympy:
         if self._total_electrons > self._n_mo * 2:
             self._total_electrons = self._n_mo * 2
 
-        if self._valence_electrons > self._total_electrons:
-            self._valence_electrons = self._total_electrons
+        if self._valence_electrons >= self._total_electrons:
+            self._valence_electrons = 0
 
         self._n_shell = np.unique(atom_map, return_counts=True)[1]
 
@@ -326,7 +326,7 @@ class WfnSympy:
                                self._uncontracted_coefficients, self._n_shell, coordinates_bohr,
                                self._n_primitives, self._shell_type, self._igroup, self._ngroup,
                                self._ca, self._cb, self._center, self._axis, self._axis2,
-                               self._charge, self._multiplicity, self._do_operation)
+                               0, self._multiplicity, self._do_operation)
             E.seek(0)
             capture = E.read()
 
@@ -339,10 +339,10 @@ class WfnSympy:
 
         # Process outputs
         dgroup = out_data[0][0]
-        # hGroup = out_data[0][1]
         nIR = out_data[0][2]
 
         self._dgroup = dgroup
+        self._hgroup = out_data[0][1]
         self._atom_coor = np.array(coordinates_bohr)
 
         self._grim_coef = out_data[1][0:dgroup]
@@ -370,40 +370,27 @@ class WfnSympy:
 
         self._SymMat = out_data[15][0:dgroup]
 
-    def get_csm_density(self):
-        if self._csm_dens is None:
-            with _captured_stdout() as E:
-                dens_data = denslib(self._symbols, self._coordinates, self._total_electrons, self._l_dens, self._alpha,
-                                    self._uncontracted_coefficients, self._n_primitives, self._n_shell,
-                                    self._shell_type, self._ca, self._center, self._axis,
-                                    self._axis2, self._n_mo, self._n_bas, self._n_c_mos, self._igroup,
-                                    self._ngroup, self._do_operation)
-                E.seek(0)
-                capture = E.read()
+    def calculate_csm_density(self):
+        with _captured_stdout():
+            dens_data = denslib(self._symbols, self._coordinates, self._total_electrons, self._l_dens, self._alpha,
+                                self._uncontracted_coefficients, self._n_primitives, self._n_shell,
+                                self._shell_type, self._ca, self._center, self._axis,
+                                self._axis2, self._n_mo, self._n_bas, self._n_c_mos, self._igroup,
+                                self._ngroup, self._do_operation)
 
-            # Process outputs
-            self._dgroup = dens_data[0][0]
-            self._hgroup = dens_data[0][1]
-            self._atom_coor = np.array(self._coordinates)
-            self._csm_dens_coef = dens_data[1][0:self._dgroup]
-            # self._csm_dens = dens_data[2]
-            self._SymLab = [''.join(line).strip() for line in np.array(dens_data[3][0:self._dgroup], dtype='str')]
-            self._csm_dens = 0
-            for idl, label in enumerate(self._SymLab):
-                try:
-                    c = int(label[0])
-                except ValueError:
-                    c = 1
-                self._csm_dens += self._csm_dens_coef[idl]*c
-            self._csm_dens = 100*(1 - self._csm_dens/self._hgroup)
-            self._self_assembly = dens_data[4]
-            capture = capture.decode().split('\n')
 
-            for i, c in enumerate(capture):
-                if 'ERROR. Axes not valid' in c:
-                    self._axis = [float(v) for v in capture[i+3].split()[-3:]]
-                    self._axis2 = [float(v) for v in capture[i+4].split()[-3:]]
-        return self._csm_dens
+        # Process outputs
+        self._csm_dens_coef = dens_data[1][0:self._dgroup]
+        self._csm_dens = dens_data[2]
+        self._csm_dens = 0
+        for idl, label in enumerate(self._SymLab):
+            try:
+                c = int(label[0])
+            except ValueError:
+                c = 1
+            self._csm_dens += self._csm_dens_coef[idl]*c
+        self._csm_dens = 100*(1 - self._csm_dens/self._hgroup)
+        self._self_assembly = dens_data[4]
 
     # Print Outputs
     def print_CSM(self):
@@ -509,12 +496,14 @@ class WfnSympy:
     @property
     def csm_dens_coef(self):
         if self._csm_dens_coef is None:
-            self.get_csm_density()
+            self.calculate_csm_density()
         return self._csm_dens_coef
 
     @property
     def csm_dens(self):
-        return self.get_csm_density()
+        if self._csm_dens is None:
+            self.calculate_csm_density()
+        return self._csm_dens
 
     @property
     def SymLab(self):

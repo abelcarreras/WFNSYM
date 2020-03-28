@@ -3,17 +3,18 @@
 
 python module WFNSYMLIB ! in 
     interface  ! in :WFNSYMLIB
-        subroutine mainlib(Etot, NEval, NBas, NMo, Norb, NAt, NCShell, iZAt, AtLab, Alph, COrb, NShell, RAt, n_prim, shell_type, &
-        igroup, ngroup, Ca, Cb, RCread, VAxis, VAxis2, iCharge, iMult, DoOp, OutDim, OutGrim, OutCMS, OutSymLab, OutSDiagA, &
-        OutSDiagB, OutWDiagA, OutWDiagB, OutTbl, OutIRLab, OutgIRA, OutgIRB, OutgIRwfA, OutgIRwfB, OutgIRwf, OutSymMat) ! in :WFNSYMLIB:lib_main.F
+        subroutine mainlib(Etot, NEval, NBas, NMo, Norb, NAt, NCShell, iZAt, AtLab, Alph, COrb, NShell, RAt, n_prim, &
+        shell_type, igroup, ngroup, Ca, Cb, RCread, VAxis, VAxis2, iCharge, iMult, DoOp, OutDim, OutGrim, OutCMS, &
+        OutSymLab, OutSDiagA, OutSDiagB, OutWDiagA, OutWDiagB, OutTbl, OutIRLab, OutgIRA, OutgIRB, OutgIRwfA, &
+        OutgIRwfB, OutgIRwf, OutSymMat) ! in :WFNSYMLIB:lib_main.F
 
 !           Inputs
-            logical :: DoOp
-            integer :: Etot, NEval, NBas, Norb, NAt, NCShell, igroup, ngroup, iCharge, iMult
+            logical,intent(in) :: DoOp
+            integer,intent(in) :: Etot, NEval, NBas, Norb, NAt, NCShell, igroup, ngroup, iCharge, iMult
 
             integer, check(len(Ca)/NBas>=NMo),depend(Ca), intent(hide) :: NMo=len(Ca)/NBas
             real*8 dimension(3),intent(in) :: RCread, VAxis, VAxis2
-            real*8 dimension(NMo),intent(in),depend(NMo) :: Ca, Cb
+            real*8 dimension(NMo*NBas),intent(in),depend(NMo) :: Ca, Cb
             real*8 dimension(Norb),intent(in),depend(Norb) :: Alph, COrb
             real*8 dimension(NAt,3),intent(in),depend(NAt) :: RAt
             integer dimension(NAt),intent(in),depend(NAt) :: iZAt, NShell
@@ -24,10 +25,10 @@ python module WFNSYMLIB ! in
             integer dimension(3),intent(out) :: OutDim
             real*8 dimension(100),intent(out) :: OutCMS, OutGrim
             character dimension(100),intent(out) :: OutSymLab*6, OutIRLab*3
-            real*8 dimension(NBas,100),intent(out) :: OutSDiagA, OutSDiagB
+            real*8 dimension(NMo,100),intent(out) :: OutSDiagA, OutSDiagB
             real*8 dimension(100),intent(out) :: OutWDiagA, OutWDiagB
             real*8 dimension(100,100),intent(out) :: OutTbl
-            real*8 dimension(NBas,100),intent(out) :: OutgIRA, OutgIRB
+            real*8 dimension(NMo,100),intent(out) :: OutgIRA, OutgIRB
             real*8 dimension(100),intent(out) :: OutgIRwfA, OutgIRwfB, OutgIRwf
             real*8 dimension(100,3,3),intent(out) :: OutSymMat
 

@@ -25,7 +25,7 @@ c
 c	NAt		# atoms
 c	NEtot 	# total electrons
 c	NEval 	# valence electrons
-c	iCharge 	molecular charge
+c	iCharge 	molecular charge (Not in use anymore)
 c	NBas        # Contracted basis functions
 c	NOrb	 	# Uncontracted basis functions
 c	COrb	 	Uncontracted AO coefficients            :: (NOrb)
@@ -63,10 +63,10 @@ c     Output
       INTEGER :: OutDim(3)
       REAL*8 :: OutCSM(100), OutGrim(100)
       CHARACTER :: OutSymLab(100)*6, OutIRLab(100)*3
-      REAL*8 :: OutSDiagA(NBas, 100), OutSDiagB(NBas, 100)
-      REAL*8 :: OutWDiagA(NBas), OutWDiagB(NBas)
+      REAL*8 :: OutSDiagA(NMo, 100), OutSDiagB(NMo, 100)
+      REAL*8 :: OutWDiagA(100), OutWDiagB(100)
       REAL*8 :: OutTbl(100,100)
-      REAL*8 :: OutgIRA(NBas,100), OutgIRB(NBas,100)
+      REAL*8 :: OutgIRA(NMo,100), OutgIRB(NMo,100)
       REAL*8 :: OutgIRwfA(100), OutgIRwfB(100), OutgIRwf(100)
       REAL*8 :: OutSymMat(100, 3, 3)
 c Include files
@@ -138,8 +138,8 @@ c Define Axes thresh
 
 
 c Set up some variables
-      NEtot = NEtot - iCharge
-      NEval = NEval - iCharge
+c      NEtot = NEtot - iCharge
+c      NEval = NEval - iCharge
       NOa = (NEtot + iMult - 1)/2
       NOb = NOa - iMult + 1
       Ncore = (NEtot-NEval)/2
@@ -570,7 +570,7 @@ c     Set output data
          OutSymLab(i) = SymLab(i)
       enddo
 
-      DO i = 1,NBas
+      DO i = 1,NMo
         iOp = 1
         DO iG = 1,dGroup
           OutSDiagA(i,iG) = SDiagA(i+(iOp-1)*NBas)
@@ -702,7 +702,7 @@ c     ENDDO
 
       ENDIF ! DoGroup
 
-      DO i = 1,NBas
+      DO i = 1,NMo
         DO iIR = 1,nIR
 c          OutIRLab(i) = IRLab(i)
           OutgIRB(i, iIR)  =  gIRB(i,iIR)
