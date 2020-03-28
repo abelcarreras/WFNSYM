@@ -1,4 +1,4 @@
-__version__ = '0.2.9'
+__version__ = '0.2.10'
 
 from wfnsympy.WFNSYMLIB import mainlib, overlap_mat
 from wfnsympy.QSYMLIB import denslib, center_charge
@@ -326,7 +326,7 @@ class WfnSympy:
                                self._uncontracted_coefficients, self._n_shell, coordinates_bohr,
                                self._n_primitives, self._shell_type, self._igroup, self._ngroup,
                                self._ca, self._cb, self._center, self._axis, self._axis2,
-                               0, self._multiplicity, self._do_operation)
+                               self._multiplicity, self._do_operation)
             E.seek(0)
             capture = E.read()
 
@@ -377,7 +377,6 @@ class WfnSympy:
                                 self._shell_type, self._ca, self._center, self._axis,
                                 self._axis2, self._n_mo, self._n_bas, self._n_c_mos, self._igroup,
                                 self._ngroup, self._do_operation)
-
 
         # Process outputs
         self._csm_dens_coef = dens_data[1][0:self._dgroup]

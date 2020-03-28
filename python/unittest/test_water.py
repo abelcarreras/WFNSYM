@@ -39,7 +39,7 @@ class TestWfnsympy(unittest.TestCase):
 
         self.wf_results = WfnSympy(coordinates=[[ 0.0000000000, 0.0000000000, -0.0428008531],
                                                 [-0.7581074140, 0.0000000000, -0.6785995734],
-                                                [ 0.7581074140, 0.0000000000, -0.6785995734]],
+                                                [ 0.7581074140, 0.000000000, -0.6785995734]],
                                    symbols=['O', 'H', 'H'],
                                    basis=basis,
                                    alpha_mo_coeff=mo_coefficients[:5],
@@ -60,6 +60,7 @@ class TestWfnsympy(unittest.TestCase):
                            [1, 1, 1, 1],
                            [1,-1, 1,-1]]
 
+        self.wf_results.print_overlap_mo_alpha()
         np.testing.assert_allclose(mo_soevs_a_test, self.wf_results.mo_SOEVs_a, atol=1e-5)
 
     def test_wf_SOEVs_a(self):

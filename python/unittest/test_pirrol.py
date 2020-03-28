@@ -106,6 +106,7 @@ class TestWfnsympy(unittest.TestCase):
                             -4.37251180e-01, -1.00000000e+00, -4.37251180e-01,
                             4.82843548e-01]]
 
+        self.pirrol.print_overlap_mo_alpha()
         np.testing.assert_allclose(mo_soevs_a_test, self.pirrol.mo_SOEVs_a, rtol=1e-6)
 
     def test_wf_SOEVs_a(self):
