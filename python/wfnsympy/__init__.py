@@ -155,28 +155,6 @@ class WfnSympy:
         self._charge = charge
         self._multiplicity = multiplicity
 
-        self._dgroup = None
-
-        self._atom_coor = None
-        self._grim_coef = None
-        self._csm_coef = None
-
-        self._SymLab = None
-        self._SymMat = None
-        self._mo_SOEVs_a = None
-        self._mo_SOEVs_b = None
-        self._wf_SOEVs_a = None
-        self._wf_SOEVs_b = None
-        self._wf_SOEVs = None
-
-        self._ideal_gt = None
-        self._IRLab = None
-        self._mo_IRd_a = None
-        self._mo_IRd_b = None
-        self._wf_IRd_a = None
-        self._wf_IRd_b = None
-        self._wf_IRd = None
-
         self._csm_dens = None
         self._csm_dens_coef = None
 
@@ -341,60 +319,56 @@ class WfnSympy:
                 self._axis2 = get_perpendicular_axis(self._axis)
 
         # Start calculation
-        if self._dgroup is None:
-            with _captured_stdout() as E:
-                coordinates_bohr = np.array(self._coordinates) / _bohr_to_angstrom
-                out_data = mainlib(self._total_electrons, self._valence_electrons, self._n_bas, self._n_uncontr_orbitals,
-                                   self._n_atoms, self._ntot_shell, self._atomic_numbers, self._symbols, self._alpha,
-                                   self._uncontracted_coefficients, self._n_shell, coordinates_bohr,
-                                   self._n_primitives, self._shell_type, self._igroup, self._ngroup,
-                                   self._ca, self._cb, self._center, self._axis, self._axis2,
-                                   self._charge, self._multiplicity, self._do_operation)
-                E.seek(0)
-                capture = E.read()
+        with _captured_stdout() as E:
+            coordinates_bohr = np.array(self._coordinates) / _bohr_to_angstrom
+            out_data = mainlib(self._total_electrons, self._valence_electrons, self._n_bas, self._n_uncontr_orbitals,
+                               self._n_atoms, self._ntot_shell, self._atomic_numbers, self._symbols, self._alpha,
+                               self._uncontracted_coefficients, self._n_shell, coordinates_bohr,
+                               self._n_primitives, self._shell_type, self._igroup, self._ngroup,
+                               self._ca, self._cb, self._center, self._axis, self._axis2,
+                               self._charge, self._multiplicity, self._do_operation)
+            E.seek(0)
+            capture = E.read()
 
-            capture = capture.decode().split('\n')
-            #for l in capture:
-            #    print(l)
-            #print('data: ', out_data)
+        capture = capture.decode().split('\n')
 
-            for i, c in enumerate(capture):
-                if 'ERROR. Axes not valid' in c:
-                    self._axis = [float(v) for v in capture[i+3].split()[-3:]]
-                    self._axis2 = [float(v) for v in capture[i+4].split()[-3:]]
+        for i, c in enumerate(capture):
+            if 'ERROR. Axes not valid' in c:
+                self._axis = [float(v) for v in capture[i+3].split()[-3:]]
+                self._axis2 = [float(v) for v in capture[i+4].split()[-3:]]
 
-            # Process outputs
-            dgroup = out_data[0][0]
-            # hGroup = out_data[0][1]
-            nIR = out_data[0][2]
+        # Process outputs
+        dgroup = out_data[0][0]
+        # hGroup = out_data[0][1]
+        nIR = out_data[0][2]
 
-            self._dgroup = dgroup
-            self._atom_coor = np.array(coordinates_bohr)
+        self._dgroup = dgroup
+        self._atom_coor = np.array(coordinates_bohr)
 
-            self._grim_coef = out_data[1][0:dgroup]
-            self._csm_coef = out_data[2][0:dgroup]
+        self._grim_coef = out_data[1][0:dgroup]
+        self._csm_coef = out_data[2][0:dgroup]
 
-            self._SymLab = [''.join(line).strip() for line in np.array(out_data[3][0:dgroup],dtype='str')]
+        self._SymLab = [''.join(line).strip() for line in np.array(out_data[3][0:dgroup],dtype='str')]
 
-            self._mo_SOEVs_a = out_data[4][:self._n_mo, 0:dgroup]
-            self._mo_SOEVs_b = out_data[5][:self._n_mo, 0:dgroup]
+        self._mo_SOEVs_a = out_data[4][:self._n_mo, 0:dgroup]
+        self._mo_SOEVs_b = out_data[5][:self._n_mo, 0:dgroup]
 
-            self._wf_SOEVs_a = out_data[6][0:dgroup]
-            self._wf_SOEVs_b = out_data[7][0:dgroup]
-            self._wf_SOEVs = np.prod([self._wf_SOEVs_a, self._wf_SOEVs_b], axis=0)
+        self._wf_SOEVs_a = out_data[6][0:dgroup]
+        self._wf_SOEVs_b = out_data[7][0:dgroup]
+        self._wf_SOEVs = np.prod([self._wf_SOEVs_a, self._wf_SOEVs_b], axis=0)
 
-            self._ideal_gt = out_data[8][:nIR, :dgroup]
+        self._ideal_gt = out_data[8][:nIR, :dgroup]
 
-            self._IRLab = [''.join(line).strip() for line in np.array(out_data[9][0:nIR],dtype='str')]
+        self._IRLab = [''.join(line).strip() for line in np.array(out_data[9][0:nIR],dtype='str')]
 
-            self._mo_IRd_a = out_data[10][:self._n_mo, 0:nIR]
-            self._mo_IRd_b = out_data[11][:self._n_mo, 0:nIR]
+        self._mo_IRd_a = out_data[10][:self._n_mo, 0:nIR]
+        self._mo_IRd_b = out_data[11][:self._n_mo, 0:nIR]
 
-            self._wf_IRd_a = out_data[12][0:nIR]
-            self._wf_IRd_b = out_data[13][0:nIR]
-            self._wf_IRd = out_data[14][0:nIR]
+        self._wf_IRd_a = out_data[12][0:nIR]
+        self._wf_IRd_b = out_data[13][0:nIR]
+        self._wf_IRd = out_data[14][0:nIR]
 
-            self._SymMat = out_data[15][0:dgroup]
+        self._SymMat = out_data[15][0:dgroup]
 
     def get_csm_density(self):
         if self._csm_dens is None:
@@ -430,11 +404,6 @@ class WfnSympy:
                     self._axis = [float(v) for v in capture[i+3].split()[-3:]]
                     self._axis2 = [float(v) for v in capture[i+4].split()[-3:]]
         return self._csm_dens
-
-    def get_csm_dens_coef(self):
-        if self._csm_dens_coef is None:
-            self.get_csm_density()
-        return self._csm_dens_coef
 
     # Print Outputs
     def print_CSM(self):
@@ -500,7 +469,6 @@ class WfnSympy:
         print(self._SymMat[nop])
 
     def print_symmetry_transformed_coordinates(self, nop, use_angstrom=True):
-
         print('Symmetry Transformed Atomic Coordinates (Angstroms)')
         if use_angstrom:
             print(np.dot(self._atom_coor * _bohr_to_angstrom, self._SymMat[nop].T))
