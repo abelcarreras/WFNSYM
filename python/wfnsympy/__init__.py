@@ -208,6 +208,7 @@ class WfnSympy:
 
         if self._total_electrons > self._n_mo * 2:
             self._total_electrons = self._n_mo * 2
+            self._multiplicity = 1
 
         if self._valence_electrons >= self._total_electrons:
             self._valence_electrons = 0
