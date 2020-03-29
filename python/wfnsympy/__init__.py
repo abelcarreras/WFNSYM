@@ -322,10 +322,10 @@ class WfnSympy:
         # Start calculation
         with _captured_stdout() as E:
             coordinates_bohr = np.array(self._coordinates) / _bohr_to_angstrom
-            out_data = mainlib(self._total_electrons, self._valence_electrons, self._n_bas, self._n_uncontr_orbitals,
-                               self._n_atoms, self._ntot_shell, self._atomic_numbers, self._symbols, self._alpha,
-                               self._uncontracted_coefficients, self._n_shell, coordinates_bohr,
-                               self._n_primitives, self._shell_type, self._igroup, self._ngroup,
+            out_data = mainlib(self._total_electrons, self._valence_electrons, self._n_bas, self._n_mo,
+                               self._n_uncontr_orbitals, self._n_atoms, self._ntot_shell, self._atomic_numbers,
+                               self._symbols, self._alpha, self._uncontracted_coefficients, self._n_shell,
+                               coordinates_bohr, self._n_primitives, self._shell_type, self._igroup, self._ngroup,
                                self._ca, self._cb, self._center, self._axis, self._axis2,
                                self._multiplicity, self._do_operation)
             E.seek(0)
@@ -351,8 +351,8 @@ class WfnSympy:
 
         self._SymLab = [''.join(line).strip() for line in np.array(out_data[3][0:dgroup],dtype='str')]
 
-        self._mo_SOEVs_a = out_data[4][:self._n_mo, 0:dgroup]
-        self._mo_SOEVs_b = out_data[5][:self._n_mo, 0:dgroup]
+        self._mo_SOEVs_a = out_data[4][:, 0:dgroup]
+        self._mo_SOEVs_b = out_data[5][:, 0:dgroup]
 
         self._wf_SOEVs_a = out_data[6][0:dgroup]
         self._wf_SOEVs_b = out_data[7][0:dgroup]
@@ -362,8 +362,8 @@ class WfnSympy:
 
         self._IRLab = [''.join(line).strip() for line in np.array(out_data[9][0:nIR],dtype='str')]
 
-        self._mo_IRd_a = out_data[10][:self._n_mo, 0:nIR]
-        self._mo_IRd_b = out_data[11][:self._n_mo, 0:nIR]
+        self._mo_IRd_a = out_data[10][:, 0:nIR]
+        self._mo_IRd_b = out_data[11][:, 0:nIR]
 
         self._wf_IRd_a = out_data[12][0:nIR]
         self._wf_IRd_b = out_data[13][0:nIR]

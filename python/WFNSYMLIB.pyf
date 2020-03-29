@@ -9,9 +9,9 @@ python module WFNSYMLIB ! in
 
 !           Inputs
             logical :: DoOp
-            integer :: Etot, NEval, NBas, Norb, NAt, NCShell, igroup, ngroup, iMult
+            integer :: Etot, NEval, NBas, Norb, NAt, NCShell, igroup, ngroup, iMult, NMo
 
-            integer, check(len(Ca)/NBas>=NMo),depend(Ca), intent(hide) :: NMo=len(Ca)/NBas
+            ! integer, check(len(Ca)/NBas>=NMo),depend(Ca), intent(hide) :: NMo=len(Ca)/NBas
             ! integer, intent(hide) :: NOrb_w
 
             real*8 dimension(3),intent(in) :: RCread, VAxis, VAxis2
@@ -26,10 +26,10 @@ python module WFNSYMLIB ! in
             integer dimension(3),intent(out) :: OutDim
             real*8 dimension(100),intent(out) :: OutCMS, OutGrim
             character dimension(100),intent(out) :: OutSymLab*6, OutIRLab*3
-            real*8 dimension(NBas,100),intent(out) :: OutSDiagA, OutSDiagB
+            real*8 dimension(NMo,100),intent(out) :: OutSDiagA, OutSDiagB
             real*8 dimension(100),intent(out) :: OutWDiagA, OutWDiagB
             real*8 dimension(100,100),intent(out) :: OutTbl
-            real*8 dimension(NBas,100),intent(out) :: OutgIRA, OutgIRB
+            real*8 dimension(NMo,100),intent(out) :: OutgIRA, OutgIRB
             real*8 dimension(100),intent(out) :: OutgIRwfA, OutgIRwfB, OutgIRwf
             real*8 dimension(100,3,3),intent(out) :: OutSymMat
 

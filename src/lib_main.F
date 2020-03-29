@@ -62,10 +62,10 @@ c     Output
       INTEGER :: OutDim(3)
       REAL*8 :: OutCSM(100), OutGrim(100)
       CHARACTER :: OutSymLab(100)*6, OutIRLab(100)*3
-      REAL*8 :: OutSDiagA(NBas, 100), OutSDiagB(NBas, 100)
+      REAL*8 :: OutSDiagA(NMo, 100), OutSDiagB(NMo, 100)
       REAL*8 :: OutWDiagA(100), OutWDiagB(100)
       REAL*8 :: OutTbl(100,100)
-      REAL*8 :: OutgIRA(NBas,100), OutgIRB(NBAs,100)
+      REAL*8 :: OutgIRA(NMo,100), OutgIRB(NMo,100)
       REAL*8 :: OutgIRwfA(100), OutgIRwfB(100), OutgIRwf(100)
       REAL*8 :: OutSymMat(100, 3, 3)
 c Include files
