@@ -2,6 +2,8 @@ __version__ = '0.2.10'
 
 from wfnsympy.WFNSYMLIB import mainlib, overlap_mat
 from wfnsympy.QSYMLIB import denslib, center_charge
+from wfnsympy.errors import MultiplicityError, ChangedAxisWarning, LabelNotFound
+import warnings
 import numpy as np
 import sys, os, io, tempfile
 
@@ -97,10 +99,10 @@ def _get_group_num_from_label(label):
                   'I':   [8, 6],
                   'IH':  [8, 7],
                   }
-    try:
+    if label_2.upper() in operations:
         return operations[label_2.upper()]
-    except KeyError:
-        raise Exception('Label not found')
+    else:
+        raise LabelNotFound(label)
 
 
 def _get_operation_num_from_label(label):
@@ -197,6 +199,9 @@ class WfnSympy:
         else:
             self._total_electrons = np.sum(self._atomic_numbers) - self._charge
 
+        if (np.remainder(self._total_electrons, 2) == np.remainder(self._multiplicity, 2) or
+            self._total_electrons < self._multiplicity):
+            raise MultiplicityError(self._multiplicity, self._total_electrons)
 
         # Create MO coefficients in contiguous list
         self._n_mo = len(alpha_mo_coeff)
@@ -330,13 +335,13 @@ class WfnSympy:
                                self._multiplicity, self._do_operation)
             E.seek(0)
             capture = E.read()
-
         capture = capture.decode().split('\n')
 
         for i, c in enumerate(capture):
             if 'ERROR. Axes not valid' in c:
                 self._axis = [float(v) for v in capture[i+3].split()[-3:]]
                 self._axis2 = [float(v) for v in capture[i+4].split()[-3:]]
+                warnings.warn(ChangedAxisWarning(self._axis, self._axis2))
 
         # Process outputs
         dgroup = out_data[0][0]
