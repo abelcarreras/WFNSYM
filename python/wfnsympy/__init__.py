@@ -3,6 +3,7 @@ __version__ = '0.2.10'
 from wfnsympy.WFNSYMLIB import mainlib, overlap_mat
 from wfnsympy.QSYMLIB import denslib, center_charge
 from wfnsympy.errors import MultiplicityError, ChangedAxisWarning, LabelNotFound
+from wfnsympy.optimize import minimize_axis2, rotation_xy, rotation_axis
 import warnings
 import numpy as np
 import sys, os, io, tempfile
@@ -199,6 +200,7 @@ class WfnSympy:
         else:
             self._total_electrons = np.sum(self._atomic_numbers) - self._charge
 
+        # Check total_electrons compatible with multiplicity
         if (np.remainder(self._total_electrons, 2) == np.remainder(self._multiplicity, 2) or
             self._total_electrons < self._multiplicity):
             raise MultiplicityError(self._multiplicity, self._total_electrons)
@@ -211,7 +213,8 @@ class WfnSympy:
         else:
             self._cb = self._ca
 
-        if self._total_electrons > self._n_mo * 2:
+        # Check if electrons fit in provided MO
+        if (self._total_electrons + self._multiplicity - 1)/2 > self._n_mo:
             self._total_electrons = self._n_mo * 2
             self._multiplicity = 1
 
@@ -303,8 +306,6 @@ class WfnSympy:
             self._axis2 = np.dot(rotation_axis(self._axis, gamma), get_perpendicular_axis(self._axis))
         elif self._axis2 is None:
             if self._igroup == 8:  # tetrahedron and octahedron groups
-                from wfnsympy.optimize import minimize_axis2
-                from wfnsympy.optimize import rotation_xy, rotation_axis
 
                 def target_function(gamma, VAxis):
                     VAxis2 = np.dot(rotation_axis(VAxis, gamma), get_perpendicular_axis(VAxis))
