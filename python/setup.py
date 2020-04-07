@@ -13,7 +13,7 @@ def get_version_number():
             return __version__
 
 
-if 'USER' in os.environ and os.environ['USER'] == 'travis':
+if bool('TRAVIS_WFNSYM' in os.environ):
     print('Testing in travis')
     copy_tree('../src', './src', update=True)
     copy_tree('../include', './include', update=True)

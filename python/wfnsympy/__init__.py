@@ -1,9 +1,9 @@
-__version__ = '0.2.10'
+__version__ = '0.2.11'
 
 from wfnsympy.WFNSYMLIB import mainlib, overlap_mat
 from wfnsympy.QSYMLIB import denslib, center_charge
 from wfnsympy.errors import MultiplicityError, ChangedAxisWarning, LabelNotFound
-from wfnsympy.optimize import minimize_axis2, rotation_xy, rotation_axis
+from wfnsympy.optimize import minimize_axis, minimize_axis2, rotation_xy, rotation_axis
 import warnings
 import numpy as np
 import sys, os, io, tempfile
@@ -117,6 +117,62 @@ def _get_operation_num_from_label(label):
     else:
         irot = 0
     return ioper, irot
+
+
+def _center_of_charge(mo_coefficients_alpha, mo_coefficients_beta,
+                      coordinates, basis, total_electrons, multiplicity,
+                      overlap_matrix):
+    """
+    Returns the center of charge in Angstrom
+    """
+
+    alpha_unpaired = multiplicity//2 + 1 if (total_electrons % 2) else multiplicity//2
+
+    alpha_electrons = total_electrons//2 + alpha_unpaired
+    beta_electrons = total_electrons - alpha_electrons
+    # print('electrons', alpha_electrons, beta_electrons)
+
+    type_to_nfunc = {}
+    for item in shell_type_list.items():
+        type_to_nfunc['{}'.format(item[1][0])] = int(item[1][1])
+
+    # get the basis functions corresponding to each atom (ini, fin)
+    ranges_per_atom = []
+    n_start = 0
+    for atoms in basis['atoms']:
+        n_functions = 0
+        for shell in atoms['shells']:
+            n_functions += type_to_nfunc[shell['shell_type']]
+
+        ranges_per_atom.append((n_start, n_start + n_functions))
+        n_start += n_functions
+
+    # localization on fragments analysis
+    number_of_atoms = len(coordinates)
+
+    charges = []
+    for atom in range(number_of_atoms):
+        charge_atom = 0
+        # Alpha
+        for i in range(alpha_electrons):
+            orb = mo_coefficients_alpha[i]
+            orb_atom = np.zeros_like(orb)
+            orb_atom[ranges_per_atom[atom][0]:ranges_per_atom[atom][1]] = \
+                orb[ranges_per_atom[atom][0]:ranges_per_atom[atom][1]]
+            charge_atom += np.dot(orb_atom, np.dot(overlap_matrix, orb))
+        # Beta
+        for i in range(beta_electrons):
+            orb = mo_coefficients_beta[i]
+            orb_atom = np.zeros_like(orb)
+            orb_atom[ranges_per_atom[atom][0]:ranges_per_atom[atom][1]] = \
+                orb[ranges_per_atom[atom][0]:ranges_per_atom[atom][1]]
+            charge_atom += np.dot(orb_atom, np.dot(overlap_matrix, orb))
+
+        charges.append(charge_atom)
+
+    center = np.sum(np.multiply(coordinates.T, charges).T, axis=0)/np.sum(charges)
+
+    return center.tolist()
 
 
 def get_perpendicular_axis(axis):
@@ -276,15 +332,30 @@ class WfnSympy:
 
         # Check center
         if self._center is None:
+            # # get overlap matrix
+            # overlap_matrix = overlap_mat(self._symbols,
+            #                              np.array(self._coordinates) / _bohr_to_angstrom,
+            #                              self._n_bas,
+            #                              self._n_atoms,
+            #                              self._n_uncontr_orbitals,
+            #                              self._ntot_shell,
+            #                              self._n_shell,
+            #                              self._shell_type,
+            #                              self._n_primitives,
+            #                              self._uncontracted_coefficients,
+            #                              self._alpha)
+            #
+            # overlap_matrix = np.array(overlap_matrix).reshape(self._n_bas, self._n_bas)
+            #
+            # self._center = _center_of_charge(alpha_mo_coeff, beta_mo_coeff, self._coordinates, basis,
+            #                                  self._total_electrons, self._multiplicity, overlap_matrix)
+
             self._center = center_charge(self._coordinates, self._total_electrons, self._l_dens, self._alpha,
                                          self._uncontracted_coefficients, self._n_primitives, self._n_shell,
                                          self._shell_type, self._ca, self._n_mo, self._n_bas, self._n_c_mos)
 
         # Check axis
         if self._axis is None:
-            from wfnsympy.optimize import minimize_axis
-            from wfnsympy.optimize import rotation_xy, rotation_axis
-
             def target_function(alpha, beta, gamma=0.0):
                 VAxis = np.dot(rotation_xy(alpha, beta), [1, 0, 0])
                 VAxis2 = np.dot(rotation_axis(VAxis, gamma), get_perpendicular_axis(VAxis))
