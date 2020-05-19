@@ -1,5 +1,5 @@
       SUBROUTINE self_similarity(SelfSim,
-     &         iAngCen,AlphCen,CCen,RCen,LCen,NCen)
+     &         iAngCen,AlphCen,CCen,RCen,NCen)
 c*****************************************************c
 c                                                     c
 c     Computes Self Similarity                        c
@@ -7,7 +7,6 @@ c                                                     c
 c                                                     c
 c     INPUT:                                          c
 c                                                     c
-c       LCen      # total centered functions          c
 c       NCen      # non zero centered functions       c
 c       iAngCen   Centered ang indices                c
 c       AlphCen   Centered exponents                  c
@@ -24,8 +23,8 @@ c       DCC: 01/20                                    c
 c                                                     c
 c*****************************************************c
       IMPLICIT REAL*8 (a-h,o-z)
-      INTEGER  iAngCen(LCen,3),iAng(3),NAngTot
-      REAL*8   AlphCen(*),CCen(*),RCen(LCen,3),
+      INTEGER  iAngCen(NCen,3),iAng(3),NAngTot
+      REAL*8   AlphCen(*),CCen(*),RCen(NCen,3),
      &         SelfSim,Rself(3),
      &         Dself,Sself
       SAVE Zero,Half,One,Two,Four,Eight

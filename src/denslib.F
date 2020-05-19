@@ -1,10 +1,9 @@
 #include "qsym.h"
 
-      SUBROUTINE denslib(AtLab,R,N_elec,LDens,alfa2,coef2,NPrim,NShell,
-     &                   shell_type,coef_mol,RCread_2,VAxis_2,VAxis2_2,
-     &                   NMOs,NAOs,NOrbX,igroup_2,ngroup_2,DoOper_2,
-     &                   NOrb,NAt_2,NTotShell,OutDim,OutCSM_i,OutCSM,
-     &                   OutSymLab,OutSassembly)
+      SUBROUTINE denslib(R,RCread_2,VAxis_2,VAxis2_2,NOrbX,
+     &                   igroup_2,ngroup_2,DoOper_2,
+     &                   iAngDens,AlphDens,CDens,RDens,NDens,NAt_2,
+     &                   OutDim,OutCSM_i,OutCSM,OutSymLab,OutSassembly)
 
 c--------------------------------------------------------------
 c
@@ -17,29 +16,24 @@ c	Variables
 c
 c	NAt		num d'atoms
 c	Num_elec	num d'electrons
-c	NAOs		num d'orbitals atomics segons la base
-c	NOrb	 	num pure      gaussian functions
 c	NOrbX	 	num cartesian gaussian functions
 c	N_1		orbital molecular que no agafem pel calcul
 c   N_2             orbital molecular que no agafem pel calcul
 c   vecontb(i)      vector de contraccio de la base. Compte el num de termes de cada capa
 c	coef_MO(i,j)    coeficients moleculars. La seva dimensio es (NOrb,Num_elec/2)
-c	coef_mol(i)	coeficients moleculars en forma de vector
 
 c   R           Atomic coordinates
 c--------------------------------------------------------------
       IMPLICIT REAL*8 (a-h,o-z)
-      INTEGER :: NOrb,NOrbX,N_elec,NAt_2,igroup_2,ngroup_2
-      CHARACTER :: AtLab(NAt_2)*2,str*2
+      INTEGER :: NOrbX,NAt_2,igroup_2,ngroup_2
+      CHARACTER :: str*2
       REAL*8 :: R(NAt_2,3),RT(NAt_2,3),alfa(NOrbX),coef(NOrbX),
-     &          alfa2(NOrb),coef2(NOrb),
-     &          R_orb(NOrbX,3),CDens(LDens),AlphDens(LDens),
-     &          RDens(LDens,3),coef_mol(NMOs*NAOs),MatSym(3,3),
+     &          CDens(NDens),AlphDens(NDens),
+     &          RDens(NDens,3),MatSym(3,3),
      &          Aux1(3,3),Aux2(3,3),R_fun(3),RCread_2(3),VAxis_2(3),
      &          VAxis2_2(3)
-      INTEGER :: i_angl(NOrbX,3),vecontb(NOrb),iAngDens(LDens,3),
-     &           NPrim(NTotShell),in(3),shell_type(NTotShell),
-     &           NShell(NAt_2)
+      INTEGER :: i_angl(NOrbX,3),iAngDens(NDens,3),
+     &           in(3)
       INTEGER, ALLOCATABLE :: iAngSym(:,:)
       REAL*8, ALLOCATABLE :: AlphSym(:),CSym(:),RSym(:,:),
      &                       coef_MO(:,:),coeficient(:),S_sym(:)
@@ -62,8 +56,6 @@ c ----------- Added manual arguments-----------
       RCread = RCread_2
       VAxis = VAxis_2
       VAxis2 = VAxis2_2
-      TolDens = 1.d-8
-      alfa = alfa2
       DoOper = DoOper_2
 
 
@@ -73,154 +65,9 @@ c Writing Coordinates and transform them to AU unities
           R(k,j) = R(k,j)*ANGSBOHR
         ENDDO
       ENDDO
-
-c Reading Basis Set
- 10   CONTINUE
-      CALL dens_basis(i_angl,R_orb,R,vecontb,NAt,
-     &                NOrbX,NPrim,NTotShell,NShell,shell_type,NOrb)
-      coef = coef2
-
-
-c Place MOs in Matrix form
-      ALLOCATE(coef_MO(NOrbX,N_elec/2))
-
-      ij = 1
-      DO i = 1,NMOs
-	    iOrb = 0
-	    DO j = 1,NAOs
-	      DO jj = 1,vecontb(j)
-	        coef_MO(iOrb+jj,i) = coef_mol(ij)
-	      ENDDO
-	      iOrb = iOrb+vecontb(j)
-	      ij = ij+1
-	    ENDDO
-	  ENDDO
-
-c
-c Expand x^2-y^2 and z2 only for pure d-orbitals
-c
-c Introduction of y^2 <- x^2-y^2
-c     write(2,*)'expand y2'
-      ij = NOrb
-      DO i = 1,NOrb
-        IF (i_angl(i,1).eq.2 .and. i_angl(i,2).eq.-2) THEN
-          alfa(ij+1) = alfa(i)
-          coef(ij+1) = -coef(i)*0.8660254038!*DSQRT(0.75D0)
-          coef(i) = coef(i)*0.8660254038!*DSQRT(0.75D0)
- 	      DO j = 1,NMOs
- 	        coef_MO(ij+1,j) = coef_MO(i,j)
-	      ENDDO
-	      DO j = 1,3
-	        R_orb(ij+1,j) = R_orb(i,j)
-	      ENDDO
-          i_angl(i,1) = 2
-          i_angl(i,2) = 0
-          i_angl(i,3) = 0
-          i_angl(ij+1,1) = 0
-          i_angl(ij+1,2) = 2
-          i_angl(ij+1,3) = 0
-          ij = ij+1
-	    END IF
-
-
-c Introduction of  z^2  =  2z^2-x^2-y^2
-c     write(2,*)'expand z2'
-        IF (i_angl(i,3).eq.4) THEN
-          alfa(ij+1) = alfa(i)
-          coef(ij+1) = -coef(i)*0.5D0
-          alfa(ij+2) = alfa(i)
-          coef(ij+2) = -coef(i)*0.5D0
-          coef(i)    = 2.0d0*coef(i)*0.5D0
-          DO j = 1,NMOs
-            coef_MO(ij+1,j) = coef_MO(i,j)
-            coef_MO(ij+2,j) = coef_MO(i,j)
-          ENDDO
-          DO j = 1,3
-            R_orb(ij+1,j) = R_orb(i,j)
-            R_orb(ij+2,j) = R_orb(i,j)
-          ENDDO
-          i_angl(i,1) = 0
-          i_angl(i,2) = 0
-          i_angl(i,3) = 2
-          i_angl(ij+1,1) = 2
-          i_angl(ij+1,2) = 0
-          i_angl(ij+1,3) = 0
-          i_angl(ij+2,1) = 0
-          i_angl(ij+2,2) = 2
-          i_angl(ij+2,3) = 0
-          ij = ij+2
-
-        END IF
-      ENDDO
-
-c Compute Normalization Factors
-	  DO iOrb = 1,NOrbX
-	    DO j = 1,3
-            in(j) = i_angl(iOrb,j)
-        ENDDO
-	    CALL norma(in,alfa(iOrb),Dot)
-	    coef(iOrb) = coef(iOrb)*Dot
-	  ENDDO
-
-c Product between MO coefficients. Only take needed orbitals
-      Nx = (NOrbX)*(NOrbX+1)/2
-      ALLOCATE(coeficient(Nx))
-      CALL VRload(coeficient,Nx,Zero)
-
-      ij = 1
-      DO i_MO = 1,NMOs
-       IF(.NOT.OrbCHK) THEN
-         k = 1
-         DO i1 = 1,NOrbX
-           DO i2 = i1,NOrbX
-             coeficient(k) = coeficient(k)+
-     &        coef_MO(i1,i_MO)*coef_MO(i2,i_MO)
-           k = k + 1
-           ENDDO
-         ENDDO
-         ij = ij + 1
-       ENDIF
-      ENDDO
-
-
-c Free some space
-      DEALLOCATE(coef_MO)
-c-------------------------------------------
-c  Build density function
-      CALL VRload(iAngDens,LDens,Zero)
-      CALL VRload(CDens,LDens,Zero)
-      CALL VRload(AlphDens,LDens,Zero)
-      CALL VRload(RDens,LDens,Zero)
-      CALL make_dens(iAngDens,AlphDens,CDens,RDens,LDens,NDens,
-     &               alfa,coeficient,coef,i_angl,R_orb,NOrbX,TolDens)
-      DEALLOCATE(coeficient)
-
-c Integrate the electron density
-      elec_total = Zero
-      CALL electronic_integral(elec_total,RC,AlphDens,iAngDens,RDens,
-     &                         CDens,LDens,NDens,N_elec)
-
-c Do we wish to center the electron density?
-      IF (NO_CENTER) THEN
-        CALL VRload(RC,3,Zero)
-      ELSEIF (readRC .AND. .NOT. CenCHK) THEN
-        DO J = 1,3
+      DO J = 1,3
           RC(J) = ANGSBOHR * RCread(J)
-        ENDDO 
-      ENDIF
-
-      Tol = 1.d-8
-      IF ((ABS(RC(1)).GT.Tol .OR. ABS(RC(2)).GT.Tol .OR.
-     &     ABS(RC(3)).GT.Tol) .AND. .NOT.CenCHK) THEN
-        DO J = 1,3
-          DO I = 1,NAt
-            R(I,J) = R(I,J) - RC(J)
-          ENDDO
-        ENDDO
- 497    FORMAT('Remaking the density at the center...')
-        CenCHK = .TRUE.
-        GOTO 10
-      ENDIF
+      ENDDO
 
 c**********************************************************c
 c  In this version we do NOT move the electron density    *c
@@ -240,7 +87,7 @@ c**********************************************************c
 
 c compute Self_similarity
       CALL self_similarity(S_total,
-     &       iAngDens,AlphDens,CDens,RDens,LDens,NDens)
+     &       iAngDens,AlphDens,CDens,RDens,NDens)
 
       CALL SetGroupDim(iGroup, nGroup, dGroup, hGroup)
 c Define Symmetry-Operation or Symmetry-Group Matrix
@@ -293,8 +140,8 @@ c Write transformation matrix and new atomic coordinates
          ALLOCATE(iAngSym(LSym,3))
          ALLOCATE(AlphSym(LSym),CSym(LSym),RSym(LSym,3))
          CALL sym_transform(iAngSym,AlphSym,CSym,RSym,LSym,NSym,
-     &         MatSym,iAngDens,AlphDens,CDens,RDens,LDens,NDens)
-         CALL sym_overlap(iAngDens,AlphDens,CDens,RDens,NDens,LDens,
+     &         MatSym,iAngDens,AlphDens,CDens,RDens,NDens)
+         CALL sym_overlap(iAngDens,AlphDens,CDens,RDens,NDens,
      &         iAngSym,AlphSym,CSym,RSym,NSym,LSym,S_sym(iG))
          S_sym_total = S_sym_total + S_sym(iG)
 !        OutCSM_i(iG) = 100.d0*(One-S_sym(iG)/(dGroup*S_total))
@@ -313,13 +160,15 @@ c Write transformation matrix and new atomic coordinates
 
       END
 
-      SUBROUTINE electronic_integral(elec_total,RC,AlphDens,iAngDens,
-     &                               RDens,CDens,LDens,NDens,N_elec)
+      SUBROUTINE center_charge(AlphDens,iAngDens,RDens,CDens,
+     &                         N_elec,elec_total,OutRC,NDens)
       IMPLICIT REAL*8 (a-h,o-z)
       INTEGER :: N_elec,ang2(3),i_angl_fun(3)
-      REAL*8 :: CDens(LDens),AlphDens(LDens),RDens(LDens,3),
+      REAL*8 :: CDens(NDens),AlphDens(NDens),RDens(NDens,3),
      &          R_fun(3),RC(3)
-      INTEGER :: iAngDens(LDens,3)
+      INTEGER :: iAngDens(NDens,3)
+c     Output
+      REAL*8 :: OutRC(3)
       SAVE Zero
       DATA Zero / 0d0 /
 
@@ -342,16 +191,17 @@ c Write transformation matrix and new atomic coordinates
            RC(k) = RC(k)+elec*CDens(i_fun)/dfloat(N_elec)
         ENDDO
       ENDDO
+      OutRC = RC
 
       END SUBROUTINE
 
-
-      SUBROUTINE center_charge(R,N_elec,LDens,alfa2,coef2,
-     &                   NPrim,NShell,shell_type,coef_mol,
-     &                   NMOs,NAOs,NOrbX,NOrb,
-     &                   NAt_2,NTotShell,OutRC)
+      SUBROUTINE build_density(R,LDens,alfa2,coef2,
+     &                         NPrim,NShell,shell_type,coef_mol,
+     &                         NMOs,NAOs,NOrbX,TolDens,
+     &                         iAngDens,AlphDens,CDens,RDens,NDens,
+     &                         NOrb,NAt_2,NTotShell)
       IMPLICIT REAL*8 (a-h,o-z)
-      INTEGER :: NOrb,NOrbX,N_elec,NAt_2
+      INTEGER :: NOrb,NOrbX,NAt_2
       REAL*8 :: R(NAt_2,3),alfa(NOrbX),coef(NOrbX),
      &          R_orb(NOrbX,3),CDens(LDens),AlphDens(LDens),
      &          RDens(LDens,3),coef_mol(NMOs*NAOs),
@@ -369,7 +219,6 @@ c     Output
 
 c ----------- Added manual arguments-----------
       iout = 0
-      TolDens = 1.d-8
       NAt = NAt_2
       alfa = alfa2
       coef = coef2
@@ -387,7 +236,7 @@ c Reading Basis Set
 
 
 c Place MOs in Matrix form
-      ALLOCATE(coef_MO(NOrbX,N_elec/2))
+      ALLOCATE(coef_MO(NOrbX,NMOs))
 
       ij = 1
       DO i = 1,NMOs
@@ -498,13 +347,5 @@ c  Build density function
      &               alfa,coeficient,coef,i_angl,R_orb,NOrbX,TolDens)
 
       DEALLOCATE(coeficient)
-
-c Integrate the electron density
-      elec_total = Zero
-      CALL electronic_integral(elec_total,OutRC,AlphDens,iAngDens,
-     &                         RDens,CDens,LDens,NDens,N_elec)
-      DO i=1,3
-      OutRC(i) = OutRC(i)/ANGSBOHR
-      END DO
 
       END SUBROUTINE
