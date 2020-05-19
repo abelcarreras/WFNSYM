@@ -1,7 +1,7 @@
 __version__ = '0.2.11'
 
 from wfnsympy.WFNSYMLIB import mainlib, overlap_mat
-from wfnsympy.QSYMLIB import denslib, center_charge
+from wfnsympy.QSYMLIB import denslib, center_charge, build_density
 from wfnsympy.errors import MultiplicityError, ChangedAxisWarning, LabelNotFound
 from wfnsympy.optimize import minimize_axis, minimize_axis2, rotation_xy, rotation_axis
 import warnings
@@ -213,6 +213,8 @@ class WfnSympy:
         self._axis2 = VAxis2
         self._charge = charge
         self._multiplicity = multiplicity
+        self._alpha_occupancy = None
+        self._beta_occupancy = None
 
         self._csm_dens = None
         self._csm_dens_coef = None
@@ -277,6 +279,20 @@ class WfnSympy:
         if self._valence_electrons >= self._total_electrons:
             self._valence_electrons = 0
 
+        if self._ca == self._cb:
+            self._unrestricted = False
+        else:
+            self._unrestricted = True
+
+        if self._alpha_occupancy is None:
+            self._alpha_occupancy = [1/np.sqrt(2) for _ in range(self._total_electrons//2)]
+        if self._beta_occupancy is None:
+            self._beta_occupancy = [1/np.sqrt(2) for _ in range(self._total_electrons//2)]
+
+        if self._multiplicity > 1:
+            for _ in range(self._multiplicity-1):
+                self._alpha_occupancy.append(1/np.sqrt(2))
+                self._beta_occupancy.append(0)
         self._n_shell = np.unique(atom_map, return_counts=True)[1]
 
         # Transform symbols type to correct Fortran char*2 type
@@ -330,29 +346,51 @@ class WfnSympy:
         self._l_dens = int(n_s*(n_s + 1)/2 + 2*n_s*(3*n_p) + 2*3*n_p*(3*n_p + 1) + n_s*n_d*(3*5 + 4*3) +
                      140*n_p*n_d + 284*n_d*n_d + 26*n_d)
 
+        self.toldens = 1e-08
+
+        ca = []
+        for ide, electrons in enumerate(self._alpha_occupancy):
+            ca.append(electrons*np.array(self._ca[ide*self._n_bas:self._n_bas*(ide + 1)]))
+        ca = np.ascontiguousarray(ca).flatten().tolist()
+        index_list_a, exponents_a, dens_coefs_a, \
+        dens_positions_a, dens_lenght_a = build_density(self._coordinates, self._l_dens, self._alpha,
+                                                        self._uncontracted_coefficients, self._n_primitives,
+                                                        self._n_shell, self._shell_type, ca, self._n_mo,
+                                                        self._n_bas, self._n_c_mos, self.toldens)
+
+        self._index_list_a = index_list_a[:dens_lenght_a]
+        self._exponents_a = exponents_a[:dens_lenght_a]
+        self._dens_coefs_a = dens_coefs_a[:dens_lenght_a]
+        self._dens_positions_a = dens_positions_a[:dens_lenght_a]
+        # print('N gaussianes a evaluar: ', dens_lenght_a)
+
+        if self._unrestricted:
+            cb = []
+            for ide, electrons in enumerate(self._beta_occupancy):
+                cb.append(electrons * np.array(self._cb[ide * self._n_bas:self._n_bas * (ide + 1)]))
+            cb = np.ascontiguousarray(cb).flatten().tolist()
+            index_list_b, exponents_b, dens_coefs_b, \
+            dens_positions_b, dens_lenght_b = build_density(self._coordinates, self._l_dens, self._alpha,
+                                                            self._uncontracted_coefficients, self._n_primitives,
+                                                            self._n_shell, self._shell_type, cb, len(self._beta_occupancy),
+                                                            self._n_bas, self._n_c_mos, self.toldens)
+
+            self._index_list_b = index_list_b[:dens_lenght_b]
+            self._exponents_b = exponents_b[:dens_lenght_b]
+            self._dens_coefs_b = dens_coefs_b[:dens_lenght_b]
+            self._dens_positions_b = dens_positions_b[:dens_lenght_b]
+            # print('N gaussianes a evaluar: ', dens_lenght_b)
+
         # Check center
         if self._center is None:
-            # # get overlap matrix
-            # overlap_matrix = overlap_mat(self._symbols,
-            #                              np.array(self._coordinates) / _bohr_to_angstrom,
-            #                              self._n_bas,
-            #                              self._n_atoms,
-            #                              self._n_uncontr_orbitals,
-            #                              self._ntot_shell,
-            #                              self._n_shell,
-            #                              self._shell_type,
-            #                              self._n_primitives,
-            #                              self._uncontracted_coefficients,
-            #                              self._alpha)
-            #
-            # overlap_matrix = np.array(overlap_matrix).reshape(self._n_bas, self._n_bas)
-            #
-            # self._center = _center_of_charge(alpha_mo_coeff, beta_mo_coeff, self._coordinates, basis,
-            #                                  self._total_electrons, self._multiplicity, overlap_matrix)
-
-            self._center = center_charge(self._coordinates, self._total_electrons, self._l_dens, self._alpha,
-                                         self._uncontracted_coefficients, self._n_primitives, self._n_shell,
-                                         self._shell_type, self._ca, self._n_mo, self._n_bas, self._n_c_mos)
+            elec_total, center_a = center_charge(self._exponents_a, self._index_list_a, self._dens_positions_a,
+                                                 self._dens_coefs_a, self._total_electrons)
+            center = 2*center_a
+            if self._unrestricted:
+                elec_total, center_b = center_charge(self._exponents_b, self._index_list_b, self._dens_positions_b,
+                                                     self._dens_coefs_b, self._total_electrons)
+                center = np.array(center_a) + np.array(center_b)
+            self._center = center*_bohr_to_angstrom
 
         # Check axis
         if self._axis is None:
@@ -361,11 +399,9 @@ class WfnSympy:
                 VAxis2 = np.dot(rotation_axis(VAxis, gamma), get_perpendicular_axis(VAxis))
 
                 with _captured_stdout():
-                    out_data = denslib(self._symbols, self._coordinates, self._total_electrons, self._l_dens,
-                                       self._alpha, self._uncontracted_coefficients,
-                                       self._n_primitives, self._n_shell, self._shell_type, self._ca, self._center,
-                                       VAxis, VAxis2, self._n_mo, self._n_bas, self._n_c_mos, self._igroup,
-                                       self._ngroup, self._do_operation)
+                    out_data = denslib(self._coordinates, self._center, VAxis, VAxis2, self._n_c_mos,
+                                       self._igroup, self._ngroup, self._do_operation, self._index_list_a,
+                                       self._exponents_a, self._dens_coefs_a, self._dens_positions_a)
 
                 return np.abs(out_data[2])
 
@@ -382,12 +418,9 @@ class WfnSympy:
                     VAxis2 = np.dot(rotation_axis(VAxis, gamma), get_perpendicular_axis(VAxis))
 
                     with _captured_stdout():
-                        out_data = denslib(self._symbols, self._coordinates, self._total_electrons, self._l_dens,
-                                           self._alpha, self._uncontracted_coefficients,
-                                           self._n_primitives, self._n_shell, self._shell_type, self._ca,
-                                           self._center, VAxis, VAxis2,
-                                           self._n_mo, self._n_bas, self._n_c_mos, self._igroup,
-                                           self._ngroup, self._do_operation)
+                        out_data = denslib(self._coordinates, self._center, VAxis, VAxis2, self._n_c_mos,
+                                           self._igroup, self._ngroup, self._do_operation, self._index_list_a,
+                                           self._exponents_a, self._dens_coefs_a, self._dens_positions_a)
 
                     return np.abs(out_data[2])
 
@@ -450,24 +483,32 @@ class WfnSympy:
 
     def calculate_csm_density(self):
         with _captured_stdout():
-            dens_data = denslib(self._symbols, self._coordinates, self._total_electrons, self._l_dens, self._alpha,
-                                self._uncontracted_coefficients, self._n_primitives, self._n_shell,
-                                self._shell_type, self._ca, self._center, self._axis,
-                                self._axis2, self._n_mo, self._n_bas, self._n_c_mos, self._igroup,
-                                self._ngroup, self._do_operation)
+            alpha_density = denslib(self._coordinates, self._center, self._axis, self._axis2, self._n_c_mos,
+                                    self._igroup, self._ngroup, self._do_operation, self._index_list_a,
+                                    self._exponents_a, self._dens_coefs_a, self._dens_positions_a)
 
         # Process outputs
-        self._csm_dens_coef = dens_data[1][0:self._dgroup]
-        self._csm_dens = dens_data[2]
-        self._csm_dens = 0
-        for idl, label in enumerate(self._SymLab):
-            try:
-                c = int(label[0])
-            except ValueError:
-                c = 1
-            self._csm_dens += self._csm_dens_coef[idl]*c
-        self._csm_dens = 100*(1 - self._csm_dens/self._hgroup)
-        self._self_assembly = dens_data[4]
+        self._csm_dens_coef_a = alpha_density[1][0:self._dgroup]
+        self._csm_dens_a = alpha_density[2]
+        self._self_assembly_a = alpha_density[4]
+
+        if self._unrestricted:
+            with _captured_stdout():
+                beta_density = denslib(self._coordinates, self._center, self._axis, self._axis2, self._n_c_mos,
+                                         self._igroup, self._ngroup, self._do_operation, self._index_list_b,
+                                         self._exponents_b, self._dens_coefs_b, self._dens_positions_b)
+            self._csm_dens_coef_b = beta_density[1][0:self._dgroup]
+            self._csm_dens_b = beta_density[2]
+            self._self_assembly_b = beta_density[4]
+
+            self._csm_dens_coef = [0.5*a + 0.5*self._csm_dens_coef_b[i] for i,a in enumerate(self._csm_dens_coef_a)]
+            self._csm_dens = 0.5*self._csm_dens_a + 0.5*self._csm_dens_b
+            self._self_assembly = 0.5*self._self_assembly_a + 0.5*self._self_assembly_b
+
+        else:
+            self._csm_dens_coef = self._csm_dens_coef_a
+            self._csm_dens = self._csm_dens_a
+            self._self_assembly = self._self_assembly_a
 
     # Print Outputs
     def print_CSM(self):
@@ -547,9 +588,12 @@ class WfnSympy:
 
     def print_dens_CSM(self):
         print('\nDensity: CSM-like values')
-        print('Total CSM {:3.3f}'.format(self.csm_dens))
         print('         ' + '  '.join(['{:^7}'.format(s) for s in self.SymLab]))
         print('C-Index ' + '  '.join(['{:7.3f}'.format(s) for s in self.csm_dens_coef]))
+        print('Total CSM {:3.3f}'.format(self.csm_dens))
+        if self._unrestricted:
+            print('Alpha CSM {:3.3f}'.format(self._csm_dens_a))
+            print('Beta  CSM {:3.3f}'.format(self._csm_dens_b))
         # print('Self Assembly {:3.4f}'.format(self._self_assembly))
 
     def print_info(self):

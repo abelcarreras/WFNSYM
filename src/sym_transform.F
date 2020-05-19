@@ -1,7 +1,7 @@
 
       SUBROUTINE sym_transform(iAngSym,AlphSym,CSym,RSym,
      & LSym,NSym,MatSym,
-     & iAngdens,AlphDens,CDens,RDens,LDens,NDens)
+     & iAngdens,AlphDens,CDens,RDens,NDens)
 c*****************************************************c
 c                                                     c
 c       Transforms the electron density               c
@@ -13,7 +13,6 @@ c        iAngDens: (x,y,z) exponent indices           c
 c        AlphDens: function exponentials              c
 c        CDens   : function coefficients              c
 c        RDens   : function positions                 c
-c        LDens   : total # functions of Dens          c
 c        NDens   : non-zero Dens functions            c
 c        LSym    : total # functions of Sym           c
 c        MatSym  : symmetry transformation            c
@@ -29,8 +28,8 @@ c       DCC: 05/09                                    c
 c                                                     c
 c*****************************************************c
       IMPLICIT REAL*8(a-h,o-z)
-      INTEGER  iAngDens(LDens,3),iAngSym(LSym,3)
-      REAL*8   AlphDens(LDens),CDens(LDens),RDens(LDens,3),
+      INTEGER  iAngDens(NDens,3),iAngSym(LSym,3)
+      REAL*8   AlphDens(NDens),CDens(NDens),RDens(NDens,3),
      &         AlphSym(LSym),CSym(LSym),RSym(LSym,3),
      &         MatSym(3,3),VDens(3),VSym(3)
       SAVE Two,Three,Four

@@ -1,5 +1,5 @@
 
-      SUBROUTINE sym_overlap(iAngA,AlphA,CA,RA,NA,LDA,
+      SUBROUTINE sym_overlap(iAngA,AlphA,CA,RA,NA,
      &           iAngB,AlphB,CB,RB,NB,LDB,SAB)
 c*****************************************************c
 c                                                     c
@@ -21,9 +21,9 @@ c       DCC: 05/09                                    c
 c                                                     c
 c*****************************************************c
       parameter   (nn = 1999999)
-      INTEGER  iAngA(LDA,3),iAngB(LDB,3),iAngAB(3),
-     &         NA,NB,LDA,LDB
-      REAL*8   AlphA(*),CA(*),RA(LDA,3),
+      INTEGER  iAngA(NA,3),iAngB(LDB,3),iAngAB(3),
+     &         NA,NB,LDB
+      REAL*8   AlphA(*),CA(*),RA(NA,3),
      &         AlphB(*),CB(*),RB(LDB,3),
      &         Dist,CAB,AlphAB,RAB(3),Test,S,SAB
       SAVE Zero
