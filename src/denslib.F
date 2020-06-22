@@ -60,14 +60,14 @@ c ----------- Added manual arguments-----------
 
 
 c Writing Coordinates and transform them to AU unities
-      DO k = 1,NAt
-        DO j = 1,3
-          R(k,j) = R(k,j)*ANGSBOHR
-        ENDDO
-      ENDDO
-      DO J = 1,3
-          RC(J) = ANGSBOHR * RCread(J)
-      ENDDO
+c      DO k = 1,NAt
+c        DO j = 1,3
+c          R(k,j) = R(k,j)*ANGSBOHR
+c        ENDDO
+c      ENDDO
+c      DO J = 1,3
+c          RC(J) = ANGSBOHR * RCread(J)
+c      ENDDO
 
 c**********************************************************c
 c  In this version we do NOT move the electron density    *c
@@ -136,7 +136,7 @@ c Define Symmetry-Operation or Symmetry-Group Matrix
       DO iG=1,dGroup
          MatSym(:,:) = SymGrp(:,:,iG)
 c Write transformation matrix and new atomic coordinates
-         CALL AtimsB(RT,R,MatSym, NAt,3,3, NAt,NAt,3, 1)
+c         CALL AtimsB(RT,R,MatSym, NAt,3,3, NAt,NAt,3, 1)
          ALLOCATE(iAngSym(LSym,3))
          ALLOCATE(AlphSym(LSym),CSym(LSym),RSym(LSym,3))
          CALL sym_transform(iAngSym,AlphSym,CSym,RSym,LSym,NSym,
