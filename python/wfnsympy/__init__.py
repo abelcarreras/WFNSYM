@@ -1,4 +1,4 @@
-__version__ = '0.2.11'
+__version__ = '0.2.12'
 
 from wfnsympy.WFNSYMLIB import mainlib, overlap_mat
 from wfnsympy.QSYMLIB import denslib, center_charge, build_density
