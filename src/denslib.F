@@ -172,6 +172,7 @@ c     Output
       SAVE Zero
       DATA Zero / 0d0 /
 
+      elec_total = Zero
       DO i = 1,3
         RC(i) = Zero
       ENDDO
@@ -183,9 +184,10 @@ c     Output
         elec_total = elec_total+elec*CDens(i_fun)
 
         DO k = 1,3
-           DO j = 1,3
-             ang2(j) = i_angl_fun(j)
-           ENDDO
+           ang2(:) = i_angl_fun(:)
+c           DO j = 1,3
+c             ang2(j) = i_angl_fun(j)
+c           ENDDO
            ang2(k) = ang2(k) + 1
            CALL overlap(ang2,alfa_fun,R_fun,elec)
            RC(k) = RC(k)+elec*CDens(i_fun)/dfloat(N_elec)
@@ -197,7 +199,7 @@ c     Output
 
       SUBROUTINE build_density(R,LDens,alfa2,coef2,
      &                         NPrim,NShell,shell_type,coef_mol,
-     &                         NMOs,NAOs,NOrbX,TolDens,
+     &                         NMOs,NAOs,NOrbX,occupancy,TolDens,
      &                         iAngDens,AlphDens,CDens,RDens,NDens,
      &                         NOrb,NAt_2,NTotShell)
       IMPLICIT REAL*8 (a-h,o-z)
@@ -205,7 +207,7 @@ c     Output
       REAL*8 :: R(NAt_2,3),alfa(NOrbX),coef(NOrbX),
      &          R_orb(NOrbX,3),CDens(LDens),AlphDens(LDens),
      &          RDens(LDens,3),coef_mol(NMOs*NAOs),
-     &          alfa2(NOrb),coef2(NOrb)
+     &          alfa2(NOrb),coef2(NOrb),occupancy(NMOs)
       INTEGER :: i_angl(NOrbX,3),vecontb(NOrb),iAngDens(LDens,3),
      &           NPrim(NTotShell),in(3),shell_type(NTotShell),
      &           NShell(NAt_2)
@@ -327,7 +329,7 @@ c Product between MO coefficients. Only take needed orbitals
          DO i1 = 1,NOrbX
            DO i2 = i1,NOrbX
              coeficient(k) = coeficient(k)+
-     &        coef_MO(i1,i_MO)*coef_MO(i2,i_MO)
+     &       occupancy(i_MO)*coef_MO(i1,i_MO)*coef_MO(i2,i_MO)/2.D0
            k = k + 1
            ENDDO
          ENDDO

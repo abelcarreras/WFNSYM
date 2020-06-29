@@ -1,4 +1,4 @@
-__version__ = '0.2.12'
+__version__ = '0.2.13'
 
 from wfnsympy.WFNSYMLIB import mainlib, overlap_mat
 from wfnsympy.QSYMLIB import denslib, center_charge, build_density
@@ -184,18 +184,12 @@ def get_perpendicular_axis(axis):
 
 
 def _build_density(coordinates, l_dens, alpha_exponents, uncontracted_coefficients, n_primitives, n_shell, shell_type,
-                   occupancy, mo_coefficients, n_bas, n_c_mos, toldens):
-    ca = []
-    for ide, electrons in enumerate(occupancy):
-        ca.append(electrons * np.array(mo_coefficients[ide*n_bas:n_bas*(ide + 1)]))
-    n_mos = len(ca)
-    ca = np.ascontiguousarray(ca).flatten().tolist()
-    index_list, exponents, dens_coefs, \
-    dens_positions, dens_lenght = build_density(coordinates, l_dens, alpha_exponents,
-                                                uncontracted_coefficients, n_primitives,
-                                                n_shell, shell_type, ca, n_mos,
-                                                n_bas, n_c_mos, toldens)
+                   occupancy, mo_coefficients, n_mos, n_bas, n_c_mos, toldens):
 
+    denisty_ouptut = build_density(coordinates, l_dens, alpha_exponents, uncontracted_coefficients, n_primitives,
+                                   n_shell, shell_type, mo_coefficients, n_mos, n_bas, n_c_mos, occupancy, toldens)
+
+    index_list, exponents, dens_coefs, dens_positions, dens_lenght = denisty_ouptut
     index_list = index_list[:dens_lenght]
     exponents = exponents[:dens_lenght]
     dens_coefs = dens_coefs[:dens_lenght]
@@ -236,6 +230,7 @@ class WfnSympy:
         self._multiplicity = multiplicity
         self._alpha_occupancy = None
         self._beta_occupancy = None
+        self.toldens = 1e-08
 
         self._csm_dens = None
         self._csm_dens_coef = None
@@ -306,14 +301,15 @@ class WfnSympy:
             self._unrestricted = True
 
         if self._alpha_occupancy is None:
-            self._alpha_occupancy = [1/np.sqrt(2) for _ in range(self._total_electrons//2)]
+            self._alpha_occupancy = [0]*int(self._n_mo)
+            self._alpha_occupancy[:int(self._total_electrons//2)] = [1]*int(self._total_electrons//2)
         if self._beta_occupancy is None:
-            self._beta_occupancy = [1/np.sqrt(2) for _ in range(self._total_electrons//2)]
+            self._beta_occupancy = [0]*int(self._n_mo)
+            self._beta_occupancy[:int(self._total_electrons//2)] = [1]*int(self._total_electrons//2)
 
         if self._multiplicity > 1:
-            for _ in range(self._multiplicity-1):
-                self._alpha_occupancy.append(1/np.sqrt(2))
-                self._beta_occupancy.append(0)
+            for i in range(self._multiplicity-1):
+                self._alpha_occupancy[int(self._total_electrons//2)+i] = 1
         self._n_shell = np.unique(atom_map, return_counts=True)[1]
 
         # Transform symbols type to correct Fortran char*2 type
@@ -367,20 +363,18 @@ class WfnSympy:
         self._l_dens = int(n_s*(n_s + 1)/2 + 2*n_s*(3*n_p) + 2*3*n_p*(3*n_p + 1) + n_s*n_d*(3*5 + 4*3) +
                      140*n_p*n_d + 284*n_d*n_d + 26*n_d)
 
-        self.toldens = 1e-08
-
         self._index_list, self._exponents, \
         self._dens_coefs, self._dens_positions = _build_density(self._coordinates, self._l_dens, self._alpha,
                                                                 self._uncontracted_coefficients, self._n_primitives,
                                                                 self._n_shell, self._shell_type, self._alpha_occupancy,
-                                                                self._ca, self._n_bas, self._n_c_mos, self.toldens)
+                                                                self._ca, self._n_mo, self._n_bas, self._n_c_mos, self.toldens)
 
         if self._unrestricted:
             index_list, exponents, \
             dens_coefs, dens_positions = _build_density(self._coordinates, self._l_dens, self._alpha,
                                                         self._uncontracted_coefficients, self._n_primitives,
                                                         self._n_shell, self._shell_type, self._beta_occupancy,
-                                                        self._cb, self._n_bas, self._n_c_mos, self.toldens)
+                                                        self._cb, self._n_mo, self._n_bas, self._n_c_mos, self.toldens)
             self._dens_spin_coefs = np.concatenate((self._dens_coefs, -dens_coefs))
             self._index_list = np.concatenate((self._index_list, index_list))
             self._exponents = np.concatenate((self._exponents, exponents))
@@ -399,17 +393,17 @@ class WfnSympy:
             self._centered_coordinates = [atom - self._center for atom in self._coordinates]
 
             self._index_list, self._exponents, \
-            self._dens_coefs, self._dens_positions = _build_density(self._coordinates, self._l_dens, self._alpha,
+            self._dens_coefs, self._dens_positions = _build_density(self._centered_coordinates, self._l_dens, self._alpha,
                                                                     self._uncontracted_coefficients, self._n_primitives,
                                                                     self._n_shell, self._shell_type,
                                                                     self._alpha_occupancy,
-                                                                    self._ca, self._n_bas, self._n_c_mos, self.toldens)
+                                                                    self._ca, self._n_mo, self._n_bas, self._n_c_mos, self.toldens)
             if self._unrestricted:
                 index_list, exponents, \
-                dens_coefs, dens_positions = _build_density(self._coordinates, self._l_dens, self._alpha,
+                dens_coefs, dens_positions = _build_density(self._centered_coordinates, self._l_dens, self._alpha,
                                                             self._uncontracted_coefficients, self._n_primitives,
                                                             self._n_shell, self._shell_type, self._beta_occupancy,
-                                                            self._cb, self._n_bas, self._n_c_mos, self.toldens)
+                                                            self._cb, self._n_mo, self._n_bas, self._n_c_mos, self.toldens)
                 self._dens_spin_coefs = np.concatenate((self._dens_coefs, -dens_coefs))
                 self._index_list = np.concatenate((self._index_list, index_list))
                 self._exponents = np.concatenate((self._exponents, exponents))
