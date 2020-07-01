@@ -28,8 +28,6 @@ class TestWfnsympy(unittest.TestCase):
                          1.000000e+02, 1.000000e+02, 9.999894e+01, 5.331136e-07,
                          9.999894e+01, 1.000000e+02]
 
-        print(self.pirrol.csm_coef)
-        print(csm_coef_test)
         np.testing.assert_allclose(csm_coef_test, self.pirrol.csm_coef, rtol=1e-6)
 
     def test_mo_SOEVs_a(self):

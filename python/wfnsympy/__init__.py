@@ -198,6 +198,45 @@ def _build_density(coordinates, l_dens, alpha_exponents, uncontracted_coefficien
 
     return index_list, exponents, dens_coefs, dens_positions
 
+
+def denspy(coordinates, l_dens, alpha, uncontracted_coefficients, n_primitives, n_shell, shell_type, alpha_occupancy,
+           ca, n_mo, n_bas, n_c_mos, total_electrons, axis, axis2, center, igroup, ngroup, do_operation, toldens,
+           beta_occupancy=None, cb=None, unrestricted=False):
+
+    index_list, exponents, dens_coefs, dens_positions = _build_density(coordinates, l_dens, alpha,
+                                                                       uncontracted_coefficients, n_primitives,
+                                                                       n_shell, shell_type, alpha_occupancy,
+                                                                       ca, n_mo, n_bas, n_c_mos, toldens)
+    if unrestricted:
+        index_list_b, exponents_b, dens_coefs_b, dens_positions_b = _build_density(coordinates, l_dens, alpha,
+                                                                                   uncontracted_coefficients, n_primitives,
+                                                                                   n_shell, shell_type, beta_occupancy,
+                                                                                   cb, n_mo, n_bas, n_c_mos, toldens)
+        dens_spin_coefs = np.concatenate((dens_coefs, -dens_coefs_b))
+        index_list = np.concatenate((index_list, index_list_b))
+        exponents = np.concatenate((exponents, exponents_b))
+        dens_coefs = np.concatenate((dens_coefs, dens_coefs_b))
+        dens_positions = np.concatenate((dens_positions, dens_positions_b))
+    else:
+        dens_coefs *= 2
+
+    # Check center
+    if center is None:
+        elec_total, center = center_charge(exponents, index_list, dens_positions, dens_coefs, total_electrons)
+        center = center * _bohr_to_angstrom
+
+    if np.sum([abs(ele) for ele in center]) > 1e-8:
+        centered_coordinates = [atom - center for atom in coordinates]
+        dens_positions = [pos - center for pos in dens_positions]
+    else:
+        centered_coordinates = coordinates
+
+    return denslib(centered_coordinates, center, axis, axis2, n_c_mos,
+                   igroup, ngroup, do_operation, index_list,
+                   exponents, dens_coefs, dens_positions)
+
+
+
 class WfnSympy:
     def __init__(self,
                  coordinates,  # in Angstrom
@@ -212,7 +251,10 @@ class WfnSympy:
                  beta_mo_coeff=None,  # Nbas x Nbas
                  group=None,
                  do_operation=False,
-                 valence_only=False):
+                 valence_only=False,
+                 alpha_occupancy=None,
+                 beta_occupancy=None,
+                 tolerance=1e-8):
 
         # Transform group label to igroup, ngroup
         if group is None:
@@ -228,9 +270,9 @@ class WfnSympy:
         self._axis2 = VAxis2
         self._charge = charge
         self._multiplicity = multiplicity
-        self._alpha_occupancy = None
-        self._beta_occupancy = None
-        self.toldens = 1e-08
+        self._alpha_occupancy = alpha_occupancy
+        self._beta_occupancy = beta_occupancy
+        self._toldens = tolerance
 
         self._csm_dens = None
         self._csm_dens_coef = None
@@ -303,9 +345,18 @@ class WfnSympy:
         if self._alpha_occupancy is None:
             self._alpha_occupancy = [0]*int(self._n_mo)
             self._alpha_occupancy[:int(self._total_electrons//2)] = [1]*int(self._total_electrons//2)
+        else:
+            if len(self._alpha_occupancy) != self._n_mo:
+                for _ in range(int(self._n_mo - len(self._alpha_occupancy))):
+                    self._alpha_occupancy.append(0)
+
         if self._beta_occupancy is None:
             self._beta_occupancy = [0]*int(self._n_mo)
             self._beta_occupancy[:int(self._total_electrons//2)] = [1]*int(self._total_electrons//2)
+        else:
+            if len(self._beta_occupancy) != self._n_mo:
+                for _ in range(int(self._n_mo - len(self._beta_occupancy))):
+                    self._beta_occupancy.append(0)
 
         if self._multiplicity > 1:
             for i in range(self._multiplicity-1):
@@ -367,14 +418,14 @@ class WfnSympy:
         self._dens_coefs, self._dens_positions = _build_density(self._coordinates, self._l_dens, self._alpha,
                                                                 self._uncontracted_coefficients, self._n_primitives,
                                                                 self._n_shell, self._shell_type, self._alpha_occupancy,
-                                                                self._ca, self._n_mo, self._n_bas, self._n_c_mos, self.toldens)
+                                                                self._ca, self._n_mo, self._n_bas, self._n_c_mos, self._toldens)
 
         if self._unrestricted:
             index_list, exponents, \
             dens_coefs, dens_positions = _build_density(self._coordinates, self._l_dens, self._alpha,
                                                         self._uncontracted_coefficients, self._n_primitives,
                                                         self._n_shell, self._shell_type, self._beta_occupancy,
-                                                        self._cb, self._n_mo, self._n_bas, self._n_c_mos, self.toldens)
+                                                        self._cb, self._n_mo, self._n_bas, self._n_c_mos, self._toldens)
             self._dens_spin_coefs = np.concatenate((self._dens_coefs, -dens_coefs))
             self._index_list = np.concatenate((self._index_list, index_list))
             self._exponents = np.concatenate((self._exponents, exponents))
@@ -392,25 +443,27 @@ class WfnSympy:
         if np.sum([abs(ele) for ele in self._center]) > 1e-8:
             self._centered_coordinates = [atom - self._center for atom in self._coordinates]
 
-            self._index_list, self._exponents, \
-            self._dens_coefs, self._dens_positions = _build_density(self._centered_coordinates, self._l_dens, self._alpha,
-                                                                    self._uncontracted_coefficients, self._n_primitives,
-                                                                    self._n_shell, self._shell_type,
-                                                                    self._alpha_occupancy,
-                                                                    self._ca, self._n_mo, self._n_bas, self._n_c_mos, self.toldens)
-            if self._unrestricted:
-                index_list, exponents, \
-                dens_coefs, dens_positions = _build_density(self._centered_coordinates, self._l_dens, self._alpha,
-                                                            self._uncontracted_coefficients, self._n_primitives,
-                                                            self._n_shell, self._shell_type, self._beta_occupancy,
-                                                            self._cb, self._n_mo, self._n_bas, self._n_c_mos, self.toldens)
-                self._dens_spin_coefs = np.concatenate((self._dens_coefs, -dens_coefs))
-                self._index_list = np.concatenate((self._index_list, index_list))
-                self._exponents = np.concatenate((self._exponents, exponents))
-                self._dens_coefs = np.concatenate((self._dens_coefs, dens_coefs))
-                self._dens_positions = np.concatenate((self._dens_positions, dens_positions))
-            else:
-                self._dens_coefs *= 2
+            self._dens_positions = [pos - self._center for pos in self._dens_positions]
+            #
+            # self._index_list, self._exponents, \
+            # self._dens_coefs, self._dens_positions = _build_density(self._centered_coordinates, self._l_dens, self._alpha,
+            #                                                         self._uncontracted_coefficients, self._n_primitives,
+            #                                                         self._n_shell, self._shell_type,
+            #                                                         self._alpha_occupancy,
+            #                                                         self._ca, self._n_mo, self._n_bas, self._n_c_mos, self._toldens)
+            # if self._unrestricted:
+            #     index_list, exponents, \
+            #     dens_coefs, dens_positions = _build_density(self._centered_coordinates, self._l_dens, self._alpha,
+            #                                                 self._uncontracted_coefficients, self._n_primitives,
+            #                                                 self._n_shell, self._shell_type, self._beta_occupancy,
+            #                                                 self._cb, self._n_mo, self._n_bas, self._n_c_mos, self._toldens)
+            #     self._dens_spin_coefs = np.concatenate((self._dens_coefs, -dens_coefs))
+            #     self._index_list = np.concatenate((self._index_list, index_list))
+            #     self._exponents = np.concatenate((self._exponents, exponents))
+            #     self._dens_coefs = np.concatenate((self._dens_coefs, dens_coefs))
+            #     self._dens_positions = np.concatenate((self._dens_positions, dens_positions))
+            # else:
+            #     self._dens_coefs *= 2
         else:
             self._centered_coordinates = self._coordinates
 
@@ -505,6 +558,11 @@ class WfnSympy:
 
     def calculate_csm_density(self):
         with _captured_stdout():
+            # density = denspy(self._coordinates, self._l_dens, self._alpha, self._uncontracted_coefficients,
+            #                  self._n_primitives, self._n_shell, self._shell_type, self._alpha_occupancy,
+            #                  self._ca, self._n_mo, self._n_bas, self._n_c_mos, self._total_electrons, self._axis,
+            #                  self._axis2, self._center, self._igroup, self._ngroup, self._do_operation, self._toldens,
+            #                  self._beta_occupancy, self._cb, self._unrestricted)
             density = denslib(self._centered_coordinates, self._center, self._axis, self._axis2, self._n_c_mos,
                               self._igroup, self._ngroup, self._do_operation, self._index_list,
                               self._exponents, self._dens_coefs, self._dens_positions)
