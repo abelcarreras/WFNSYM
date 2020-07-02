@@ -301,25 +301,13 @@ class WfnSympy:
                 for pc in shell['p_con_coefficients']:
                     p_c_coefficients.append(pc)
 
+        self._n_shell = np.unique(atom_map, return_counts=True)[1]
+
         # convert from Angstroms to Bohr
         self._coordinates = np.array(coordinates)
 
         # get atomic numbers
         self._atomic_numbers = [symbol_map[i] for i in symbols]
-
-        # get valence electrons
-        self._valence_electrons = get_valence_electrons(self._atomic_numbers, self._charge)
-
-        # get total number of electrons
-        if valence_only:
-            self._total_electrons = self._valence_electrons
-        else:
-            self._total_electrons = np.sum(self._atomic_numbers) - self._charge
-
-        # Check total_electrons compatible with multiplicity
-        if (np.remainder(self._total_electrons, 2) == np.remainder(self._multiplicity, 2) or
-            self._total_electrons < self._multiplicity):
-            raise MultiplicityError(self._multiplicity, self._total_electrons)
 
         # Create MO coefficients in contiguous list
         self._n_mo = len(alpha_mo_coeff)
@@ -329,6 +317,31 @@ class WfnSympy:
         else:
             self._cb = self._ca
 
+        if self._ca == self._cb:
+            self._unrestricted = False
+        else:
+            self._unrestricted = True
+
+        # get valence electrons
+        self._valence_electrons = get_valence_electrons(self._atomic_numbers, self._charge)
+
+        # get total number of electrons
+        if self._alpha_occupancy is not None:
+            if self._beta_occupancy is None:
+                self._total_electrons = 2*np.sum(self._alpha_occupancy)
+            else:
+                self._total_electrons = np.sum(self._alpha_occupancy) + np.sum(self._beta_occupancy)
+        else:
+            if valence_only:
+                self._total_electrons = self._valence_electrons
+            else:
+                self._total_electrons = np.sum(self._atomic_numbers) - self._charge
+
+        # Check total_electrons compatible with multiplicity
+        if (np.remainder(self._total_electrons, 2) == np.remainder(self._multiplicity, 2) or
+            self._total_electrons < self._multiplicity):
+            raise MultiplicityError(self._multiplicity, self._total_electrons)
+
         # Check if electrons fit in provided MO
         if (self._total_electrons + self._multiplicity - 1)/2 > self._n_mo:
             self._total_electrons = self._n_mo * 2
@@ -337,14 +350,12 @@ class WfnSympy:
         if self._valence_electrons >= self._total_electrons:
             self._valence_electrons = 0
 
-        if self._ca == self._cb:
-            self._unrestricted = False
-        else:
-            self._unrestricted = True
-
         if self._alpha_occupancy is None:
             self._alpha_occupancy = [0]*int(self._n_mo)
             self._alpha_occupancy[:int(self._total_electrons//2)] = [1]*int(self._total_electrons//2)
+            if self._multiplicity > 1:
+                for i in range(self._multiplicity - 1):
+                    self._alpha_occupancy[int(self._total_electrons // 2) + i] = 1
         else:
             if len(self._alpha_occupancy) != self._n_mo:
                 for _ in range(int(self._n_mo - len(self._alpha_occupancy))):
@@ -357,11 +368,6 @@ class WfnSympy:
             if len(self._beta_occupancy) != self._n_mo:
                 for _ in range(int(self._n_mo - len(self._beta_occupancy))):
                     self._beta_occupancy.append(0)
-
-        if self._multiplicity > 1:
-            for i in range(self._multiplicity-1):
-                self._alpha_occupancy[int(self._total_electrons//2)+i] = 1
-        self._n_shell = np.unique(atom_map, return_counts=True)[1]
 
         # Transform symbols type to correct Fortran char*2 type
         self._symbols = np.array([list('{:<2}'.format(char)) for char in symbols], dtype='S')
