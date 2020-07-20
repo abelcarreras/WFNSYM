@@ -19,10 +19,10 @@ class TestQsympy(unittest.TestCase):
                                   group='C3v')
 
     def test_csm_dens(self):
-        np.testing.assert_allclose(0.14761255, self.structure.csm_dens, rtol=1e-03)
+        np.testing.assert_allclose(0.148, self.structure.csm_dens, rtol=1e-03)
 
     def test_csm_dens_coef(self):
-        csm_coef_test = [1.000000, 0.999995, 0.997539, 0.997542, 0.997544]
+        csm_coef_test = [1.000000, 0.999999, 0.997533, 0.997535, 0.997535]
 
         np.testing.assert_allclose(csm_coef_test, self.structure.csm_dens_coef, rtol=1e-06)
 
@@ -37,7 +37,7 @@ class TestQsympy(unittest.TestCase):
                                   multiplicity=1,
                                   group='C3v',
                                   alpha_occupancy=[0, 1, 1, 1, 1])
-        np.testing.assert_allclose(4.25514, self.structure.csm_dens, rtol=1e-03)
+        np.testing.assert_allclose(4.507, self.structure.csm_dens, rtol=1e-03)
 
     def test_precision(self):
         self.structure = WfnSympy(coordinates=self.data['coordinates'],
@@ -50,4 +50,4 @@ class TestQsympy(unittest.TestCase):
                                   multiplicity=1,
                                   group='C3v',
                                   tolerance=1e-04)
-        np.testing.assert_allclose(0.14761255, self.structure.csm_dens, rtol=1e-03)
+        np.testing.assert_allclose(0.148, self.structure.csm_dens, rtol=1e-03)
