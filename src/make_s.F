@@ -289,7 +289,7 @@ c******************************************************
         MatId(I,I) = One
       ENDDO
 
-      CALL get_basis(AtLab,RAt,iAng,Alph,
+      CALL get_basis(RAt,iAng,Alph,
      & ROrb,COrb,iContr,iLAO,cLAO,NAt_2,NBas,NOrb,
      & NPrim, NTotShell, NShell, shell_type)
 

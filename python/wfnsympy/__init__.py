@@ -119,9 +119,9 @@ def _get_operation_num_from_label(label):
     return ioper, irot
 
 
-# def _center_of_charge(mo_coefficients_alpha, mo_coefficients_beta,
-#                       coordinates, basis, total_electrons, multiplicity,
-#                       overlap_matrix):
+# def _center_of_charge_old(mo_coefficients_alpha, mo_coefficients_beta,
+#                           coordinates, basis, total_electrons, multiplicity,
+#                           overlap_matrix):
 #     """
 #     Returns the center of charge in Angstrom
 #     """
@@ -255,7 +255,11 @@ def denspy(coordinates, l_dens, alpha, uncontracted_coefficients, n_primitives, 
 
     if np.sum([abs(ele) for ele in center]) > 1e-8:
         centered_coordinates = [atom - center for atom in coordinates]
-        dens_positions = [pos - center for pos in dens_positions]
+        index_list, exponents, dens_coefs, dens_positions = _build_density(centered_coordinates, l_dens, alpha,
+                                                                           uncontracted_coefficients, n_primitives,
+                                                                           n_shell, shell_type, alpha_occupancy,
+                                                                           ca, n_mo, n_bas, n_c_mos, toldens)
+        # dens_positions = [pos - center for pos in dens_positions]
     else:
         centered_coordinates = coordinates
 
@@ -448,29 +452,18 @@ class WfnSympy:
         self._n_uncontr_orbitals = len(self._uncontracted_coefficients)
         self._n_bas = np.sum([shell_type_list['{}'.format(st)][1] for st in self._shell_type])
 
+        # coordinates_bohr = np.array(self._coordinates) / _bohr_to_angstrom
+        # out = overlap_mat(self._symbols, coordinates_bohr, self._n_bas, self._n_atoms, self._n_uncontr_orbitals,
+        #                   self._ntot_shell, self._n_shell, self._shell_type, self._n_primitives,
+        #                   self._uncontracted_coefficients, self._alpha)
+        # overlap_matrix = np.array(out).reshape(self._n_bas, self._n_bas)
+        #
+        # old_center = _center_of_charge_old(alpha_mo_coeff, alpha_mo_coeff, self._coordinates, basis, self._total_electrons,
+        #                                    self._multiplicity, overlap_matrix)
+        #
         self._n_c_mos = n_s + 3*n_p + 8*n_d
         self._l_dens = int(n_s*(n_s + 1)/2 + 2*n_s*(3*n_p) + 2*3*n_p*(3*n_p + 1) + n_s*n_d*(3*5 + 4*3) +
-                     140*n_p*n_d + 284*n_d*n_d + 26*n_d)
-
-        # self._index_list, self._exponents, \
-        # self._dens_coefs, self._dens_positions = _build_density(self._coordinates, self._l_dens, self._alpha,
-        #                                                         self._uncontracted_coefficients, self._n_primitives,
-        #                                                         self._n_shell, self._shell_type, self._alpha_occupancy,
-        #                                                         self._ca, self._n_mo, self._n_bas, self._n_c_mos, self._toldens)
-        #
-        # if self._unrestricted:
-        #     index_list, exponents, \
-        #     dens_coefs, dens_positions = _build_density(self._coordinates, self._l_dens, self._alpha,
-        #                                                 self._uncontracted_coefficients, self._n_primitives,
-        #                                                 self._n_shell, self._shell_type, self._beta_occupancy,
-        #                                                 self._cb, self._n_mo, self._n_bas, self._n_c_mos, self._toldens)
-        #     self._dens_spin_coefs = np.concatenate((self._dens_coefs, -dens_coefs))
-        #     self._index_list = np.concatenate((self._index_list, index_list))
-        #     self._exponents = np.concatenate((self._exponents, exponents))
-        #     self._dens_coefs = np.concatenate((self._dens_coefs, dens_coefs))
-        #     self._dens_positions = np.concatenate((self._dens_positions, dens_positions))
-        # else:
-        #     self._dens_coefs *= 2
+                           140*n_p*n_d + 284*n_d*n_d + 26*n_d)
 
         # Check center
         if self._center is None:
