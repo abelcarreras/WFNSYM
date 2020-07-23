@@ -1,4 +1,4 @@
-__version__ = '0.2.14'
+__version__ = '0.2.15'
 
 from wfnsympy.WFNSYMLIB import mainlib, overlap_mat
 from wfnsympy.QSYMLIB import denslib, center_charge, build_density
@@ -234,7 +234,7 @@ def denspy(coordinates, l_dens, alpha, uncontracted_coefficients, n_primitives, 
                                                                        uncontracted_coefficients, n_primitives,
                                                                        n_shell, shell_type, alpha_occupancy,
                                                                        ca, n_mo, n_bas, n_c_mos, toldens)
-    if unrestricted:
+    if unrestricted or spin_density:
         index_list_b, exponents_b, dens_coefs_b, dens_positions_b = _build_density(coordinates, l_dens, alpha,
                                                                                    uncontracted_coefficients,
                                                                                    n_primitives,
@@ -260,15 +260,15 @@ def denspy(coordinates, l_dens, alpha, uncontracted_coefficients, n_primitives, 
                                                                            n_shell, shell_type, alpha_occupancy,
                                                                            ca, n_mo, n_bas, n_c_mos, toldens)
         # dens_positions = [pos - center for pos in dens_positions]
-    else:
-        centered_coordinates = coordinates
+    # else:
+    #     centered_coordinates = coordinates
 
     if spin_density:
-        return denslib(centered_coordinates, center, axis, axis2, n_c_mos,
+        return denslib(axis, axis2, n_c_mos,
                        igroup, ngroup, do_operation, index_list,
                        exponents, dens_spin_coefs, dens_positions)
     else:
-        return denslib(centered_coordinates, center, axis, axis2, n_c_mos,
+        return denslib(axis, axis2, n_c_mos,
                        igroup, ngroup, do_operation, index_list,
                        exponents, dens_coefs, dens_positions)
 
@@ -287,7 +287,7 @@ class WfnSympy:
                  beta_mo_coeff=None,  # Nbas x Nbas
                  group=None,
                  do_operation=False,
-                 valence_only=False,
+                 # valence_only=False,
                  alpha_occupancy=None,
                  beta_occupancy=None,
                  tolerance=1e-8):
@@ -359,7 +359,7 @@ class WfnSympy:
             self._unrestricted = True
 
         # get valence electrons
-        self._valence_electrons = get_valence_electrons(self._atomic_numbers, self._charge)
+        # self._valence_electrons = get_valence_electrons(self._atomic_numbers, self._charge)
 
         # get total number of electrons
         if self._alpha_occupancy is not None:
@@ -368,10 +368,10 @@ class WfnSympy:
             else:
                 self._total_electrons = np.sum(self._alpha_occupancy) + np.sum(self._beta_occupancy)
         else:
-            if valence_only:
-                self._total_electrons = self._valence_electrons
-            else:
-                self._total_electrons = np.sum(self._atomic_numbers) - self._charge
+        #     if valence_only:
+        #         self._total_electrons = self._valence_electrons
+        #     else:
+            self._total_electrons = np.sum(self._atomic_numbers) - self._charge
 
         # Check total_electrons compatible with multiplicity
         if (np.remainder(self._total_electrons, 2) == np.remainder(self._multiplicity, 2) or
@@ -383,8 +383,8 @@ class WfnSympy:
             self._total_electrons = self._n_mo * 2
             self._multiplicity = 1
 
-        if self._valence_electrons >= self._total_electrons:
-            self._valence_electrons = 0
+        # if self._valence_electrons >= self._total_electrons:
+        #     self._valence_electrons = 0
 
         if self._alpha_occupancy is None:
             self._alpha_occupancy = [0]*int(self._n_mo)
@@ -519,7 +519,7 @@ class WfnSympy:
         # Start calculation
         with _captured_stdout() as E:
             coordinates_bohr = np.array(self._coordinates) / _bohr_to_angstrom
-            out_data = mainlib(self._total_electrons, self._valence_electrons, self._n_bas, self._n_mo,
+            out_data = mainlib(self._total_electrons, self._n_bas, self._n_mo,
                                self._n_uncontr_orbitals, self._n_atoms, self._ntot_shell, self._atomic_numbers,
                                self._symbols, self._alpha, self._uncontracted_coefficients, self._n_shell,
                                coordinates_bohr, self._n_primitives, self._shell_type, self._igroup, self._ngroup,

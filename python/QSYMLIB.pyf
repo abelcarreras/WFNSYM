@@ -3,20 +3,17 @@
 
 python module QSYMLIB ! in
     interface  ! in :QSYMLIB
-        subroutine denslib(r,rcread_2,vaxis_2,vaxis2_2,norbx,igroup,ngroup,dooper,&
-        iangdens,alphdens,cdens,rdens,ndens,nat_2,&
+        subroutine denslib(vaxis_2,vaxis2_2,norbx,igroup,ngroup,dooper,&
+        iangdens,alphdens,cdens,rdens,ndens,&
         OutDim,OutCSM_i,OutCSM,OutSymLab,OutSassembly) ! in :QSYMLIB:lib_main.F
 !           Intput
-            real*8 dimension(nat_2,3),depend(nat_2) :: r
             integer :: norbx,igroup,ngroup
-            real*8 dimension(3) :: rcread_2
             real*8 dimension(3) :: vaxis_2,vaxis2_2
             real*8 dimension(ndens) :: alphdens
             integer dimension(ndens,3),depend(ndens) :: iangdens
             real*8 dimension(ndens,3),depend(ndens) :: rdens
             real*8 dimension(ndens),depend(ndens) :: cdens
             integer, optional,check(len(alphdens)>=ndens),depend(alphdens) :: ndens=len(alphdens)
-            integer, optional,check(shape(r,0)==nat_2),depend(r) :: nat_2=shape(r,0)
             logical :: dooper
 !           Outputs
             integer dimension(3),intent(out) :: OutDim

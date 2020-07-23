@@ -1,8 +1,7 @@
 #include "qsym.h"
 
-      SUBROUTINE denslib(R,RCread_2,VAxis_2,VAxis2_2,NOrbX,
-     &                   igroup_2,ngroup_2,DoOper_2,
-     &                   iAngDens,AlphDens,CDens,RDens,NDens,NAt_2,
+      SUBROUTINE denslib(VAxis_2,VAxis2_2,NOrbX,igroup_2,ngroup_2,
+     &                   DoOper_2,iAngDens,AlphDens,CDens,RDens,NDens,
      &                   OutDim,OutCSM_i,OutCSM,OutSymLab,OutSassembly)
 
 c--------------------------------------------------------------
@@ -25,9 +24,9 @@ c	coef_MO(i,j)    coeficients moleculars. La seva dimensio es (NOrb,Num_elec/2)
 c   R           Atomic coordinates
 c--------------------------------------------------------------
       IMPLICIT REAL*8 (a-h,o-z)
-      INTEGER :: NOrbX,NAt_2,igroup_2,ngroup_2
+      INTEGER :: NOrbX,igroup_2,ngroup_2
       CHARACTER :: str*2
-      REAL*8 :: R(NAt_2,3),RT(NAt_2,3),alfa(NOrbX),coef(NOrbX),
+      REAL*8 :: alfa(NOrbX),coef(NOrbX),
      &          CDens(NDens),AlphDens(NDens),
      &          RDens(NDens,3),MatSym(3,3),
      &          Aux1(3,3),Aux2(3,3),R_fun(3),RCread_2(3),VAxis_2(3),
@@ -52,8 +51,6 @@ c ----------- Added manual arguments-----------
       iout = 0
       igroup = igroup_2
       ngroup = ngroup_2
-      NAt = NAt_2
-      RCread = RCread_2
       VAxis = VAxis_2
       VAxis2 = VAxis2_2
       DoOper = DoOper_2
@@ -95,7 +92,6 @@ c Define Symmetry-Operation or Symmetry-Group Matrix
         dGroup = 1
         hGroup = 1
         ALLOCATE(SymGrp(3,3,dGroup))
-!       CALL sym_oper(SymMat,iOper,iRot,AXIS,ANGLES,VAxis,iout)
         CALL sym_oper(SymGrp,iGroup,nGroup,AXIS,ANGLES,VAxis,iout)
 
       ELSE
@@ -136,7 +132,6 @@ c Define Symmetry-Operation or Symmetry-Group Matrix
       DO iG=1,dGroup
          MatSym(:,:) = SymGrp(:,:,iG)
 c Write transformation matrix and new atomic coordinates
-c         CALL AtimsB(RT,R,MatSym, NAt,3,3, NAt,NAt,3, 1)
          ALLOCATE(iAngSym(LSym,3))
          ALLOCATE(AlphSym(LSym),CSym(LSym),RSym(LSym,3))
          CALL sym_transform(iAngSym,AlphSym,CSym,RSym,LSym,NSym,

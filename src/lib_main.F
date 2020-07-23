@@ -1,7 +1,7 @@
 #include "wfnsym.h"
 
 c      PROGRAM Prog_Main
-      SUBROUTINE mainlib(NEtot, NEval, NBas, NMo, Norb,
+      SUBROUTINE mainlib(NEtot, NBas, NMo, Norb,
      & NAt_2, NTotShell, iZAt, AtLab, Alph, COrb, NShell,
      & RAt, NPrim, shell_type, igroup_2, ngroup_2, Ca, Cb,
      & RCread_2, VAxis_2, VAxis2_2, iMult, DoOp,
@@ -139,9 +139,9 @@ c Define Axes thresh
 c Set up some variables
       NOa = (NEtot + iMult - 1)/2
       NOb = NOa - iMult + 1
-      Ncore = (NEtot-NEval)/2
-      NOva = NOa - Ncore
-      NOvb = NOb - Ncore
+c      Ncore = (NEtot-NEval)/2
+c      NOva = NOa - Ncore
+c      NOvb = NOb - Ncore
       NBas2 = NBas*NBas
       IF(NOa+NOb .NE. NEtot) THEN
         WRITE(iout, *) 'ERROR. Charge/Multiplicity inconsistency'

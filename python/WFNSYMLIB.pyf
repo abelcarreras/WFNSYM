@@ -3,13 +3,13 @@
 
 python module WFNSYMLIB ! in 
     interface  ! in :WFNSYMLIB
-        subroutine mainlib(Etot, NEval, NBas, NMo, Norb, NAt, NCShell, iZAt, AtLab, Alph, COrb, NShell, RAt, n_prim, shell_type, &
+        subroutine mainlib(Etot, NBas, NMo, Norb, NAt, NCShell, iZAt, AtLab, Alph, COrb, NShell, RAt, n_prim, shell_type, &
         igroup, ngroup, Ca, Cb, RCread, VAxis, VAxis2, iMult, DoOp, OutDim, OutGrim, OutCMS, OutSymLab, OutSDiagA, &
         OutSDiagB, OutWDiagA, OutWDiagB, OutTbl, OutIRLab, OutgIRA, OutgIRB, OutgIRwfA, OutgIRwfB, OutgIRwf, OutSymMat) ! in :WFNSYMLIB:lib_main.F
 
 !           Inputs
             logical :: DoOp
-            integer :: Etot, NEval, NBas, Norb, NAt, NCShell, igroup, ngroup, iMult, NMo
+            integer :: Etot, NBas, Norb, NAt, NCShell, igroup, ngroup, iMult, NMo
 
             ! integer, check(len(Ca)/NBas>=NMo),depend(Ca), intent(hide) :: NMo=len(Ca)/NBas
             ! integer, intent(hide) :: NOrb_w
