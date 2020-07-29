@@ -1,4 +1,4 @@
-__version__ = '0.2.15'
+__version__ = '0.2.16'
 
 from wfnsympy.WFNSYMLIB import mainlib, overlap_mat
 from wfnsympy.QSYMLIB import denslib, center_charge, build_density
@@ -372,11 +372,10 @@ class WfnSympy:
         #         self._total_electrons = self._valence_electrons
         #     else:
             self._total_electrons = np.sum(self._atomic_numbers) - self._charge
-
-        # Check total_electrons compatible with multiplicity
-        if (np.remainder(self._total_electrons, 2) == np.remainder(self._multiplicity, 2) or
-            self._total_electrons < self._multiplicity):
-            raise MultiplicityError(self._multiplicity, self._total_electrons)
+            # Check total_electrons compatible with multiplicity
+            if (np.remainder(self._total_electrons, 2) == np.remainder(self._multiplicity, 2) or
+                self._total_electrons < self._multiplicity):
+                raise MultiplicityError(self._multiplicity, self._total_electrons)
 
         # Check if electrons fit in provided MO
         if (self._total_electrons + self._multiplicity - 1)/2 > self._n_mo:
