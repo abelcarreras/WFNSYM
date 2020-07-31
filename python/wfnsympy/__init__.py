@@ -41,22 +41,22 @@ class _captured_stdout:
         self.F.close()
 
 
-def get_valence_electrons(atomic_numbers, charge):
-    valence_electrons = 0
-    for number in atomic_numbers:
-        if 2 >= number > 0:
-            valence_electrons += np.mod(number, 2)
-        if 18 >= number > 2:
-            valence_electrons += np.mod(number - 2, 8)
-        if 54 >= number > 18:
-            valence_electrons += np.mod(number - 18, 18)
-        if 118 >= number > 54:
-            valence_electrons += np.mod(number - 54, 32)
-        if number > 118:
-            raise Exception('Atomic number size not implemented')
-
-    valence_electrons -= charge
-    return valence_electrons
+# def get_valence_electrons(atomic_numbers, charge):
+#     valence_electrons = 0
+#     for number in atomic_numbers:
+#         if 2 >= number > 0:
+#             valence_electrons += np.mod(number, 2)
+#         if 18 >= number > 2:
+#             valence_electrons += np.mod(number - 2, 8)
+#         if 54 >= number > 18:
+#             valence_electrons += np.mod(number - 18, 18)
+#         if 118 >= number > 54:
+#             valence_electrons += np.mod(number - 54, 32)
+#         if number > 118:
+#             raise Exception('Atomic number size not implemented')
+#
+#     valence_electrons -= charge
+#     return valence_electrons
 
 
 def _get_group_num_from_label(label):
@@ -280,14 +280,13 @@ class WfnSympy:
                  basis,  # basis dictionary
                  alpha_mo_coeff,  # Nbas x Nbas
                  center=None,  # in Angstrom
-                 VAxis=None,
-                 VAxis2=None,
-                 charge=0,
-                 multiplicity=1,
+                 axis=None,
+                 axis2=None,
+                 # charge=0,
+                 # multiplicity=1,
                  beta_mo_coeff=None,  # Nbas x Nbas
                  group=None,
                  do_operation=False,
-                 # valence_only=False,
                  alpha_occupancy=None,
                  beta_occupancy=None,
                  tolerance=1e-8):
@@ -302,10 +301,10 @@ class WfnSympy:
 
         self._do_operation = do_operation
         self._center = center
-        self._axis = VAxis
-        self._axis2 = VAxis2
-        self._charge = charge
-        self._multiplicity = multiplicity
+        self._axis = axis
+        self._axis2 = axis2
+        # self._charge = charge
+        # self._multiplicity = multiplicity
         self._alpha_occupancy = alpha_occupancy
         self._beta_occupancy = beta_occupancy
         self._toldens = tolerance
@@ -358,9 +357,6 @@ class WfnSympy:
         else:
             self._unrestricted = True
 
-        # get valence electrons
-        # self._valence_electrons = get_valence_electrons(self._atomic_numbers, self._charge)
-
         # get total number of electrons
         if self._alpha_occupancy is not None:
             if self._beta_occupancy is None:
@@ -368,29 +364,28 @@ class WfnSympy:
             else:
                 self._total_electrons = np.sum(self._alpha_occupancy) + np.sum(self._beta_occupancy)
         else:
-        #     if valence_only:
-        #         self._total_electrons = self._valence_electrons
-        #     else:
-            self._total_electrons = np.sum(self._atomic_numbers) - self._charge
+            # self._total_electrons = np.sum(self._atomic_numbers) - self._charge
+            self._total_electrons = np.sum(self._atomic_numbers)
             # Check total_electrons compatible with multiplicity
-            if (np.remainder(self._total_electrons, 2) == np.remainder(self._multiplicity, 2) or
-                self._total_electrons < self._multiplicity):
-                raise MultiplicityError(self._multiplicity, self._total_electrons)
+            # if (np.remainder(self._total_electrons, 2) == np.remainder(self._multiplicity, 2) or
+            #     self._total_electrons < self._multiplicity):
+            #     raise MultiplicityError(self._multiplicity, self._total_electrons)
 
         # Check if electrons fit in provided MO
-        if (self._total_electrons + self._multiplicity - 1)/2 > self._n_mo:
+        # if (self._total_electrons + self._multiplicity - 1)/2 > self._n_mo:
+        if self._total_electrons/2 > self._n_mo:
             self._total_electrons = self._n_mo * 2
-            self._multiplicity = 1
+            # self._multiplicity = 1
 
-        # if self._valence_electrons >= self._total_electrons:
-        #     self._valence_electrons = 0
-
+        # self._total_electrons += 1
         if self._alpha_occupancy is None:
             self._alpha_occupancy = [0]*int(self._n_mo)
             self._alpha_occupancy[:int(self._total_electrons//2)] = [1]*int(self._total_electrons//2)
-            if self._multiplicity > 1:
-                for i in range(self._multiplicity - 1):
-                    self._alpha_occupancy[int(self._total_electrons // 2) + i] = 1
+            if self._total_electrons%2 != 0:
+                self._alpha_occupancy[int(self._total_electrons//2)] = 1
+            # if self._multiplicity > 1:
+            #     for i in range(self._multiplicity - 1):
+            #         self._alpha_occupancy[int(self._total_electrons // 2) + i] = 1
         else:
             if len(self._alpha_occupancy) != self._n_mo:
                 for _ in range(int(self._n_mo - len(self._alpha_occupancy))):
@@ -518,12 +513,11 @@ class WfnSympy:
         # Start calculation
         with _captured_stdout() as E:
             coordinates_bohr = np.array(self._coordinates) / _bohr_to_angstrom
-            out_data = mainlib(self._total_electrons, self._n_bas, self._n_mo,
+            out_data = mainlib(self._alpha_occupancy, self._beta_occupancy, self._n_bas, self._n_mo,
                                self._n_uncontr_orbitals, self._n_atoms, self._ntot_shell, self._atomic_numbers,
                                self._symbols, self._alpha, self._uncontracted_coefficients, self._n_shell,
                                coordinates_bohr, self._n_primitives, self._shell_type, self._igroup, self._ngroup,
-                               self._ca, self._cb, self._center, self._axis, self._axis2,
-                               self._multiplicity, self._do_operation)
+                               self._ca, self._cb, self._center, self._axis, self._axis2, self._do_operation)
             E.seek(0)
             capture = E.read()
         capture = capture.decode().split('\n')

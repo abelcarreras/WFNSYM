@@ -71,7 +71,7 @@ def basis_format(basis_set_name,
 
 
 def get_data_from_file_fchk(file_name):
-    key_list = ['Charge', 'Multiplicity', 'Atomic numbers', 'Current cartesian coordinates',
+    key_list = ['Number of alpha electrons', 'Number of beta electrons', 'Atomic numbers', 'Current cartesian coordinates',
                 'Shell type', 'Number of primitives per shell', 'Shell to atom map', 'Primitive exponents',
                 'Contraction coefficients', 'P(S=P) Contraction coefficients',
                 'Alpha MO coefficients', 'Beta MO coefficients']
@@ -126,6 +126,12 @@ def get_data_from_file_fchk(file_name):
         atomic_numbers = [int(num) for num in input_molecule[2]]
         symbols = get_symbols_from_atomic_numbers(atomic_numbers)
 
+        alpha_occupancy = [1] * int(input_molecule[0][0])
+        beta_occupancy = [1] * int(input_molecule[1][0])
+        if len(alpha_occupancy) != len(beta_occupancy):
+            for i in range(abs(len(alpha_occupancy) - len(beta_occupancy))):
+                beta_occupancy.append(0)
+
         basis = basis_format(basis_set_name=basis_set,
                              atomic_numbers=atomic_numbers,
                              atomic_symbols=symbols,
@@ -145,7 +151,9 @@ def get_data_from_file_fchk(file_name):
         return {'coordinates': coordinates,
                 'symbols': symbols,
                 'basis': basis,
-                'mo_coefficients': coefficients}
+                'mo_coefficients': coefficients,
+                'alpha_occupancy': alpha_occupancy,
+                'beta_occupancy': beta_occupancy}
 
 
 if __name__ == '__main__':

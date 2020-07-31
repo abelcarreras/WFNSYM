@@ -12,11 +12,13 @@ class TestWfnsympy(unittest.TestCase):
                                symbols=data['symbols'],
                                basis=data['basis'],
                                center=[0., 0., 0.],
-                               VAxis=[1., 0., 0.],
-                               # VAxis2=[0., 0., 1.],
+                               axis=[1., 0., 0.],
+                               # axis2=[0., 0., 1.],
                                alpha_mo_coeff=data['mo_coefficients']['alpha'][:18],
-                               charge=0,
-                               multiplicity=1,
+                               alpha_occupancy=data['alpha_occupancy'],
+                               beta_occupancy=data['beta_occupancy'],
+                               # charge=0,
+                               # multiplicity=1,
                                group='C6v')
 
     def test_symlab(self):

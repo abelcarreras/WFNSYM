@@ -1,10 +1,10 @@
 #include "wfnsym.h"
 
 c      PROGRAM Prog_Main
-      SUBROUTINE mainlib(NEtot, NBas, NMo, Norb,
+      SUBROUTINE mainlib(AOccup, BOccup, NBas, NMo, Norb,
      & NAt_2, NTotShell, iZAt, AtLab, Alph, COrb, NShell,
      & RAt, NPrim, shell_type, igroup_2, ngroup_2, Ca, Cb,
-     & RCread_2, VAxis_2, VAxis2_2, iMult, DoOp,
+     & RCread_2, VAxis_2, VAxis2_2, nAOccup, nBOccup, DoOp,
      & OutDim, OutGrim, OutCSM, OutSymLab,
      & OutSDiagA, OutSDiagB, OutWDiagA, OutWDiagB, OutTbl,
      & OutIRLab, OutgIRA, OutgIRB,OutgIRwfA,OutgIRwfB,
@@ -52,11 +52,12 @@ c			             False: 3 decimals (default)
 c					 True : 5 decimals
 c--------------------------------------------------------------
       IMPLICIT REAL*8 (a-h,o-z)
-      INTEGER :: iZAt(NAt_2), NPrim(NTotShell)
+      INTEGER :: iZAt(NAt_2), NPrim(NTotShell), nAOccup, nBOccup
       CHARACTER :: AtLab(NAt_2)*2
       REAL*8 :: Alph(Norb),  COrb(Norb), RAt(NAt_2, 3)
       REAL*8 :: CA(NMo*NBas),  CB(NMo*NBas)
       REAL*8 :: RCread_2(3), VAxis_2(3), VAxis2_2(3)
+      REAL*8 :: AOccup(nAOccup), BOccup(nBOccup)
       LOGICAL :: DoOp
 c     Output
       INTEGER :: OutDim(3)
@@ -137,16 +138,19 @@ c Define Axes thresh
 
 
 c Set up some variables
-      NOa = (NEtot + iMult - 1)/2
-      NOb = NOa - iMult + 1
+
+      NOa = SUM(AOccup)
+      NOb = SUM(BOccup)
+c      NOa = (NEtot + iMult - 1)/2
+c      NOb = NOa - iMult + 1
 c      Ncore = (NEtot-NEval)/2
 c      NOva = NOa - Ncore
 c      NOvb = NOb - Ncore
       NBas2 = NBas*NBas
-      IF(NOa+NOb .NE. NEtot) THEN
-        WRITE(iout, *) 'ERROR. Charge/Multiplicity inconsistency'
-        STOP
-      ENDIF
+c      IF(NOa+NOb .NE. NEtot) THEN
+c        WRITE(iout, *) 'ERROR. Charge/Multiplicity inconsistency'
+c        STOP
+c      ENDIF
 
 
 c Where do we center the molecule?

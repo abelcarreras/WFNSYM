@@ -127,11 +127,11 @@ if __name__ == "__main__":
                           symbols=data['symbols'],
                           basis=data['basis'],
                           center=c_geom,
-                          VAxis=ax1,
-                          # VAxis2=ax2,
+                          axis=ax1,
+                          # axis2=ax2,
                           alpha_mo_coeff=data['mo_coefficients']['alpha'],
-                          charge=0,
-                          multiplicity=1,
+                          # charge=0,
+                          # multiplicity=1,
                           group='C5')
         res = np.sum(np.sqrt(pirrol.csm_coef))
         return res

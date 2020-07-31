@@ -43,8 +43,8 @@ class TestWfnsympy(unittest.TestCase):
                                    symbols=['O', 'H', 'H'],
                                    basis=basis,
                                    alpha_mo_coeff=mo_coefficients[:5],
-                                   charge=0,
-                                   multiplicity=1,
+                                   # charge=0,
+                                   # multiplicity=1,
                                    group='C2v')
 
         self.wf_results.print_alpha_mo_IRD()

@@ -10,10 +10,12 @@ structure = WfnSympy(coordinates=data['coordinates'],
                      basis=data['basis'],
                      alpha_mo_coeff=data['mo_coefficients']['alpha'],
                      # center=[0., 0., 0.],
-                     # VAxis=[0., 0., 1.],
-                     # VAxis2=[0, 1, 0],
-                     charge=0,
-                     multiplicity=1,
+                     # axis=[0., 0., 1.],
+                     # axis2=[0, 1, 0],
+                     alpha_occupancy=data['alpha_occupancy'],
+                     beta_occupancy=data['beta_occupancy'],
+                     # charge=0,
+                     # multiplicity=1,
                      group='Td')
 
 

@@ -11,12 +11,15 @@ class TestQsympy(unittest.TestCase):
         self.structure = WfnSympy(coordinates=self.data['coordinates'],
                                   symbols=self.data['symbols'],
                                   basis=self.data['basis'],
-                                  VAxis=[0.55944897, 0.69527034, -0.4512383 ],
-                                  VAxis2=[0., -0.4512383, -0.69527034],
+                                  axis=[0.55944897, 0.69527034, -0.4512383],
+                                  axis2=[0., -0.4512383, -0.69527034],
                                   alpha_mo_coeff=self.data['mo_coefficients']['alpha'],
-                                  charge=0,
-                                  multiplicity=1,
-                                  group='C3v')
+                                  # charge=0,
+                                  # multiplicity=1,
+                                  group='C3v',
+                                  # alpha_occupancy=self.data['alpha_occupancy'],
+                                  # beta_occupancy=self.data['beta_occupancy']
+                                  )
 
     def test_csm_dens(self):
         np.testing.assert_allclose(0.148, self.structure.csm_dens, rtol=1e-03)
@@ -30,11 +33,11 @@ class TestQsympy(unittest.TestCase):
         self.structure = WfnSympy(coordinates=self.data['coordinates'],
                                   symbols=self.data['symbols'],
                                   basis=self.data['basis'],
-                                  VAxis=[0.55944897, 0.69527034, -0.4512383 ],
-                                  VAxis2=[0., -0.4512383, -0.69527034],
+                                  axis=[0.55944897, 0.69527034, -0.4512383],
+                                  axis2=[0., -0.4512383, -0.69527034],
                                   alpha_mo_coeff=self.data['mo_coefficients']['alpha'],
-                                  charge=0,
-                                  multiplicity=1,
+                                  # charge=0,
+                                  # multiplicity=1,
                                   group='C3v',
                                   alpha_occupancy=[0, 1, 1, 1, 1])
         np.testing.assert_allclose(4.507, self.structure.csm_dens, rtol=1e-03)
@@ -43,11 +46,13 @@ class TestQsympy(unittest.TestCase):
         self.structure = WfnSympy(coordinates=self.data['coordinates'],
                                   symbols=self.data['symbols'],
                                   basis=self.data['basis'],
-                                  VAxis=[0.55944897, 0.69527034, -0.4512383],
-                                  VAxis2=[0., -0.4512383, -0.69527034],
+                                  axis=[0.55944897, 0.69527034, -0.4512383],
+                                  axis2=[0., -0.4512383, -0.69527034],
                                   alpha_mo_coeff=self.data['mo_coefficients']['alpha'],
-                                  charge=0,
-                                  multiplicity=1,
+                                  # charge=0,
+                                  # multiplicity=1,
                                   group='C3v',
-                                  tolerance=1e-04)
+                                  tolerance=1e-04,
+                                  alpha_occupancy=self.data['alpha_occupancy'],
+                                  beta_occupancy=self.data['beta_occupancy'])
         np.testing.assert_allclose(0.148, self.structure.csm_dens, rtol=1e-03)
