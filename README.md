@@ -76,8 +76,6 @@ wf_results = WfnSympy(coordinates=[[ 0.00000000, 0.00000000, -0.04280085],
                       symbols=['O', 'H', 'H'],
                       basis=basis,
                       alpha_mo_coeff=mo_coefficients,
-                      # charge=0,
-                      # multiplicity=1,
                       group='C2v')
 
 wf_results.print_CSM()

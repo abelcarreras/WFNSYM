@@ -1,4 +1,4 @@
-__version__ = '0.2.16'
+__version__ = '0.2.17'
 
 from wfnsympy.WFNSYMLIB import mainlib, overlap_mat
 from wfnsympy.QSYMLIB import denslib, center_charge, build_density
@@ -282,8 +282,6 @@ class WfnSympy:
                  center=None,  # in Angstrom
                  axis=None,
                  axis2=None,
-                 # charge=0,
-                 # multiplicity=1,
                  beta_mo_coeff=None,  # Nbas x Nbas
                  group=None,
                  do_operation=False,
@@ -303,8 +301,6 @@ class WfnSympy:
         self._center = center
         self._axis = axis
         self._axis2 = axis2
-        # self._charge = charge
-        # self._multiplicity = multiplicity
         self._alpha_occupancy = alpha_occupancy
         self._beta_occupancy = beta_occupancy
         self._toldens = tolerance
@@ -364,18 +360,11 @@ class WfnSympy:
             else:
                 self._total_electrons = np.sum(self._alpha_occupancy) + np.sum(self._beta_occupancy)
         else:
-            # self._total_electrons = np.sum(self._atomic_numbers) - self._charge
             self._total_electrons = np.sum(self._atomic_numbers)
-            # Check total_electrons compatible with multiplicity
-            # if (np.remainder(self._total_electrons, 2) == np.remainder(self._multiplicity, 2) or
-            #     self._total_electrons < self._multiplicity):
-            #     raise MultiplicityError(self._multiplicity, self._total_electrons)
 
         # Check if electrons fit in provided MO
-        # if (self._total_electrons + self._multiplicity - 1)/2 > self._n_mo:
         if self._total_electrons/2 > self._n_mo:
             self._total_electrons = self._n_mo * 2
-            # self._multiplicity = 1
 
         # self._total_electrons += 1
         if self._alpha_occupancy is None:
@@ -383,9 +372,6 @@ class WfnSympy:
             self._alpha_occupancy[:int(self._total_electrons//2)] = [1]*int(self._total_electrons//2)
             if self._total_electrons%2 != 0:
                 self._alpha_occupancy[int(self._total_electrons//2)] = 1
-            # if self._multiplicity > 1:
-            #     for i in range(self._multiplicity - 1):
-            #         self._alpha_occupancy[int(self._total_electrons // 2) + i] = 1
         else:
             if len(self._alpha_occupancy) != self._n_mo:
                 for _ in range(int(self._n_mo - len(self._alpha_occupancy))):

@@ -17,8 +17,6 @@ class TestWfnsympy(unittest.TestCase):
                                alpha_mo_coeff=data['mo_coefficients']['alpha'][:18],
                                alpha_occupancy=data['alpha_occupancy'],
                                beta_occupancy=data['beta_occupancy'],
-                               # charge=0,
-                               # multiplicity=1,
                                group='C6v')
 
     def test_symlab(self):

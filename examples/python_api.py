@@ -14,8 +14,6 @@ structure = WfnSympy(coordinates=data['coordinates'],
                      # axis2=[0, 1, 0],
                      alpha_occupancy=data['alpha_occupancy'],
                      beta_occupancy=data['beta_occupancy'],
-                     # charge=0,
-                     # multiplicity=1,
                      group='Td')
 
 
