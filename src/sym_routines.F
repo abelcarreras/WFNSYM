@@ -115,7 +115,8 @@ c Set matrices to zero (to be safe)
       SymGrp(:,:,:) = Zero
       Angles = .FALSE.
       Angles2 = .FALSE.
-      IAx_Thresh = 9
+!      IAx_Thresh = 9
+      IAx_Thresh = 4
 
 c Set thresh between axis
       Thresh = 10.d0**(-IAx_Thresh)
@@ -169,8 +170,11 @@ c s_v,s_d: Cnv, Dnh, Dnd
             WRITE(iunit,"('Axis2 = ',3(1x,f9.5))") (VAxis2(j),j=1,3)
             WRITE(iunit,*)'ERROR. Axes not valid'
             WRITE(iunit,"(' IAx_Thresh = ',I2)") IAx_Thresh
-            WRITE(iunit,*)'Modify the group axes or lower AXES_THRESH'
-            STOP
+            WRITE(iunit,*)'Modified Oh axes: '
+            CALL OrthoAxis2(VAxis,VAxis2)
+            WRITE(iunit,"('Axis  = ',3(1x,f15.9))") (VAxis(j),j=1,3)
+            WRITE(iunit,"('Axis2 = ',3(1x,f15.9))") (VAxis2(j),j=1,3)
+!            STOP
           ENDIF
           VAux0(:) = VAxis2(:)
           CALL rotation(2*nGroup,VAxis,SAux0,ANGLES,.TRUE.)
@@ -322,12 +326,17 @@ c VAxis,VAxis2 must be perpendicular
           CALL VRdot(Dot,VAxis,VAxis2,3)
           Dot = ABS(Dot)
           IF(Dot.GT.Thresh) THEN
-            WRITE(iunit,"('Axis  = ',3(1x,f9.5))") (VAxis(j),j=1,3)
-            WRITE(iunit,"('Axis2 = ',3(1x,f9.5))") (VAxis2(j),j=1,3)
+            WRITE(iunit,"('Axis  = ',3(1x,f15.9))") (VAxis(j),j=1,3)
+            WRITE(iunit,"('Axis2 = ',3(1x,f15.9))") (VAxis2(j),j=1,3)
+            WRITE(iunit,*)'Input cosine between C4 axes = ',Dot
             WRITE(iunit,*)'ERROR. Axes not valid'
-            WRITE(iunit,"('IAx_Thresh = ',I2)") IAx_Thresh
-            WRITE(iunit,*)'Modify the group axes or lower AXES_THRESH'
-            STOP
+            WRITE(iunit,*)'Ideal cosine between C4 axes = ',0.D0
+c            WRITE(iunit,"(' IAx_Thresh = ',I2)") IAx_Thresh
+            WRITE(iunit,*)'Modified Oh axes: '
+            CALL OrthoAxis2(VAxis,VAxis2)
+            WRITE(iunit,"('Axis  = ',3(1x,f15.9))") (VAxis(j),j=1,3)
+            WRITE(iunit,"('Axis2 = ',3(1x,f15.9))") (VAxis2(j),j=1,3)
+!            STOP
           ENDIF
 c Orientation: VAxis = Z, VAxis2 = X, VAux0 = Y.
           CALL VRcross(VAux0,VAxis,VAxis2)
@@ -840,3 +849,44 @@ c Rotate V1
         RETURN
       END
 
+      SUBROUTINE OrthoAxis2(V1,V2)
+c
+c  Recomputes the 2nd Oh axis from VAxis and VAxis2
+c
+      REAL*8  Aph,TAph,Dot
+      REAL*8  Rot(3,3),V(3),V1(3),V2(3)
+      SAVE     One, Two, Four
+      DATA     One, Two, Four / 1.d0, 2.d0, 4.d0  /
+
+c Define Td-angle
+      Aph = Four*DATAN(1.D0)/2.D0
+      TAph = 1.d0 - DCOS(Aph)
+
+c Define Axis
+      CALL VRcross(V,V2,V1)
+      Dot = 0.0d0
+      DO I = 1,3
+        Dot = Dot + V(I)**2
+      ENDDO
+      V(:) = V(:) / DSQRT(Dot)
+
+c Build the rotation matrix
+      DO 10 I = 1,3
+        DO 10 J = 1,3
+          Rot(I,J) = TAph * V(I) * V(J)
+          IF (I.EQ.J) THEN
+            Rot(I,J) = Rot(I,J) + DCOS(Aph)
+          ENDIF
+ 10     CONTINUE
+        Rot(1,2) = Rot(1,2) + DSIN(Aph)*V(3)
+        Rot(1,3) = Rot(1,3) - DSIN(Aph)*V(2)
+        Rot(2,1) = Rot(2,1) - DSIN(Aph)*V(3)
+        Rot(2,3) = Rot(2,3) + DSIN(Aph)*V(1)
+        Rot(3,1) = Rot(3,1) + DSIN(Aph)*V(2)
+        Rot(3,2) = Rot(3,2) - DSIN(Aph)*V(1)
+
+c Rotate V1
+        CALL AtimsB(V2,Rot,V1, 3,1,3, 3,3,3, 1)
+
+        RETURN
+      END
