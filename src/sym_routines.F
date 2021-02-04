@@ -116,7 +116,7 @@ c Set matrices to zero (to be safe)
       Angles = .FALSE.
       Angles2 = .FALSE.
 !      IAx_Thresh = 9
-      IAx_Thresh = 4
+      IAx_Thresh = 1
 
 c Set thresh between axis
       Thresh = 10.d0**(-IAx_Thresh)
@@ -165,13 +165,15 @@ c s_v,s_d: Cnv, Dnh, Dnd
         IF(iGroup.GE.3 .AND. iGroup.LE.6) THEN
           CALL VRdot(Dot,VAxis,VAxis2,3)
           Dot = DABS(Dot)
+          CALL OrthoAxis2(VAxis,VAxis2)
           IF(Dot.GT.Thresh) THEN
             WRITE(iunit,"('Axis  = ',3(1x,f9.5))") (VAxis(j),j=1,3)
             WRITE(iunit,"('Axis2 = ',3(1x,f9.5))") (VAxis2(j),j=1,3)
-            WRITE(iunit,*)'ERROR. Axes not valid'
-            WRITE(iunit,"(' IAx_Thresh = ',I2)") IAx_Thresh
+            WRITE(iunit,*)'Input cosine between axes = ',Dot
+!            WRITE(iunit,*)'ERROR. Axes not valid'
+!            WRITE(iunit,"(' IAx_Thresh = ',I2)") IAx_Thresh
             WRITE(iunit,*)'Modified Oh axes: '
-            CALL OrthoAxis2(VAxis,VAxis2)
+!            CALL OrthoAxis2(VAxis,VAxis2)
             WRITE(iunit,"('Axis  = ',3(1x,f15.9))") (VAxis(j),j=1,3)
             WRITE(iunit,"('Axis2 = ',3(1x,f15.9))") (VAxis2(j),j=1,3)
 !            STOP
@@ -248,15 +250,16 @@ c       VAxis2(:) = -DSIN(Dot1)*VAxis2(:) + DCOS(Dot1)*VAux0(:)
           Dot1 = Two*DATAN(DSQRT(Two))    ! ideal angle between Td axis
           Dot = ABS(Dot-DCOS(Dot1))
 c          WRITE(iunit,*)'Diff = ',Dot
+          CALL TdAxis2(VAxis,VAxis2)
           IF(Dot.GT.Thresh) THEN
             WRITE(iunit,"('Axis  = ',3(1x,f15.9))") (VAxis(j),j=1,3)
             WRITE(iunit,"('Axis2 = ',3(1x,f15.9))") (VAxis2(j),j=1,3)
-            WRITE(iunit,*)'Input cosine between C3 axes = ',Dot
-            WRITE(iunit,*)'ERROR. Axes not valid'
-            WRITE(iunit,*)'Ideal cosine between C3 axes = ',DCOS(Dot1)
+            WRITE(iunit,*)'Input cosine between axes = ',Dot
+!            WRITE(iunit,*)'ERROR. Axes not valid'
+!            WRITE(iunit,*)'Ideal cosine between C3 axes = ',DCOS(Dot1)
 c            WRITE(iunit,"(' IAx_Thresh = ',I2)") IAx_Thresh
             WRITE(iunit,*)'Modified Td axes: '
-            CALL TdAxis2(VAxis,VAxis2)
+!            CALL TdAxis2(VAxis,VAxis2)
             WRITE(iunit,"('Axis  = ',3(1x,f15.9))") (VAxis(j),j=1,3)
             WRITE(iunit,"('Axis2 = ',3(1x,f15.9))") (VAxis2(j),j=1,3)
           ENDIF
@@ -325,15 +328,16 @@ c Oh
 c VAxis,VAxis2 must be perpendicular
           CALL VRdot(Dot,VAxis,VAxis2,3)
           Dot = ABS(Dot)
+          CALL OrthoAxis2(VAxis,VAxis2)
           IF(Dot.GT.Thresh) THEN
             WRITE(iunit,"('Axis  = ',3(1x,f15.9))") (VAxis(j),j=1,3)
             WRITE(iunit,"('Axis2 = ',3(1x,f15.9))") (VAxis2(j),j=1,3)
-            WRITE(iunit,*)'Input cosine between C4 axes = ',Dot
-            WRITE(iunit,*)'ERROR. Axes not valid'
-            WRITE(iunit,*)'Ideal cosine between C4 axes = ',0.D0
+            WRITE(iunit,*)'Input cosine between axes = ',Dot
+!            WRITE(iunit,*)'ERROR. Axes not valid'
+!            WRITE(iunit,*)'Ideal cosine between C4 axes = ',0.D0
 c            WRITE(iunit,"(' IAx_Thresh = ',I2)") IAx_Thresh
             WRITE(iunit,*)'Modified Oh axes: '
-            CALL OrthoAxis2(VAxis,VAxis2)
+!            CALL OrthoAxis2(VAxis,VAxis2)
             WRITE(iunit,"('Axis  = ',3(1x,f15.9))") (VAxis(j),j=1,3)
             WRITE(iunit,"('Axis2 = ',3(1x,f15.9))") (VAxis2(j),j=1,3)
 !            STOP
