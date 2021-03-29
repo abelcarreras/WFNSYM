@@ -1,4 +1,4 @@
-__version__ = '0.2.19'
+__version__ = '0.2.20'
 
 from wfnsympy.WFNSYMLIB import mainlib, overlap_mat
 from wfnsympy.QSYMLIB import denslib, center_charge, build_density
@@ -58,6 +58,32 @@ class _captured_stdout:
 #     valence_electrons -= charge
 #     return valence_electrons
 
+def _get_rotation_axis(sym_matrix):
+    threshold = 1E-08
+    if abs(sym_matrix[1][0] - sym_matrix[0][1]) < threshold and \
+            abs(sym_matrix[0][2] - sym_matrix[2][0]) < threshold and \
+            abs(sym_matrix[2][1] - sym_matrix[1][2]) < threshold:
+        if all([diag_element > 0 for diag_element in np.diag(sym_matrix)]):
+            return 'Identity'
+        elif all([diag_element < 0 for diag_element in np.diag(sym_matrix)]):
+            return 'Inversion'
+    angle = np.arccos((sym_matrix[0][0] + sym_matrix[1][1] + sym_matrix[2][2] - 1) / 2) * 180 / np.pi
+    if (180 - abs(angle)) < threshold:
+        x = np.sqrt((sym_matrix[0][0] + 1) / 2)
+        y = np.sqrt((sym_matrix[1][1] + 1) / 2)
+        z = np.sqrt((sym_matrix[2][2] + 1) / 2)
+        return [x, y, z]
+    else:
+        x = (sym_matrix[2][1] - sym_matrix[1][2])/np.sqrt((sym_matrix[2][1] - sym_matrix[1][2])**2 +
+                                                          (sym_matrix[0][2] - sym_matrix[2][0])**2 +
+                                                          (sym_matrix[1][0] - sym_matrix[0][1])**2)
+        y = (sym_matrix[0][2] - sym_matrix[2][0])/np.sqrt((sym_matrix[2][1] - sym_matrix[1][2])**2 +
+                                                          (sym_matrix[0][2] - sym_matrix[2][0])**2 +
+                                                          (sym_matrix[1][0] - sym_matrix[0][1])**2)
+        z = (sym_matrix[1][0] - sym_matrix[0][1])/np.sqrt((sym_matrix[2][1] - sym_matrix[1][2])**2 +
+                                                          (sym_matrix[0][2] - sym_matrix[2][0])**2 +
+                                                          (sym_matrix[1][0] - sym_matrix[0][1])**2)
+        return [x, y, z]
 
 def _get_group_num_from_label(label):
     label_2 = label[0].upper()
@@ -546,6 +572,7 @@ class WfnSympy:
         self._wf_IRd = out_data[14][0:nIR]
 
         self._SymMat = out_data[15][0:dgroup]
+        self._SymAxes = [_get_rotation_axis(sym_matrix) for sym_matrix in self._SymMat]
 
     def calculate_csm_density(self):
         with _captured_stdout():
@@ -688,6 +715,12 @@ class WfnSympy:
         return self._csm_dens
 
     @property
+    def self_assembly(self):
+        if self._self_assembly is None:
+            self.calculate_csm_density()
+        return self._self_assembly
+
+    @property
     def SymLab(self):
         return self._SymLab
 
@@ -742,6 +775,10 @@ class WfnSympy:
     @property
     def SymMat(self):
         return self._SymMat
+
+    @property
+    def SymAxes(self):
+        return self._SymAxes
 
     @property
     def center(self):
