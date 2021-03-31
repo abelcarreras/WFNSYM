@@ -1,4 +1,4 @@
-__version__ = '0.2.21'
+__version__ = '0.2.22'
 
 from wfnsympy.WFNSYMLIB import mainlib, overlap_mat
 from wfnsympy.QSYMLIB import denslib, center_charge, build_density
@@ -333,7 +333,7 @@ class WfnSympy:
 
         self._csm_dens = None
         self._csm_dens_coef = None
-        self._self_assembly = None
+        self._self_similarity = None
 
         type_list_inverse = {}
         for item in shell_type_list.items():
@@ -586,7 +586,7 @@ class WfnSympy:
         # Process outputs
         self._csm_dens_coef = density[1][0:self._dgroup]
         self._csm_dens = density[2]
-        self._self_assembly = density[4]
+        self._self_similarity = density[4]
 
         if self._unrestricted:
             with _captured_stdout():
@@ -598,7 +598,7 @@ class WfnSympy:
                                       self._unrestricted, spin_density=True)
             self._csm_spin_dens_coef = spin_density[1][0:self._dgroup]
             self._csm_spin_dens = spin_density[2]
-            self._self_spin_assembly = spin_density[4]
+            self._self_spin_similarity = spin_density[4]
 
     # Print Outputs
     def print_CSM(self):
@@ -716,10 +716,10 @@ class WfnSympy:
         return self._csm_dens
 
     @property
-    def self_assembly(self):
-        if self._self_assembly is None:
+    def self_similarity(self):
+        if self._self_similarity is None:
             self.calculate_csm_density()
-        return self._self_assembly
+        return self._self_similarity
 
     @property
     def SymLab(self):

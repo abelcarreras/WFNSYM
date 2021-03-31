@@ -2,7 +2,8 @@
 
       SUBROUTINE denslib(VAxis_2,VAxis2_2,NOrbX,igroup_2,ngroup_2,
      &                   DoOper_2,iAngDens,AlphDens,CDens,RDens,NDens,
-     &                   OutDim,OutCSM_i,OutCSM,OutSymLab,OutSassembly)
+     &                   OutDim,OutCSM_i,OutCSM,OutSymLab,
+     &                   OutSsimilarity)
 
 c--------------------------------------------------------------
 c
@@ -39,7 +40,7 @@ c--------------------------------------------------------------
       LOGICAL :: DoOper_2
 c     Output
       INTEGER :: OutDim(3)
-      REAL*8  ::  OutCSM_i(100),OutCSM,OutSassembly
+      REAL*8  ::  OutCSM_i(100),OutCSM,OutSsimilarity
       CHARACTER :: OutSymLab(100)*6
 
 c Include files
@@ -151,7 +152,7 @@ c Write transformation matrix and new atomic coordinates
       OutDim(1) = dGroup
       OutDim(2) = hGroup
       OutDim(3) = nIR
-      OutSassembly = S_total
+      OutSsimilarity = S_total
 
       END
 
