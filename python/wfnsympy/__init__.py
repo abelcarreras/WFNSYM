@@ -1,4 +1,4 @@
-__version__ = '0.2.22'
+__version__ = '0.2.23'
 
 from wfnsympy.WFNSYMLIB import mainlib, overlap_mat
 from wfnsympy.QSYMLIB import denslib, center_charge, build_density
@@ -58,16 +58,19 @@ class _captured_stdout:
 #     valence_electrons -= charge
 #     return valence_electrons
 
-def _get_rotation_axis(sym_matrix):
+def _get_rotation_axis(sym_matrix, type):
+
     threshold = 1E-08
-    if abs(sym_matrix[1][0] - sym_matrix[0][1]) < threshold and \
-            abs(sym_matrix[0][2] - sym_matrix[2][0]) < threshold and \
-            abs(sym_matrix[2][1] - sym_matrix[1][2]) < threshold:
-        if all([diag_element > 0 for diag_element in np.diag(sym_matrix)]):
-            return 'Identity'
-        elif all([diag_element < 0 for diag_element in np.diag(sym_matrix)]):
-            return 'Inversion'
-    angle = np.arccos((sym_matrix[0][0] + sym_matrix[1][1] + sym_matrix[2][2] - 1) / 2) * 180 / np.pi
+    if type == 'E':
+        return 'Identity'
+    elif type == 'i':
+        return 'Inversion'
+    elif 's_' in type:
+        x = np.sqrt((1 - sym_matrix[0][0]) / 2)
+        y = np.sqrt((1 - sym_matrix[1][1]) / 2)
+        z = np.sqrt((1 - sym_matrix[2][2]) / 2)
+        return [x, y, z]
+    angle = np.arccos((np.sum(np.diag(sym_matrix)) - 1) / 2) * 180 / np.pi
     if (180 - abs(angle)) < threshold:
         x = np.sqrt((sym_matrix[0][0] + 1) / 2)
         y = np.sqrt((sym_matrix[1][1] + 1) / 2)
@@ -573,7 +576,7 @@ class WfnSympy:
         self._wf_IRd = out_data[14][0:nIR]
 
         self._SymMat = out_data[15][0:dgroup]
-        self._SymAxes = [_get_rotation_axis(sym_matrix) for sym_matrix in self._SymMat]
+        self._SymAxes = [_get_rotation_axis(sym_matrix, self._SymLab[ids]) for ids, sym_matrix in enumerate(self._SymMat)]
 
     def calculate_csm_density(self):
         with _captured_stdout():
