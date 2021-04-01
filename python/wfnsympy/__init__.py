@@ -388,7 +388,7 @@ class WfnSympy:
         # Transform symbols type to correct Fortran char*2 type
         self._symbols = np.array([list('{:<2}'.format(char)) for char in symbols], dtype='S')
 
-        exp_group = np.array(np.split(np.array(p_exponents), np.cumsum(self._n_primitives))[:-1])
+        exp_group = np.array(np.split(np.array(p_exponents), np.cumsum(self._n_primitives))[:-1],dtype=object)
 
         Alph = []
         for i, stype in enumerate(self._shell_type):
@@ -399,8 +399,8 @@ class WfnSympy:
             Alph2.append(np.ndarray.tolist(i))
         self._alpha = [item for sublist in Alph2 for item in sublist]
 
-        coef_group = np.array(np.split(np.array(c_coefficients), np.cumsum(self._n_primitives))[:-1])
-        b_coef_group = np.array(np.split(np.array(p_c_coefficients), np.cumsum(self._n_primitives))[:-1])
+        coef_group = np.array(np.split(np.array(c_coefficients), np.cumsum(self._n_primitives))[:-1], dtype=object)
+        b_coef_group = np.array(np.split(np.array(p_c_coefficients), np.cumsum(self._n_primitives))[:-1], dtype=object)
 
         COrb = []
         n_s, n_p, n_d = 0, 0, 0
