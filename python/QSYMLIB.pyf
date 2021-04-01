@@ -5,7 +5,7 @@ python module QSYMLIB ! in
     interface  ! in :QSYMLIB
         subroutine denslib(vaxis_2,vaxis2_2,norbx,igroup,ngroup,dooper,&
         iangdens,alphdens,cdens,rdens,ndens,&
-        OutDim,OutCSM_i,OutCSM,OutSymLab,OutSassembly) ! in :QSYMLIB:lib_main.F
+        OutDim,OutCSM_i,OutCSM,OutSymLab,OutSsimilarity) ! in :QSYMLIB:lib_main.F
 !           Intput
             integer :: norbx,igroup,ngroup
             real*8 dimension(3) :: vaxis_2,vaxis2_2
@@ -18,7 +18,7 @@ python module QSYMLIB ! in
 !           Outputs
             integer dimension(3),intent(out) :: OutDim
             real*8 dimension(100), intent(out) :: OutCSM_i
-            real*8, intent(out) :: OutCSM,OutSassembly
+            real*8, intent(out) :: OutCSM,OutSsimilarity
             character dimension(100),intent(out) :: OutSymLab*6
         end subroutine denslib
 
