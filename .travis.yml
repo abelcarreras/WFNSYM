@@ -34,6 +34,7 @@ install:
     - pip install -e .
 
 script:
+    - export PYTHONPATH=$(pwd)
     - cd unittest
 #    - py.test test_pirrol.py
 #    - coverage report -m
