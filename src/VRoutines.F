@@ -77,6 +77,23 @@ c
       RETURN
       END
 
+      SUBROUTINE VRloadI(A,N,Value)
+c
+c     Set each element of A to a scalar
+c
+      INTEGER A(N), Value
+      DO i = 1, N-3, 4
+         A(i) = Value
+         A(i+1) = Value
+         A(i+2) = Value
+         A(i+3) = Value
+      ENDDO
+      DO i = i, N
+         A(i) = Value
+      ENDDO
+      RETURN
+      END
+
       SUBROUTINE VRdot(Dot,A,B,N)
 c
 c     Compute the dot product of A and B

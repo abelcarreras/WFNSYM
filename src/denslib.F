@@ -337,7 +337,7 @@ c Free some space
       DEALLOCATE(coef_MO)
 c-------------------------------------------
 c  Build density function
-      CALL VRload(iAngDens,LDens,Zero)
+      CALL VRloadI(iAngDens,LDens, 0)
       CALL VRload(CDens,LDens,Zero)
       CALL VRload(AlphDens,LDens,Zero)
       CALL VRload(RDens,LDens,Zero)

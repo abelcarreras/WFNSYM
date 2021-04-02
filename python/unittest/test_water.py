@@ -54,9 +54,9 @@ class TestWfnsympy(unittest.TestCase):
     def test_mo_SOEVs_a(self):
         mo_soevs_a_test = [[1, 1, 1, 1],
                            [1, 1, 1, 1],
-                           [1,-1,-1, 1],
+                           [1,-1, 1, -1],
                            [1, 1, 1, 1],
-                           [1,-1, 1,-1]]
+                           [1,-1,-1, 1]]
 
         self.wf_results.print_overlap_mo_alpha()
         np.testing.assert_allclose(mo_soevs_a_test, self.wf_results.mo_SOEVs_a, atol=1e-5)

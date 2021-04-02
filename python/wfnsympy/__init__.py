@@ -4,9 +4,11 @@ from wfnsympy.WFNSYMLIB import mainlib, overlap_mat
 from wfnsympy.QSYMLIB import denslib, center_charge, build_density
 from wfnsympy.errors import MultiplicityError, ChangedAxisWarning, LabelNotFound
 from wfnsympy.optimize import minimize_axis, minimize_axis2, rotation_xy, rotation_axis
+from itertools import combinations
 import warnings
 import numpy as np
 import sys, os, io, tempfile
+
 
 _bohr_to_angstrom = 0.529177249
 
@@ -462,11 +464,11 @@ class WfnSympy:
         self._n_uncontr_orbitals = len(self._uncontracted_coefficients)
         self._n_bas = np.sum([shell_type_list['{}'.format(st)][1] for st in self._shell_type])
 
-        # coordinates_bohr = np.array(self._coordinates) / _bohr_to_angstrom
-        # out = overlap_mat(self._symbols, coordinates_bohr, self._n_bas, self._n_atoms, self._n_uncontr_orbitals,
-        #                   self._ntot_shell, self._n_shell, self._shell_type, self._n_primitives,
-        #                   self._uncontracted_coefficients, self._alpha)
-        # overlap_matrix = np.array(out).reshape(self._n_bas, self._n_bas)
+        coordinates_bohr = np.array(self._coordinates) / _bohr_to_angstrom
+        out = overlap_mat(self._symbols, coordinates_bohr, self._n_bas, self._n_atoms, self._n_uncontr_orbitals,
+                          self._ntot_shell, self._n_shell, self._shell_type, self._n_primitives,
+                          self._uncontracted_coefficients, self._alpha)
+        self._overlap_matrix = np.array(out).reshape(self._n_bas, self._n_bas)
         #
         # old_center = _center_of_charge_old(alpha_mo_coeff, alpha_mo_coeff, self._coordinates, basis, self._total_electrons,
         #                                    self._multiplicity, overlap_matrix)
@@ -490,14 +492,15 @@ class WfnSympy:
                 VAxis2 = np.dot(rotation_axis(VAxis, gamma), get_perpendicular_axis(VAxis))
 
                 with _captured_stdout():
-                    out_data = denspy(self._coordinates, self._l_dens, self._alpha, self._uncontracted_coefficients,
-                                      self._n_primitives, self._n_shell, self._shell_type, self._alpha_occupancy,
-                                      self._ca, self._n_mo, self._n_bas, self._n_c_mos, self._total_electrons,
-                                      VAxis, VAxis2, self._center, self._igroup, self._ngroup,
-                                      self._do_operation, self._toldens, self._beta_occupancy, self._cb,
-                                      self._unrestricted)
-
-                return np.abs(out_data[2])
+                    coordinates_bohr = np.array(self._coordinates) / _bohr_to_angstrom
+                    out_data = mainlib(self._alpha_occupancy, self._beta_occupancy, self._n_bas, self._n_mo,
+                                       self._n_uncontr_orbitals, self._n_atoms, self._ntot_shell, self._atomic_numbers,
+                                       self._symbols, self._alpha, self._uncontracted_coefficients, self._n_shell,
+                                       coordinates_bohr, self._n_primitives, self._shell_type, self._igroup, self._ngroup,
+                                       self._ca, self._cb, self._center, VAxis, VAxis2, self._do_operation)
+                nIR = out_data[0][2]
+                wf_IRd = out_data[14][0:nIR]
+                return np.sum([np.prod(pair)**2 for pair in combinations(wf_IRd, 2)])
 
             data = {'coordinates': self._coordinates, 'symbols': self._symbols, 'igroup': self._igroup,
                     'ngroup': self._ngroup}
@@ -512,14 +515,16 @@ class WfnSympy:
                     VAxis2 = np.dot(rotation_axis(VAxis, gamma), get_perpendicular_axis(VAxis))
 
                     with _captured_stdout():
-                        out_data = denspy(self._coordinates, self._l_dens, self._alpha, self._uncontracted_coefficients,
-                                          self._n_primitives, self._n_shell, self._shell_type, self._alpha_occupancy,
-                                          self._ca, self._n_mo, self._n_bas, self._n_c_mos, self._total_electrons,
-                                          VAxis, VAxis2, self._center, self._igroup, self._ngroup,
-                                          self._do_operation, self._toldens, self._beta_occupancy, self._cb,
-                                          self._unrestricted)
+                        coordinates_bohr = np.array(self._coordinates) / _bohr_to_angstrom
+                        out_data = mainlib(self._alpha_occupancy, self._beta_occupancy, self._n_bas, self._n_mo,
+                                           self._n_uncontr_orbitals, self._n_atoms, self._ntot_shell, self._atomic_numbers,
+                                           self._symbols, self._alpha, self._uncontracted_coefficients, self._n_shell,
+                                           coordinates_bohr, self._n_primitives, self._shell_type, self._igroup, self._ngroup,
+                                           self._ca, self._cb, self._center, VAxis, VAxis2, self._do_operation)
 
-                    return np.abs(out_data[2])
+                    nIR = out_data[0][2]
+                    wf_IRd = out_data[14][0:nIR]
+                    return np.sum([np.prod(pair)**2 for pair in combinations(wf_IRd, 2)])
 
                 gamma = minimize_axis2(target_function, self._axis, delta=0.05)
                 self._axis2 = np.dot(rotation_axis(self._axis, gamma), get_perpendicular_axis(self._axis))
