@@ -39,7 +39,7 @@ script:
 #    - coverage report -m
 #    - coverage run -m unittest discover
     - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then coverage run --source=../wfnsympy -m unittest discover . "test_*.py"; fi
-    - if [[ $TRAVIS_PYTHON_VERSION == '3.8' ]]; then python --source=../wfnsympy -m unittest discover -p "test_*.py"; fi
+    - if [[ $TRAVIS_PYTHON_VERSION == '3.8' ]]; then python  -m unittest test_*.py; fi
 
 after_success:
     - coveralls
