@@ -52,6 +52,8 @@ wfnsymlib = Extension('wfnsympy.WFNSYMLIB',
 
 qsymlib = Extension('wfnsympy.QSYMLIB',
                     include_dirs=[i_dir],
+                    extra_f77_compile_args=['-O0'],
+                    extra_compile_args = ["-O0"],
                     libraries=['lapack', 'blas'],
                     sources=['QSYMLIB.pyf',
                              s_dir + 'center_dens.F',
@@ -76,4 +78,4 @@ setup(name='wfnsympy',
       author_email='abelcarreras83@gmail.com',
       install_requires=['numpy', 'scipy'],
       packages=['wfnsympy'],
-      ext_modules=[wfnsymlib])
+      ext_modules=[wfnsymlib, qsymlib])
