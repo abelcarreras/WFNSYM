@@ -42,9 +42,14 @@ script:
     - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then coverage run --source=../wfnsympy -m unittest discover . "test_*.py"; fi
     - if [[ $TRAVIS_PYTHON_VERSION == '3.8' ]]; then pytest  --rootdir=..  test_*.py; fi
 
+    allow_failures:
+      - python: "3.8"
+
+
 after_success:
     - coveralls
     - cd ..
+
 
 deploy:
   - provider: pypi
