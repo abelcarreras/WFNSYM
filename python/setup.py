@@ -52,8 +52,6 @@ wfnsymlib = Extension('wfnsympy.WFNSYMLIB',
 
 qsymlib = Extension('wfnsympy.QSYMLIB',
                     include_dirs=[i_dir],
-                    extra_f77_compile_args=['-O0'],
-                    extra_compile_args = ["-O0"],
                     libraries=['lapack', 'blas'],
                     sources=['QSYMLIB.pyf',
                              s_dir + 'center_dens.F',
