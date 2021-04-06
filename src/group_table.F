@@ -258,19 +258,19 @@ c Dn
         GrpTbl(1,:) = One
         GrpTbl(2,1:5)  = One
         GrpTbl(2,6:10) = -One
-        GrpTbl(3,:) = (/One,Cth,Cth,C2th,C2th 
+        GrpTbl(3,:) = (/One,Cth,Cth,C2th,C2th,
      &               -One,-Cth,-C2th,-C2th,-Cth/)
-        GrpTbl(4,:) = (/Zero,Sth,-Sth,S2th,-S2th
+        GrpTbl(4,:) = (/Zero,Sth,-Sth,S2th,-S2th,
      &               Zero,Sth,S2th,-S2th,-Sth/)
-        GrpTbl(5,:) = (/Zero,-Sth,Sth,-S2th,S2th
+        GrpTbl(5,:) = (/Zero,-Sth,Sth,-S2th,S2th,
      &               Zero,Sth,S2th,-S2th,-Sth/)
         GrpTbl(6,:) = GrpTbl(2,:)*GrpTbl(3,:)
 
         GrpTbl(7,:) = (/One,C2th,C2th,Cth,Cth
      &               -One,-C2th,-Cth,-Cth,-C2th/)
-        GrpTbl(8,:) = (/Zero,-S2th,S2th,Sth,-Sth
+        GrpTbl(8,:) = (/Zero,-S2th,S2th,Sth,-Sth,
      &               Zero,-S2th,Sth,-Sth,S2th/)
-        GrpTbl(9,:) = (/Zero,S2th,-S2th,-Sth,Sth
+        GrpTbl(9,:) = (/Zero,S2th,-S2th,-Sth,Sth,
      &               Zero,-S2th,Sth,-Sth,S2th/)
         GrpTbl(10,:) = GrpTbl(2,:)*GrpTbl(7,:)
        ELSEIF(nGroup.EQ.6) THEN
@@ -281,7 +281,7 @@ c Dn
      &                  One,-One,One,-One,One,-One/)
         GrpTbl(4,:) = GrpTbl(2,:)*GrpTbl(3,:)
 
-        GrpTbl(5,:) = (/One,Half,Half,-Half,-Half,-One
+        GrpTbl(5,:) = (/One,Half,Half,-Half,-Half,-One,
      &                  One,Half,-Half,-One,-Half,Half/)
         GrpTbl(6,:) = (/Zero,Coef,-Coef,Coef,-Coef,Zero,
      &                  Zero,-Coef,-Coef,Zero,Coef,Coef/)
@@ -735,11 +735,11 @@ c          41    42   43   44    45   46    47   48
      &   (Zero,i=9,13),One,-One,One,-One,(Zero,i=18,25),
      &   -One,One,(Zero,i=28,32),One,-One,Zero,-One,
      &    Zero,Zero,One,(Zero,i=40,46),One,-One/)
-        GrpTbl(9,:) = (/Zero,Zero,One,-One,Zero,One,Zero,Zero
+        GrpTbl(9,:) = (/Zero,Zero,One,-One,Zero,One,Zero,Zero,
      &    -One,One,-One,(Zero,i=12,19),-One,One,
      &    (Zero,i=22,29),One,-One,One,Zero,Zero,-One,Zero,
      &     One,-One,(Zero,i=39,42),One,-One,(Zero,i=45,48)/)
-        GrpTbl(10,:) = (/Zero,Zero,One,-One,Zero,-One,Zero,Zero
+        GrpTbl(10,:) = (/Zero,Zero,One,-One,Zero,-One,Zero,Zero,
      &    One,(Zero,i=10,13),One,-One,-One,One,(Zero,i=18,25),
      &    One,-One,(Zero,i=28,31),One,Zero,Zero,-One,Zero,
      &   -One,One,(Zero,i=39,46),One,-One/)
@@ -1251,7 +1251,7 @@ c Linear
       END
 
 
-      SUBROUTINE table_dimensions(nIR,iGroup,nGroup,dGroup)
+      SUBROUTINE table_dimensions(nIR,iGroup,nGroup,dGroup, iout)
 c*****************************************************c
 c                                                     c
 c       Gets the # of Ireducible Representations      c

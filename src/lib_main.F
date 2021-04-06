@@ -76,6 +76,7 @@ c Include files
 
 c ----------- Added manual arguments-----------
       iout = 0
+      NPrint = 0
       igroup = igroup_2
       ngroup = ngroup_2
       CALL SetGroupDim(iGroup, nGroup, dGroup, hGroup)
@@ -486,7 +487,7 @@ c      FMT3 = "(2X,A6)"
 
       IF(DoGroup) THEN
 c Build Group Table
-      CALL table_dimensions(nIR,iGroup,nGroup,dGroup)
+      CALL table_dimensions(nIR,iGroup,nGroup,dGroup, iout)
       ALLOCATE(GrpTbl(hGroup,hGroup))
       ALLOCATE(IRLab(nIR),IRMul(nIR))
       CALL group_labels(IRLab,nIR,iGroup,nGroup,iout)

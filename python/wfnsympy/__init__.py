@@ -344,6 +344,10 @@ class WfnSympy:
         for item in shell_type_list.items():
             type_list_inverse['{}'.format(item[1][0])] = int(item[0])
 
+        # Check limitations
+        if self._ngroup > 6:
+            raise Exception('Only implemented groups for n < 7')
+
         # from basis dictionary to wfsymm lib arguments
         self._shell_type = []
         p_exponents = []
@@ -542,7 +546,6 @@ class WfnSympy:
             E.seek(0)
             capture = E.read()
         capture = capture.decode().split('\n')
-
         for i, c in enumerate(capture):
             if 'ERROR. Axes not valid' in c:
                 self._axis = [float(v) for v in capture[i+3].split()[-3:]]

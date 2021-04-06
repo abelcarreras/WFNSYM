@@ -766,7 +766,7 @@ c Define level of printing results
 
       IF(DoGroup) THEN
 c Build Group Table
-      CALL table_dimensions(nIR,iGroup,nGroup,dGroup)
+      CALL table_dimensions(nIR,iGroup,nGroup,dGroup, iout)
       ALLOCATE(GrpTbl(hGroup,hGroup))
       ALLOCATE(IRLab(nIR),IRMul(nIR))
       CALL group_labels(IRLab,nIR,iGroup,nGroup,iout)
