@@ -448,7 +448,7 @@ c Compute the wave function symmetry
       S_WFa = One
       S_WFb = One
       K = 1
-      DO I = 1,Nbas
+      DO I = 1,nAOccup
         IF (AOccup(I) > 0.5) THEN
           IF(IpivA(K).EQ.K) THEN
             S_WFa = S_WFa * S_MOa(I+(I-1)*NBas)
@@ -460,7 +460,7 @@ c Compute the wave function symmetry
       ENDDO
       IF(NOb.GT.0) THEN
         K = 1
-        DO I = 1,Nbas
+        DO I = 1,nBOccup
           IF (BOccup(I) > 0.5) THEN
             IF(IpivB(K).EQ.K) THEN
 c            write(6,*) 'IpivB(I)', IpivB(I), I
