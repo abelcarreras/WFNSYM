@@ -444,21 +444,31 @@ c Compute the wave function symmetry
         CALL VRcopy(S_MOb,S_MOa,NBas2)
         IpivB(1:NOa) = IpivA(1:NOa)
       ENDIF
+
       S_WFa = One
       S_WFb = One
-      DO I = 1,NOa
-        IF(IpivA(I).EQ.I) THEN
-          S_WFa = S_WFa * S_MOa(I+(I-1)*NBas)
-        ELSE
-          S_WFa = - S_WFa * S_MOa(I+(I-1)*NBas)
+      K = 1
+      DO I = 1,Nbas
+        IF (AOccup(I) > 0.5) THEN
+          IF(IpivA(K).EQ.K) THEN
+            S_WFa = S_WFa * S_MOa(I+(I-1)*NBas)
+          ELSE
+            S_WFa = - S_WFa * S_MOa(I+(I-1)*NBas)
+          ENDIF
+          K = K + 1
         ENDIF
       ENDDO
       IF(NOb.GT.0) THEN
-        DO I = 1,NOb
-          IF(IpivB(I).EQ.I) THEN
-            S_WFb = S_WFb * S_MOb(I+(I-1)*NBas)
-          ELSE
-            S_WFb = - S_WFb * S_MOb(I+(I-1)*NBas)
+        K = 1
+        DO I = 1,Nbas
+          IF (BOccup(I) > 0.5) THEN
+            IF(IpivB(K).EQ.K) THEN
+c            write(6,*) 'IpivB(I)', IpivB(I), I
+              S_WFb = S_WFb * S_MOb(I+(I-1)*NBas)
+            ELSE
+              S_WFb = - S_WFb * S_MOb(I+(I-1)*NBas)
+            ENDIF
+            K = K + 1
           ENDIF
         ENDDO
       ELSE
