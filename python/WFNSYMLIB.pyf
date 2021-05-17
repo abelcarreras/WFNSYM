@@ -4,7 +4,7 @@
 python module WFNSYMLIB ! in 
     interface  ! in :WFNSYMLIB
         subroutine mainlib(AOccup, BOccup, NBas, NMo, Norb, NAt, NCShell, iZAt, AtLab, Alph, COrb, NShell, RAt, n_prim, &
-        shell_type, igroup, ngroup, Ca, Cb, RCread, VAxis, VAxis2, nAOccup, nBOccup, DoOp, &
+        shell_type, igroup, ngroup, Ca, Cb, RCread, VAxis, VAxis2, DoOp, &
         OutDim, OutGrim, OutCMS, OutSymLab, OutSDiagA, OutSDiagB, OutWDiagA, OutWDiagB, OutTbl, OutIRLab, OutgIRA, &
         OutgIRB, OutgIRwfA, OutgIRwfB, OutgIRwf, OutSymMat) ! in :WFNSYMLIB:lib_main.F
 
@@ -22,10 +22,8 @@ python module WFNSYMLIB ! in
             integer dimension(NAt),intent(in),depend(NAt) :: iZAt, NShell
             integer dimension(NCShell),intent(in),depend(NCShell) :: n_prim, shell_type
             character dimension(NAt),intent(in),depend(NAt) :: AtLab*2
-            real*8 dimension(nAOccup), intent(in) :: AOccup
-            real*8 dimension(nBOccup), intent(in) :: BOccup
-            integer, optional,check(len(AOccup)>=nAOccup),depend(AOccup) :: nAOccup=len(AOccup)
-            integer, optional,check(len(BOccup)>=nBOccup),depend(BOccup) :: nBOccup=len(BOccup)
+            real*8 dimension(NMo), intent(in),depend(NMo) :: AOccup
+            real*8 dimension(NMo), intent(in),depend(NMo) :: BOccup
 
 !           Outputs
             integer dimension(3),intent(out) :: OutDim

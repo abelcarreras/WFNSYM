@@ -1,4 +1,4 @@
-__version__ = '0.2.24'
+__version__ = '0.2.25'
 
 from wfnsympy.WFNSYMLIB import mainlib, overlap_mat
 from wfnsympy.QSYMLIB import denslib, center_charge, build_density
@@ -408,18 +408,23 @@ class WfnSympy:
             self._alpha_occupancy[:int(self._total_electrons//2)] = [1]*int(self._total_electrons//2)
             if self._total_electrons%2 != 0:
                 self._alpha_occupancy[int(self._total_electrons//2)] = 1
+
+        if len(self._alpha_occupancy) <= self._n_mo:
+            for _ in range(int(self._n_mo - len(self._alpha_occupancy))):
+                self._alpha_occupancy.append(0)
         else:
-            if len(self._alpha_occupancy) != self._n_mo:
-                for _ in range(int(self._n_mo - len(self._alpha_occupancy))):
-                    self._alpha_occupancy.append(0)
+            raise Exception('Wrong length Alpha Occupancies')
 
         if self._beta_occupancy is None:
             self._beta_occupancy = [0]*int(self._n_mo)
             self._beta_occupancy[:int(self._total_electrons//2)] = [1]*int(self._total_electrons//2)
+
+        if len(self._beta_occupancy) <= self._n_mo:
+            for _ in range(int(self._n_mo - len(self._beta_occupancy))):
+                self._beta_occupancy.append(0)
         else:
-            if len(self._beta_occupancy) != self._n_mo:
-                for _ in range(int(self._n_mo - len(self._beta_occupancy))):
-                    self._beta_occupancy.append(0)
+            raise Exception('Wrong length Beta Occupancies')
+
 
         # Transform symbols type to correct Fortran char*2 type
         self._symbols = np.array([list('{:<2}'.format(char)) for char in symbols], dtype='S')
@@ -803,6 +808,10 @@ class WfnSympy:
     @property
     def axis2(self):
         return self._axis2
+
+    @property
+    def min_function(self):
+        return np.sum([np.prod(pair) for pair in combinations(self._wf_IRd, 2)])
 
 
 symbol_map = {

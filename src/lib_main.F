@@ -4,7 +4,7 @@ c      PROGRAM Prog_Main
       SUBROUTINE mainlib(AOccup, BOccup, NBas, NMo, Norb,
      & NAt_2, NTotShell, iZAt, AtLab, Alph, COrb, NShell,
      & RAt, NPrim, shell_type, igroup_2, ngroup_2, Ca, Cb,
-     & RCread_2, VAxis_2, VAxis2_2, nAOccup, nBOccup, DoOp,
+     & RCread_2, VAxis_2, VAxis2_2, DoOp,
      & OutDim, OutGrim, OutCSM, OutSymLab,
      & OutSDiagA, OutSDiagB, OutWDiagA, OutWDiagB, OutTbl,
      & OutIRLab, OutgIRA, OutgIRB,OutgIRwfA,OutgIRwfB,
@@ -52,12 +52,12 @@ c			             False: 3 decimals (default)
 c					 True : 5 decimals
 c--------------------------------------------------------------
       IMPLICIT REAL*8 (a-h,o-z)
-      INTEGER :: iZAt(NAt_2), NPrim(NTotShell), nAOccup, nBOccup
+      INTEGER :: iZAt(NAt_2), NPrim(NTotShell)
       CHARACTER :: AtLab(NAt_2)*2
       REAL*8 :: Alph(Norb),  COrb(Norb), RAt(NAt_2, 3)
       REAL*8 :: CA(NMo*NBas),  CB(NMo*NBas)
       REAL*8 :: RCread_2(3), VAxis_2(3), VAxis2_2(3)
-      REAL*8 :: AOccup(nAOccup), BOccup(nBOccup)
+      REAL*8 :: AOccup(NMo), BOccup(NMo)
       LOGICAL :: DoOp
 c     Output
       INTEGER :: OutDim(3)
@@ -448,7 +448,7 @@ c Compute the wave function symmetry
       S_WFa = One
       S_WFb = One
       K = 1
-      DO I = 1,nAOccup
+      DO I = 1,NMo
         IF (AOccup(I) > 0.5) THEN
           IF(IpivA(K).EQ.K) THEN
             S_WFa = S_WFa * S_MOa(I+(I-1)*NBas)
@@ -460,7 +460,7 @@ c Compute the wave function symmetry
       ENDDO
       IF(NOb.GT.0) THEN
         K = 1
-        DO I = 1,nBOccup
+        DO I = 1,NMo
           IF (BOccup(I) > 0.5) THEN
             IF(IpivB(K).EQ.K) THEN
 c            write(6,*) 'IpivB(I)', IpivB(I), I
