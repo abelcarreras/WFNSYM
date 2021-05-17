@@ -1,7 +1,7 @@
 from numpy.distutils.core import setup, Extension
 from distutils.dir_util import copy_tree
 from distutils.errors import DistutilsFileError
-import os
+import os, sys
 from shutil import copyfile
 
 
@@ -77,3 +77,13 @@ setup(name='wfnsympy',
       install_requires=['numpy', 'scipy'],
       packages=['wfnsympy'],
       ext_modules=[wfnsymlib, qsymlib])
+
+
+# If windows
+if sys.platform.startswith('win'):
+    from shutil import copyfile
+    dir = os.path.dirname(__file__)
+    files = os.listdir(dir + '/wfnsympy/.libs')
+    for file in files:
+        filename = os.path.join(dir, 'wfnsympy','.libs', file)
+        copyfile(filename, os.path.join(dir, 'wfnsympy', file))
