@@ -68,7 +68,7 @@ qsymlib = Extension('wfnsympy.QSYMLIB',
                              s_dir + 'VRoutines.F'])
 
 
-class PostInstallCommand(install):
+class PostInstallCommand():
     def run(self):
         install.run(self)
         # If windows
