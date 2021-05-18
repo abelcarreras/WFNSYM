@@ -1,5 +1,5 @@
 from numpy.distutils.core import setup, Extension
-from numpy.distutils.command.install import install
+from numpy.distutils.command.install import install as _install
 from distutils.dir_util import copy_tree
 from distutils.errors import DistutilsFileError
 import os, sys
@@ -69,17 +69,17 @@ qsymlib = Extension('wfnsympy.QSYMLIB',
                              s_dir + 'VRoutines.F'])
 
 
-class PostInstallCommand(install):
+class PostInstallCommand(_install):
     def run(self):
-        install.run(self)
+        _install.run(self)
         # If windows
-        if sys.platform.startswith('win'):
-            from shutil import copyfile
-            dir = os.path.dirname(__file__)
-            files = os.listdir(dir + '/wfnsympy/.libs')
-            for file in files:
-                filename = os.path.join(dir, 'wfnsympy','.libs', file)
-                copyfile(filename, os.path.join(dir, 'wfnsympy', file))
+        from shutil import copyfile
+        print('Copying dll for windows')
+        dir = os.path.dirname(__file__)
+        files = os.listdir(dir + '/wfnsympy/.libs')
+        for file in files:
+            filename = os.path.join(dir, 'wfnsympy','.libs', file)
+            copyfile(filename, os.path.join(dir, 'wfnsympy', file))
 
 setup(name='wfnsympy',
       version=get_version_number(),
