@@ -70,7 +70,7 @@ qsymlib = Extension('wfnsympy.QSYMLIB',
 
 class PostInstallCommand(install):
     def run(self):
-        install.run()
+        install.run(self)
         # If windows
         if sys.platform.startswith('win'):
             from shutil import copyfile
