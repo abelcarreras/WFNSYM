@@ -1,17 +1,18 @@
 from numpy.distutils.core import setup, Extension
 from numpy.distutils.command.install import install as _install
 from distutils.dir_util import copy_tree
-from distutils.errors import DistutilsFileError
+from distutils.sysconfig import get_python_lib
 import os, sys
 from shutil import copyfile
 
 
 # get version number
 def get_version_number():
-    for l in open('wfnsympy/__init__.py', 'r').readlines():
-        if not(l.find('__version__')):
-            exec(l, globals())
-            return __version__
+    main_ns = {}
+    for line in open('wfnsympy/__init__.py', 'r').readlines():
+        if not(line.find('__version__')):
+            exec(line, main_ns)
+            return main_ns['__version__']
 
 
 if bool('TRAVIS_WFNSYM' in os.environ):
@@ -68,18 +69,22 @@ qsymlib = Extension('wfnsympy.QSYMLIB',
                              s_dir + 'sym_routines.F',
                              s_dir + 'VRoutines.F'])
 
-
 class PostInstallCommand(_install):
     def run(self):
         _install.run(self)
-        # If windows
         from shutil import copyfile
-        print('Copying dll for windows')
         dir = os.path.dirname(__file__)
         files = os.listdir(dir + '/wfnsympy/.libs')
         for file in files:
-            filename = os.path.join(dir, 'wfnsympy','.libs', file)
+            filename = os.path.join(dir, 'wfnsympy', '.libs', file)
             copyfile(filename, os.path.join(dir, 'wfnsympy', file))
+
+        site_dir = get_python_lib()
+        files = [f for f in os.listdir('./wfnsympy/') if os.path.isfile('./wfnsympy/' + f)]
+        for file in files:
+            filename = os.path.join(dir, 'wfnsympy', file)
+            print('file', filename)
+            copyfile(filename, os.path.join(site_dir, 'wfnsympy', file))
 
 setup(name='wfnsympy',
       version=get_version_number(),
@@ -94,4 +99,3 @@ setup(name='wfnsympy',
       package_data={"": ["*.dll"],},
       include_package_data=True,
       ext_modules=[wfnsymlib, qsymlib])
-
