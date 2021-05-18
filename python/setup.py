@@ -1,4 +1,5 @@
-from numpy.distutils.core import setup, Extension, develop, install
+from numpy.distutils.core import setup, Extension
+from numpy.distutils.command.install import install
 from distutils.dir_util import copy_tree
 from distutils.errors import DistutilsFileError
 import os, sys
@@ -68,7 +69,7 @@ qsymlib = Extension('wfnsympy.QSYMLIB',
                              s_dir + 'VRoutines.F'])
 
 
-class PostInstallCommand():
+class PostInstallCommand(install):
     def run(self):
         install.run(self)
         # If windows
