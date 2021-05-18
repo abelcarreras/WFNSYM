@@ -80,7 +80,7 @@ setup(name='wfnsympy',
 
 
 # If windows
-if sys.platform.startswith('win'):
+if sys.platform.startswith('xwin'):
     from shutil import copyfile
     dir = os.path.dirname(__file__)
     files = os.listdir(dir + '/wfnsympy/.libs')
