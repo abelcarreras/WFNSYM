@@ -15,6 +15,7 @@ def get_version_number():
             return main_ns['__version__']
 
 
+# if testing in TRAVIS
 if bool('TRAVIS_WFNSYM' in os.environ):
     print('Testing in travis')
     copy_tree('../src', './src', update=True)
@@ -95,7 +96,7 @@ setup(name='wfnsympy',
       author_email='abelcarreras83@gmail.com',
       install_requires=['numpy', 'scipy'],
       packages=['wfnsympy'],
-      cmdclass={'install': PostInstallCommand},
-      package_data={"": ["*.dll"],},
+      cmdclass={'install': PostInstallCommand} if sys.platform.startswith('win') else {},
+      package_data={"": ["*.dll", "*.pyd"],},
       include_package_data=True,
       ext_modules=[wfnsymlib, qsymlib])
