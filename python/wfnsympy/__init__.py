@@ -265,6 +265,17 @@ def denspy(coordinates, l_dens, alpha, uncontracted_coefficients, n_primitives, 
                                                                        uncontracted_coefficients, n_primitives,
                                                                        n_shell, shell_type, alpha_occupancy,
                                                                        ca, n_mo, n_bas, n_c_mos, toldens)
+    # Check center
+    if center is None:
+        elec_total, center = center_charge(exponents, index_list, dens_positions, dens_coefs, total_electrons)
+        center = center * _bohr_to_angstrom
+
+    if np.sum([abs(ele) for ele in center]) > 1e-8:
+        centered_coordinates = [atom - center for atom in coordinates]
+        index_list, exponents, dens_coefs, dens_positions = _build_density(centered_coordinates, l_dens, alpha,
+                                                                           uncontracted_coefficients, n_primitives,
+                                                                           n_shell, shell_type, alpha_occupancy,
+                                                                           ca, n_mo, n_bas, n_c_mos, toldens)
     if unrestricted or spin_density:
         index_list_b, exponents_b, dens_coefs_b, dens_positions_b = _build_density(coordinates, l_dens, alpha,
                                                                                    uncontracted_coefficients,
@@ -278,21 +289,6 @@ def denspy(coordinates, l_dens, alpha, uncontracted_coefficients, n_primitives, 
         dens_positions = np.concatenate((dens_positions, dens_positions_b))
     else:
         dens_coefs *= 2
-
-    # Check center
-    if center is None:
-        elec_total, center = center_charge(exponents, index_list, dens_positions, dens_coefs, total_electrons)
-        center = center * _bohr_to_angstrom
-
-    if np.sum([abs(ele) for ele in center]) > 1e-8:
-        centered_coordinates = [atom - center for atom in coordinates]
-        index_list, exponents, dens_coefs, dens_positions = _build_density(centered_coordinates, l_dens, alpha,
-                                                                           uncontracted_coefficients, n_primitives,
-                                                                           n_shell, shell_type, alpha_occupancy,
-                                                                           ca, n_mo, n_bas, n_c_mos, toldens)
-        # dens_positions = [pos - center for pos in dens_positions]
-    # else:
-    #     centered_coordinates = coordinates
 
     if spin_density:
         return denslib(axis, axis2, n_c_mos,
@@ -474,10 +470,13 @@ class WfnSympy:
         self._n_bas = np.sum([shell_type_list['{}'.format(st)][1] for st in self._shell_type])
 
         coordinates_bohr = np.array(self._coordinates) / _bohr_to_angstrom
-        #out = overlap_mat(self._symbols, coordinates_bohr, self._n_bas, self._n_atoms, self._n_uncontr_orbitals,
-        #                  self._ntot_shell, self._n_shell, self._shell_type, self._n_primitives,
-        #                  self._uncontracted_coefficients, self._alpha)
-        #self._overlap_matrix = np.array(out).reshape(self._n_bas, self._n_bas)
+
+        # compute overlap matrix
+        out = overlap_mat(self._symbols, coordinates_bohr, self._n_bas, self._n_atoms, self._n_uncontr_orbitals,
+                          self._ntot_shell, self._n_shell, self._shell_type, self._n_primitives,
+                          self._uncontracted_coefficients, self._alpha)
+        self._overlap_matrix = np.array(out).reshape(self._n_bas, self._n_bas)
+
         #
         # old_center = _center_of_charge_old(alpha_mo_coeff, alpha_mo_coeff, self._coordinates, basis, self._total_electrons,
         #                                    self._multiplicity, overlap_matrix)
