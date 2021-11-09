@@ -293,6 +293,7 @@ c******************************************************
      & ROrb,COrb,iContr,iLAO,cLAO,NAt_2,NBas,NOrb,
      & NPrim, NTotShell, NShell, shell_type)
 
+       NBas2 = NBas * NBas
       CALL make_S(S_AO,iAng,Alph,COrb,ROrb,iAng,Alph,COrb,ROrb,
      & NBas,NBas2,NOrb,iContr,MatId)
 
