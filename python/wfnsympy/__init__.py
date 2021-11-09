@@ -1,4 +1,4 @@
-__version__ = '0.2.25'
+__version__ = '0.2.26'
 
 from wfnsympy.WFNSYMLIB import mainlib, overlap_mat
 from wfnsympy.QSYMLIB import denslib, center_charge, build_density
@@ -472,10 +472,12 @@ class WfnSympy:
         coordinates_bohr = np.array(self._coordinates) / _bohr_to_angstrom
 
         # compute overlap matrix
-        out = overlap_mat(self._symbols, coordinates_bohr, self._n_bas, self._n_atoms, self._n_uncontr_orbitals,
-                          self._ntot_shell, self._n_shell, self._shell_type, self._n_primitives,
-                          self._uncontracted_coefficients, self._alpha)
-        self._overlap_matrix = np.array(out).reshape(self._n_bas, self._n_bas)
+        get_overlap = False
+        if get_overlap:
+            out = overlap_mat(self._symbols, coordinates_bohr, self._n_bas, self._n_atoms, self._n_uncontr_orbitals,
+                              self._ntot_shell, self._n_shell, self._shell_type, self._n_primitives,
+                              self._uncontracted_coefficients, self._alpha)
+            self._overlap_matrix = np.array(out).reshape(self._n_bas, self._n_bas)
 
         #
         # old_center = _center_of_charge_old(alpha_mo_coeff, alpha_mo_coeff, self._coordinates, basis, self._total_electrons,
