@@ -601,6 +601,7 @@ class WfnSympy:
                              self._beta_occupancy, self._cb, self._unrestricted)
 
         # Process outputs
+        # dGroup, hGroup, nIR = density[0]
         self._csm_dens_coef = density[1][0:self._dgroup]
         self._csm_dens = density[2]
         self._self_similarity = density[4]
@@ -613,6 +614,9 @@ class WfnSympy:
                                       self._axis, self._axis2, self._center, self._igroup, self._ngroup,
                                       self._do_operation, self._toldens, self._beta_occupancy, self._cb,
                                       self._unrestricted, spin_density=True)
+
+            # Process outputs
+            # dGroup, hGroup, nIR = spin_density[0]
             self._csm_spin_dens_coef = spin_density[1][0:self._dgroup]
             self._csm_spin_dens = spin_density[2]
             self._self_spin_similarity = spin_density[4]
