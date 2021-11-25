@@ -1,4 +1,4 @@
-__version__ = '0.2.27'
+__version__ = '0.2.28'
 
 from wfnsympy.WFNSYMLIB import mainlib, overlap_mat
 from wfnsympy.QSYMLIB import denslib, center_charge, build_density
@@ -821,8 +821,19 @@ class WfnSympy:
         return self._axis2
 
     @property
-    def min_function(self):
+    def _min_function(self):
         return np.sum([np.prod(pair) for pair in combinations(self._wf_IRd, 2)])
+
+    @property
+    def op_multiplicity(self):
+        def multi(symlab):
+            for label in symlab:
+                if label[0].isnumeric():
+                    yield int(label[0])
+                else:
+                    yield 1
+
+        return list(multi(self.SymLab))
 
 
 symbol_map = {
