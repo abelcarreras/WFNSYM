@@ -1,4 +1,4 @@
-__version__ = '0.2.26'
+__version__ = '0.2.27'
 
 from wfnsympy.WFNSYMLIB import mainlib, overlap_mat
 from wfnsympy.QSYMLIB import denslib, center_charge, build_density
@@ -532,6 +532,7 @@ class WfnSympy:
                                            coordinates_bohr, self._n_primitives, self._shell_type, self._igroup, self._ngroup,
                                            self._ca, self._cb, self._center, VAxis, VAxis2, self._do_operation)
 
+
                     nIR = out_data[0][2]
                     wf_IRd = out_data[14][0:nIR]
                     return np.sum([np.prod(pair) for pair in combinations(wf_IRd, 2)])
@@ -559,8 +560,9 @@ class WfnSympy:
                 warnings.warn(ChangedAxisWarning(self._axis, self._axis2))
 
         # Process outputs
-        dgroup = out_data[0][0]
-        nIR = out_data[0][2]
+        # dgroup = out_data[0][0]
+        # nIR = out_data[0][2]
+        dgroup, hgroup, nIR = out_data[0]
 
         self._dgroup = dgroup
         self._hgroup = out_data[0][1]
@@ -715,6 +717,10 @@ class WfnSympy:
     @property
     def dgroup(self):
         return self._dgroup
+
+    @property
+    def hgroup(self):
+        return self._hgroup
 
     @property
     def grim_coef(self):
