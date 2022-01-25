@@ -521,7 +521,7 @@ c      DO i = 1,dGroup
 c        WRITE(iout,FMT1,advance='no')
 c      ENDDO
 c      WRITE(iout,*)
-
+      Tbl = Zero
       jIR = 1
       DO iIR = 1,nIR
 c        WRITE(iout,'(A3)',advance='no') IRLab(iIR)

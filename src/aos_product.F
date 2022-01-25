@@ -39,17 +39,17 @@ c*****************************************************c
      &    / 0d0, 0.5d0, 1d0, 2d0, 3d0, 4d0, 8d0 /
 
 c Make copies of RvA,RvB and iAngvA,iAngvB 
-	DO I = 1,3
-	  RA(:)    = RvA(:)
-	  RB(:)    = RvB(:)
-	  iAngA(:) = iAngvA(:)
-	  iAngB(:) = iAngvB(:)
-	ENDDO
+      DO I = 1,3
+        RA(:)    = RvA(:)
+        RB(:)    = RvB(:)
+        iAngA(:) = iAngvA(:)
+        iAngB(:) = iAngvB(:)
+      ENDDO
 
 c Initialize some variables
       NAB = 0
       iAB = 1
-	iChange = 0
+      iChange = 0
 
       ijkA = iAngA(1) + iAngA(2) + iAngA(3)
       ijkB = iAngB(1) + iAngB(2) + iAngB(3)
@@ -150,7 +150,7 @@ cc Case (0 0 2)
               iAng(iAB+1,i) = iAngFun(i)/2
               iAng(iAB+2,i) = iAngFun(i)
               IF(iAngFun(i).EQ.2) THEN
-	         C(iAB) = CFun*RA(i)**(iAngA(i))
+             C(iAB) = CFun*RA(i)**(iAngA(i))
      &                *RB(i)**(iAngB(i))+C(iAB)
                C(iAB+1) = -CFun*(RA(i)*
      &         dfloat(iAngA(i))+RB(i)*(dfloat(iAngB(i))))+
@@ -204,8 +204,8 @@ cc   ---Funcions S, P, D i F---
         ELSEIF ((ijkA.EQ.1 .AND. ijkB.EQ.2).OR.
      &    (ijkA.EQ.2 .AND. ijkB.EQ.1)) THEN
 cc Case (1 0 0) (0 1 1)
-          IF ((iAngFun(1).EQ.1).AND.(iAngFun(2).EQ.1).
-     &        AND.(iAngFun(3).EQ.1)) THEN
+          IF ((iAngFun(1).EQ.1).AND.(iAngFun(2).EQ.1)
+     &        .AND.(iAngFun(3).EQ.1)) THEN
             DO j = 1,3
               DO i = 1,8
                 R(iAB+i-1,j) = RFun(j)
@@ -353,7 +353,7 @@ cc Case (2 0 0) (2 0 0)
          NAB=NAB+5
 
 cc Case (1 1 0) (2 0 0)
-	 ELSEIF ((iAngFun(1).EQ.3).OR.(iAngFun(2).EQ.3).OR.
+      ELSEIF ((iAngFun(1).EQ.3).OR.(iAngFun(2).EQ.3).OR.
      &         (iAngFun(3).EQ.3)) THEN
          DO j = 1,3
            DO i = 1,8
@@ -403,7 +403,7 @@ cc Case (1 1 0) (2 0 0)
          NAB = NAB + 8
 
 cc Cases (1 1 0) (0 1 1) and (110)(002)
-	 ELSEIF ((iAngFun(1).EQ.1).OR.(iAngFun(2).EQ.1).OR.
+      ELSEIF ((iAngFun(1).EQ.1).OR.(iAngFun(2).EQ.1).OR.
      &         (iAngFun(3).EQ.1)) THEN
          DO i = 1,12
            Alph(iAB+i-1) = AlphFun
@@ -617,17 +617,17 @@ c Order terms: (3,0,0);(2,1,0);(1,1,1)
       IF((iAngB(1).EQ.2 .OR. iAngB(2).EQ.2 .OR.   
      &   iAngB(3).EQ.2) .AND. (iAngA(1).LT.2 .AND.
      &   iAngA(2).LT.2 .AND. iAngA(3).LT.2)) iChange = 1
-	IF(iChange.EQ.1) THEN
+      IF(iChange.EQ.1) THEN
         iAngX(1:3) = iAngA(1:3)
         iAngA(1:3) = iAngB(1:3)
         iAngB(1:3) = iAngX(1:3)
         RX(1:3) = RA(1:3)
         RA(1:3) = RB(1:3)
         RB(1:3) = RX(1:3)
-	ENDIF
+      ENDIF
 
 c Case [6,0,0]
-	IF(iAngFun(1).EQ.6 .OR. iAngFun(2).EQ.6 .OR.
+      IF(iAngFun(1).EQ.6 .OR. iAngFun(2).EQ.6 .OR.
      &   iAngFun(3).EQ.6) THEN
 
        DO i = 0,6
@@ -637,9 +637,9 @@ c Case [6,0,0]
          ENDDO
          Alph(iAB+i) = AlphFun
        ENDDO
-	 DO i = 1,3
-	   IF(iAngFun(i).EQ.6) j1 = i
-	 ENDDO
+       DO i = 1,3
+         IF(iAngFun(i).EQ.6) j1 = i
+       ENDDO
        iAng(iAB  ,j1) = 6
        iAng(iAB+1,j1) = 5
        iAng(iAB+2,j1) = 4
@@ -648,7 +648,7 @@ c Case [6,0,0]
        iAng(iAB+5,j1) = 1
        iAng(iAB+6,j1) = 0
 
-	 C(iAB  ) = CFun
+       C(iAB  ) = CFun
        C(iAB+1) = -CFun*Three*(RA(j1) + RB(j1))
        C(iAB+2) = CFun*Three*
      &  (RA(j1)**2 + Three*RA(j1)*RB(j1) + RB(j1)**2)
@@ -671,10 +671,10 @@ c Case [5,1,0]: (3,0,0)(2,1,0)
         R(iAB+i,:)    = RFun(:)
         Alph(iAB+i)   = AlphFun
       ENDDO
-	DO i = 1,3
-	 IF(iAngFun(i).EQ.5) j1 = i
-	 IF(iAngFun(i).EQ.1) j2 = i
-	ENDDO
+      DO i = 1,3
+       IF(iAngFun(i).EQ.5) j1 = i
+       IF(iAngFun(i).EQ.1) j2 = i
+      ENDDO
       iAng(iAB  ,j1) = 5
       iAng(iAB  ,j2) = 1
       iAng(iAB+1,j1) = 5
@@ -705,10 +705,10 @@ c Case [5,1,0]: (3,0,0)(2,1,0)
       C(iAB+9) = -C(iAB+8)*RB(j2)
       C(iAB+10) = -RA(j1)*(RA(j1)*RB(j1))**2
       C(iAB+11) = -C(iAB+10)*RB(j2)
-	DO i = 0,11
-	  C(iAB+i) = CFun * C(iAB+i)
-	ENDDO 
-	
+      DO i = 0,11
+        C(iAB+i) = CFun * C(iAB+i)
+      ENDDO
+
       iAB = iAB + 12
       NAB = NAB + 12
 
@@ -718,21 +718,21 @@ c Cases [4,n,m]
 
 
 c cases [4,2,0]: (3,0,0)(1,2,0); (2,1,0)(2,1,0)
-	 IF(iAngFun(1).EQ.2 .OR. iAngFun(2).EQ.2 .OR.
+      IF(iAngFun(1).EQ.2 .OR. iAngFun(2).EQ.2 .OR.
      &       iAngFun(3).EQ.2) THEN
 
 
        DO i = 0,14
-	  DO j = 1,3
+       DO j = 1,3
          iAng(iAB+i,j) = 0
          R(iAB+i,j)    = RFun(j)
-	  ENDDO
+       ENDDO
         Alph(iAB+i)   = AlphFun
        ENDDO
-	 DO i = 1,3
+       DO i = 1,3
          IF (iAngFun(i).EQ.4) j1 = i
          IF (iAngFun(i).EQ.2) j2 = i
-	 ENDDO
+       ENDDO
 
        iAng(iAB  ,j1) = 4
        iAng(iAB  ,j2) = 2
@@ -760,17 +760,17 @@ c cases [4,2,0]: (3,0,0)(1,2,0); (2,1,0)(2,1,0)
        C(iAB  ) = One
        C(iAB+1) = -(iAngA(j2)*RA(j2)+iAngB(j2)*RB(j2)) 
        C(iAB+2) = -(iAngA(j1)*RA(j1)+iAngB(j1)*RB(j1)) 
-	 IF(iAngA(j1).EQ.3) THEN
+       IF(iAngA(j1).EQ.3) THEN
          C(iAB+3) = RB(j2)**2
          C(iAB+5) = Three*RA(j1)*(RA(j1)+RB(j1))
          C(iAB+8) = -(RA(j1)+Three*RB(j1))*RA(j1)**2
          C(iAB+11)= RB(j1)*RA(j1)**3 
-	 ELSE
+       ELSE
          C(iAB+3) = RA(j2)*RB(j2)
          C(iAB+5) = RA(j1)**2+Four*RA(j1)*RB(j1)+RB(j1)**2
          C(iAB+8) = -Two*(RA(j1)+RB(j1))*RA(j1)*RB(j1)
          C(iAB+11)= (RA(j1)*RB(j1))**2 
-	 ENDIF
+       ENDIF
        C(iAB+4) = C(iAB+1) * C(iAB+2)
        C(iAB+6) = C(iAB+2) * C(iAB+3)
        C(iAB+7) = C(iAB+1) * C(iAB+5)
@@ -780,15 +780,15 @@ c cases [4,2,0]: (3,0,0)(1,2,0); (2,1,0)(2,1,0)
        C(iAB+13)= C(iAB+1) * C(iAB+11)
        C(iAB+14)= C(iAB+3) * C(iAB+11)
 
-	 DO i =0,14
-	   C(iAB+i) = CFun*C(iAB+i)
-	 ENDDO
+      DO i =0,14
+        C(iAB+i) = CFun*C(iAB+i)
+      ENDDO
        
       iAB = iAB + 15
       NAB = NAB + 15
 
 c cases [4,1,1]: (3,0,0)(1,1,1); (2,1,0)(2,0,1)
-	 ELSE
+      ELSE
 
        DO i = 0,19
          DO j = 1,3
@@ -800,20 +800,20 @@ c cases [4,1,1]: (3,0,0)(1,1,1); (2,1,0)(2,0,1)
        DO i = 1,3
          IF (iAngFun(i).EQ.4) j1 = i
        ENDDO
-	 IF(iAngA(j1).EQ.3) THEN
-	   j2 = j1 + 1
-	   IF(j2.EQ.4) j2 = 1
-	 ELSE
-	   DO i = 1,3
-	     IF(iAngA(i).EQ.1) j2 = i
-	   ENDDO
-	 ENDIF
-	 j3 = 6 - (j1+j2)
-	 iAng(iAB  ,j1) = 4
-	 iAng(iAB  ,j2) = 1
-	 iAng(iAB  ,j3) = 1
-	 iAng(iAB+1,j1) = 4
-	 iAng(iAB+1,j2) = 1
+       IF(iAngA(j1).EQ.3) THEN
+         j2 = j1 + 1
+       IF(j2.EQ.4) j2 = 1
+       ELSE
+       DO i = 1,3
+         IF(iAngA(i).EQ.1) j2 = i
+       ENDDO
+       ENDIF
+       j3 = 6 - (j1+j2)
+       iAng(iAB  ,j1) = 4
+       iAng(iAB  ,j2) = 1
+       iAng(iAB  ,j3) = 1
+       iAng(iAB+1,j1) = 4
+       iAng(iAB+1,j2) = 1
        iAng(iAB+2,j1) = 4
        iAng(iAB+2,j3) = 1
        iAng(iAB+3,j1) = 3
@@ -846,23 +846,23 @@ c cases [4,1,1]: (3,0,0)(1,1,1); (2,1,0)(2,0,1)
        iAng(iAB+17,j2) = 1
        iAng(iAB+18,j3) = 1
 
-	 C(iAB  ) = One
-	 C(iAB+1) = -RB(j3)
-	 C(iAB+2) = -(iAngA(j2)*RA(j2) + iAngB(j2)*RB(j2))
+       C(iAB  ) = One
+       C(iAB+1) = -RB(j3)
+       C(iAB+2) = -(iAngA(j2)*RA(j2) + iAngB(j2)*RB(j2))
        C(iAB+3) = -(iAngA(j1)*RA(j1) + iAngB(j1)*RB(j1))
 
        C(iAB+4) = C(iAB+1) * C(iAB+2)
        C(iAB+5) = C(iAB+1) * C(iAB+3)
        C(iAB+6) = C(iAB+2) * C(iAB+3)
-	 IF(iAngA(j1).EQ.3) THEN
+       IF(iAngA(j1).EQ.3) THEN
          C(iAB+7) = Three*RA(j1)*(RA(j1)+RB(j1))
          C(iAB+11)= -(RA(j1)+Three*RB(j1))*RA(j1)**2
          C(iAB+15)= RB(j1)*RA(j1)**3
-	 ELSE
+       ELSE
          C(iAB+7) = RA(j1)**2+Four*RA(j1)*RB(j1)+RB(j1)**2
          C(iAB+11)= -Two*(RA(j1)+RB(j1))*RA(j1)*RB(j1)
          C(iAB+15)= (RA(j1)*RB(j1))**2
-	 ENDIF
+       ENDIF
 
        C(iAB+8) = C(iAB+1) * C(iAB+6)
        C(iAB+9) = C(iAB+1) * C(iAB+7)
@@ -885,7 +885,7 @@ c cases [4,1,1]: (3,0,0)(1,1,1); (2,1,0)(2,0,1)
       iAB = iAB + 20
       NAB = NAB + 20
 
-	 ENDIF
+      ENDIF
 
 
 c Cases [3,n,m]
@@ -903,11 +903,11 @@ c cases [3,2,1]: (3,0,0)(0,2,1);(2,1,0)(1,0,2)=(2,1,0)(0,2,1);(2,1,0)(1,1,1)
         ENDDO
         Alph(iAB+i) = AlphFun
       ENDDO
-	DO i = 1,3
-	  IF(iAngFun(i).EQ.3) j1 = i
-	  IF(iAngFun(i).EQ.2) j2 = i
-	  IF(iAngFun(i).EQ.1) j3 = i
-	ENDDO
+      DO i = 1,3
+       IF(iAngFun(i).EQ.3) j1 = i
+       IF(iAngFun(i).EQ.2) j2 = i
+       IF(iAngFun(i).EQ.1) j3 = i
+      ENDDO
 c change (1,2,0)(2,0,1) by (2,0,1)(1,2,0)
       IF(iAngA(j1).EQ.1 .AND. iAngB(j1).EQ.2) THEN
         iAngX(1:3) = iAngA(1:3)
@@ -918,9 +918,9 @@ c change (1,2,0)(2,0,1) by (2,0,1)(1,2,0)
         RB(1:3) = RX(1:3)
       ENDIF
 
-	iAng(iAB  ,j1) = 3
-	iAng(iAB  ,j2) = 2
-	iAng(iAB  ,j3) = 1
+      iAng(iAB  ,j1) = 3
+      iAng(iAB  ,j2) = 2
+      iAng(iAB  ,j3) = 1
       iAng(iAB+1,j1) = 3
       iAng(iAB+1,j2) = 2
       iAng(iAB+2,j1) = 3
@@ -976,18 +976,18 @@ c change (1,2,0)(2,0,1) by (2,0,1)(1,2,0)
         C(iAB+5) = RB(j2)**2
         C(iAB+8) = Three*RA(j1)**2
         C(iAB+13)= -RA(j1)**3
-	ELSEIF(iAngA(j1).EQ.2 .AND. iAngA(j2).EQ.1) THEN
+      ELSEIF(iAngA(j1).EQ.2 .AND. iAngA(j2).EQ.1) THEN
         C(iAB+5) = RA(j2)*RB(j2)
-	  C(iAB+8) = RA(j1)*(RA(j1)+Two*RB(j1))
+        C(iAB+8) = RA(j1)*(RA(j1)+Two*RB(j1))
         C(iAB+13)= -RB(j1)*RA(j1)**2
-	ELSEIF(iAngA(j1).EQ.2 .AND. iAngA(j2).EQ.0) THEN
+      ELSEIF(iAngA(j1).EQ.2 .AND. iAngA(j2).EQ.0) THEN
         C(iAB+5) = RB(j2)**2
-	  C(iAB+8) = RA(j1)*(RA(j1)+Two*RB(j1))
+        C(iAB+8) = RA(j1)*(RA(j1)+Two*RB(j1))
         C(iAB+13)= -RB(j1)*RA(j1)**2
-	ELSE
-	  write(*,*)"ERROR. Unexpected term in F*F product"
-	  STOP
-	ENDIF
+      ELSE
+      write(*,*)"ERROR. Unexpected term in F*F product"
+      STOP
+      ENDIF
       C(iAB+ 9) = C(iAB+1) * C(iAB+5)
       C(iAB+10) = C(iAB+1) * C(iAB+7)
       C(iAB+11) = C(iAB+3) * C(iAB+5)
@@ -1002,9 +1002,9 @@ c change (1,2,0)(2,0,1) by (2,0,1)(1,2,0)
       C(iAB+21) = C(iAB+1) * C(iAB+19)
       C(iAB+22) = C(iAB+5) * C(iAB+13)
       C(iAB+23) = C(iAB+1) * C(iAB+22)
-	DO i = 0,23
-	  C(iAB+i) = CFun * C(iAB+i)
-	ENDDO
+      DO i = 0,23
+        C(iAB+i) = CFun * C(iAB+i)
+      ENDDO
 
       iAB = iAB + 24
       NAB = NAB + 24
@@ -1012,74 +1012,74 @@ c change (1,2,0)(2,0,1) by (2,0,1)(1,2,0)
 c Cases [3,3,0]: (3,0,0)(0,3,0);(2,1,0)(1,2,0)
        ELSE
 
-	  DO i = 1,3
-	    IF(iAngA(i).GE.2) j1 = i
-	    IF(iAngB(i).GE.2) j2 = i
-	  ENDDO    
-        DO i = 0,15
-          DO j = 1,3
-            iAng(iAB+i,j) = 0
-            R(iAB+i,j) = RFun(j)
-          ENDDO
-          Alph(iAB+i) = AlphFun
+      DO i = 1,3
+        IF(iAngA(i).GE.2) j1 = i
+        IF(iAngB(i).GE.2) j2 = i
+      ENDDO
+      DO i = 0,15
+        DO j = 1,3
+          iAng(iAB+i,j) = 0
+          R(iAB+i,j) = RFun(j)
         ENDDO
-        iAng(iAB  ,j1) = 3
-        iAng(iAB  ,j2) = 3
-        iAng(iAB+1,j1) = 3
-        iAng(iAB+1,j2) = 2
-        iAng(iAB+2,j1) = 2
-        iAng(iAB+2,j2) = 3
-        iAng(iAB+3,j1) = 3
-        iAng(iAB+3,j2) = 1
-        iAng(iAB+4,j1) = 1
-        iAng(iAB+4,j2) = 3
-        iAng(iAB+5,j1) = 2
-        iAng(iAB+5,j2) = 2
-        iAng(iAB+6,j1) = 3
-        iAng(iAB+7,j2) = 3
-        iAng(iAB+8,j1) = 2
-        iAng(iAB+8,j2) = 1
-        iAng(iAB+9,j1) = 1
-        iAng(iAB+9,j2) = 2
-        iAng(iAB+10,j1) = 2
-        iAng(iAB+11,j2) = 2
-        iAng(iAB+12,j1) = 1
-        iAng(iAB+12,j2) = 1
-        iAng(iAB+13,j1) = 1
-        iAng(iAB+14,j2) = 1
+        Alph(iAB+i) = AlphFun
+      ENDDO
+      iAng(iAB  ,j1) = 3
+      iAng(iAB  ,j2) = 3
+      iAng(iAB+1,j1) = 3
+      iAng(iAB+1,j2) = 2
+      iAng(iAB+2,j1) = 2
+      iAng(iAB+2,j2) = 3
+      iAng(iAB+3,j1) = 3
+      iAng(iAB+3,j2) = 1
+      iAng(iAB+4,j1) = 1
+      iAng(iAB+4,j2) = 3
+      iAng(iAB+5,j1) = 2
+      iAng(iAB+5,j2) = 2
+      iAng(iAB+6,j1) = 3
+      iAng(iAB+7,j2) = 3
+      iAng(iAB+8,j1) = 2
+      iAng(iAB+8,j2) = 1
+      iAng(iAB+9,j1) = 1
+      iAng(iAB+9,j2) = 2
+      iAng(iAB+10,j1) = 2
+      iAng(iAB+11,j2) = 2
+      iAng(iAB+12,j1) = 1
+      iAng(iAB+12,j2) = 1
+      iAng(iAB+13,j1) = 1
+      iAng(iAB+14,j2) = 1
 
-        C(iAB  ) = One
-        C(iAB+1) = -(iAngA(j2)*RA(j2)+iAngB(j2)*RB(j2))
-        C(iAB+2) = -(iAngA(j1)*RA(j1)+iAngB(j1)*RB(j1))
-	  IF(iAngA(j1).EQ.3) THEN
-         C(iAB+3) = Three * RB(j2)**2
-         C(iAB+4) = Three * RA(j1)**2
-         C(iAB+6) = -RB(j2)**3
-         C(iAB+7) = -RA(j1)**3
-	  ELSE
-         C(iAB+3) = (Two*RA(j2)+RB(j2))*RB(j2)
-         C(iAB+4) = (RA(j1)+Two*RB(j1))*RA(j1)
-         C(iAB+6) = -RA(j2)*RB(j2)**2
-         C(iAB+7) = -RB(j1)*RA(j1)**2
-	  ENDIF
-        C(iAB+5) = C(iAB+1) * C(iAB+2)
-        C(iAB+8) = C(iAB+2) * C(iAB+3)
-        C(iAB+9) = C(iAB+1) * C(iAB+4)
-        C(iAB+10) = C(iAB+2) * C(iAB+6)
-        C(iAB+11) = C(iAB+1) * C(iAB+7)
-        C(iAB+12) = C(iAB+3) * C(iAB+4)
-        C(iAB+13) = C(iAB+4) * C(iAB+6)
-        C(iAB+14) = C(iAB+3) * C(iAB+7)
-        C(iAB+15) = C(iAB+6) * C(iAB+7)
+      C(iAB  ) = One
+      C(iAB+1) = -(iAngA(j2)*RA(j2)+iAngB(j2)*RB(j2))
+      C(iAB+2) = -(iAngA(j1)*RA(j1)+iAngB(j1)*RB(j1))
+      IF(iAngA(j1).EQ.3) THEN
+        C(iAB+3) = Three * RB(j2)**2
+        C(iAB+4) = Three * RA(j1)**2
+        C(iAB+6) = -RB(j2)**3
+        C(iAB+7) = -RA(j1)**3
+      ELSE
+        C(iAB+3) = (Two*RA(j2)+RB(j2))*RB(j2)
+        C(iAB+4) = (RA(j1)+Two*RB(j1))*RA(j1)
+        C(iAB+6) = -RA(j2)*RB(j2)**2
+        C(iAB+7) = -RB(j1)*RA(j1)**2
+      ENDIF
+      C(iAB+5) = C(iAB+1) * C(iAB+2)
+      C(iAB+8) = C(iAB+2) * C(iAB+3)
+      C(iAB+9) = C(iAB+1) * C(iAB+4)
+      C(iAB+10) = C(iAB+2) * C(iAB+6)
+      C(iAB+11) = C(iAB+1) * C(iAB+7)
+      C(iAB+12) = C(iAB+3) * C(iAB+4)
+      C(iAB+13) = C(iAB+4) * C(iAB+6)
+      C(iAB+14) = C(iAB+3) * C(iAB+7)
+      C(iAB+15) = C(iAB+6) * C(iAB+7)
 
-	  DO i = 0,15
-	    C(iAB+i) = CFun * C(iAB+i)
-	  ENDDO
+      DO i = 0,15
+        C(iAB+i) = CFun * C(iAB+i)
+      ENDDO
 
-        iAB = iAB + 16
-        NAB = NAB + 16
+      iAB = iAB + 16
+      NAB = NAB + 16
 
-	ENDIF
+      ENDIF
 
 c Cases [2,2,2]: (2,1,0)(0,1,2); (1,1,1)(1,1,1)
       ELSEIF(iAngFun(1).EQ.2 .AND. iAngFun(2).EQ.2 .AND.
@@ -1092,16 +1092,16 @@ c Cases [2,2,2]: (2,1,0)(0,1,2); (1,1,1)(1,1,1)
         ENDDO
         Alph(iAB+i) = AlphFun
       ENDDO
-	IF(iAngA(1).EQ.1 .AND. iAngA(2).EQ.1) THEN
-	  j1 = 1
-	  j2 = 2
-	ELSE
+      IF(iAngA(1).EQ.1 .AND. iAngA(2).EQ.1) THEN
+        j1 = 1
+        j2 = 2
+      ELSE
         DO i = 1,3
           IF(iAngA(i).EQ.2) j1 = i
           IF(iAngB(i).EQ.2) j2 = i
         ENDDO
-	ENDIF
-	j3 = 6 - (j1+j2)
+      ENDIF
+      j3 = 6 - (j1+j2)
 
       iAng(iAB  ,j1) = 2
       iAng(iAB  ,j2) = 2
@@ -1163,13 +1163,13 @@ c Cases [2,2,2]: (2,1,0)(0,1,2); (1,1,1)(1,1,1)
       C(iAB+2) = -(iAngA(j2)*RA(j2)+iAngB(j2)*RB(j2))
       C(iAB+3) = -(iAngA(j1)*RA(j1)+iAngB(j1)*RB(j1))
       C(iAB+4) = RA(j3)*RB(j3)
-	IF(iAngA(j1).EQ.2) THEN
-	  C(iAB+5) = RB(j2)**2
-	  C(iAB+6) = RA(j1)**2
-	ELSE
-	  C(iAB+5) = RA(j2)*RB(j2)
-	  C(iAB+6) = RA(j1)*RB(j1)
-	ENDIF
+      IF(iAngA(j1).EQ.2) THEN
+        C(iAB+5) = RB(j2)**2
+        C(iAB+6) = RA(j1)**2
+      ELSE
+        C(iAB+5) = RA(j2)*RB(j2)
+        C(iAB+6) = RA(j1)*RB(j1)
+      ENDIF
       C(iAB+7) = C(iAB+1) * C(iAB+2)
       C(iAB+8) = C(iAB+1) * C(iAB+3)
       C(iAB+9) = C(iAB+2) * C(iAB+3)
@@ -1198,10 +1198,10 @@ c Cases [2,2,2]: (2,1,0)(0,1,2); (1,1,1)(1,1,1)
       iAB = iAB + 27
       NAB = NAB + 27
 
-	ELSE
-	  WRITE(*,*)'ERROR. Inconsistency in F*F AOs product.'
-	  STOP
-	ENDIF  ! End F*F cases
+      ELSE
+        WRITE(0, *)'ERROR. Inconsistency in F*F AOs product.'
+        STOP
+      ENDIF  ! End F*F cases
 cc
 c  F*D product
 cc
@@ -1232,11 +1232,11 @@ c Case [5,0,0]: (3,0,0)(2,0,0)
         IF(iAngFun(i).EQ.5) j1 = i
       ENDDO
 
-	iAng(iAB  ,j1) = 5
-	iAng(iAB+1,j1) = 4
-	iAng(iAB+2,j1) = 3
-	iAng(iAB+3,j1) = 2
-	iAng(iAB+4,j1) = 1
+      iAng(iAB  ,j1) = 5
+      iAng(iAB+1,j1) = 4
+      iAng(iAB+2,j1) = 3
+      iAng(iAB+3,j1) = 2
+      iAng(iAB+4,j1) = 1
 
       C(iAB  ) = One
       C(iAB+1) = -(Three*RA(j1)+Two*RB(j1))
@@ -1284,13 +1284,13 @@ c Cases [4,1,0]: (3,0,0)(1,1,0); (2,1,0)(2,0,0)
       C(iAB+1) = -(iAngA(j2)*RA(j2) + iAngB(j2)*RB(j2))
       C(iAB+2) = -(iAngA(j1)*RA(j1) + iAngB(j1)*RB(j1))
       C(iAB+3) = C(iAB+1) * C(iAB+2) 
-	IF(iAngA(j1).EQ.3) THEN
+      IF(iAngA(j1).EQ.3) THEN
         C(iAB+4) = Three*RA(j1)*(RA(j1)+RB(j1))
-	  C(iAB+6) = -(RA(j1)+Three*RB(j1))*RA(j1)**2
-	ELSE
+        C(iAB+6) = -(RA(j1)+Three*RB(j1))*RA(j1)**2
+      ELSE
         C(iAB+4) = RA(j1)**2 + Four*RA(j1)*RB(j1) + RB(j1)**2
-	  C(iAB+6) = -Two*RA(j1)*RB(j1)*(RA(j1)+RB(j1))
-	ENDIF
+        C(iAB+6) = -Two*RA(j1)*RB(j1)*(RA(j1)+RB(j1))
+      ENDIF
       C(iAB+5) = C(iAB+1) * C(iAB+4)
       C(iAB+7) = C(iAB+1) * C(iAB+6)
       C(iAB+8) = (RA(j1)**iAngA(j1)) * (RB(j1)**iAngB(j1))
@@ -1338,13 +1338,13 @@ c Cases [3,2,0]: (3,0,0)(0,2,0); (1,2,0)(2,0,0); (2,1,0)(1,1,0)
       C(iAB+2) = -(iAngA(j1)*RA(j1) + iAngB(j1)*RB(j1))
       C(iAB+3) = (RA(j2)**iAngA(j2)) * (RB(j2)**iAngB(j2))
       C(iAB+4) = C(iAB+1) * C(iAB+2) 
-	IF(iAngA(j1).EQ.3) THEN
+      IF(iAngA(j1).EQ.3) THEN
         C(iAB+5) = Three*RA(j1)**2
-	ELSEIF(iAngA(j1).EQ.2) THEN
+      ELSEIF(iAngA(j1).EQ.2) THEN
         C(iAB+5) = RA(j1)*(RA(j1)+Two*RB(j1))
-	ELSE
+      ELSE
         C(iAB+5) = RB(j1)*(RB(j1)+Two*RA(j1))
-	ENDIF
+      ENDIF
       C(iAB+6) = C(iAB+2) * C(iAB+3) 
       C(iAB+7) = -(RA(j1)**iAngA(j1)) * (RB(j1)**iAngB(j1))
       C(iAB+8) = C(iAB+1) * C(iAB+5)
@@ -1369,12 +1369,12 @@ c Cases [3,1,1]: (3,0,0)(0,1,1); (2,1,0)(1,0,1); (1,1,1)(2,0,0)
       DO i = 1,3
         IF(iAngFun(i).EQ.3) j1 = i
       ENDDO
-	IF(j1.EQ.3) THEN
-	  j2 = 1
-	ELSE
-	  j2 = j1 + 1
-	ENDIF
-	j3 = 6 - (j1+j2)
+      IF(j1.EQ.3) THEN
+        j2 = 1
+      ELSE
+      j2 = j1 + 1
+      ENDIF
+      j3 = 6 - (j1+j2)
 
       iAng(iAB  ,j1) = 3
       iAng(iAB  ,j2) = 1
@@ -1412,13 +1412,13 @@ c Cases [3,1,1]: (3,0,0)(0,1,1); (2,1,0)(1,0,1); (1,1,1)(2,0,0)
       C(iAB+4) = C(iAB+1) * C(iAB+2) 
       C(iAB+5) = C(iAB+1) * C(iAB+3)
       C(iAB+6) = C(iAB+2) * C(iAB+3)
-	IF(iAngA(j1).EQ.3) THEN
+      IF(iAngA(j1).EQ.3) THEN
         C(iAB+7) = Three*RA(j1)**2
-	ELSEIF(iAngA(j1).EQ.2) THEN
+      ELSEIF(iAngA(j1).EQ.2) THEN
         C(iAB+7) = RA(j1)*(RA(j1)+Two*RB(j1))
-	ELSE
+      ELSE
         C(iAB+7) = RB(j1)*(RB(j1)+Two*RA(j1))
-	ENDIF
+      ENDIF
       C(iAB+8) = C(iAB+1) * C(iAB+6) 
       C(iAB+9) = C(iAB+1) * C(iAB+7) 
       C(iAB+10) = C(iAB+2) * C(iAB+7)
@@ -1434,21 +1434,21 @@ c Cases [3,1,1]: (3,0,0)(0,1,1); (2,1,0)(1,0,1); (1,1,1)(2,0,0)
       NAB = NAB + 16
 
 c Cases [2,2,1]: (2,1,0)(0,0,2); (2,1,0)(0,1,1); (1,1,1)(1,1,0)
-	ELSE
+      ELSE
 
       DO i = 0,17
         iAng(iAB+i,1:3) = 0
         R(iAB+i,1:3) = RFun(1:3)
         Alph(iAB+i) = AlphFun
       ENDDO
-	j1 = 0
+      j1 = 0
       DO i = 1,3
         IF(iAngA(i).EQ.2) j1 = i
         IF(iAngFun(i).EQ.1) j3 = i
       ENDDO
-	IF(j1.EQ.0) j1 = j3 + 1
-	IF(j1.EQ.4) j1 = 1
-	j2 = 6 - (j1+j3)
+      IF(j1.EQ.0) j1 = j3 + 1
+      IF(j1.EQ.4) j1 = 1
+      j2 = 6 - (j1+j3)
 
       iAng(iAB  ,j1) = 2
       iAng(iAB  ,j2) = 2
@@ -1508,7 +1508,7 @@ c Cases [2,2,1]: (2,1,0)(0,0,2); (2,1,0)(0,1,1); (1,1,1)(1,1,0)
       iAB = iAB + 18
       NAB = NAB + 18
 
-	ENDIF
+      ENDIF
 
 cc
 c  F*P product
@@ -1529,7 +1529,7 @@ c Order terms: F, P
       ENDIF
 
 c Case [4,0,0]: (3,0,0)(1,0,0)
-	IF(iAngFun(1).EQ.4 .OR. iAngFun(2).EQ.4 .OR.
+      IF(iAngFun(1).EQ.4 .OR. iAngFun(2).EQ.4 .OR.
      &   iAngFun(3).EQ.4) THEN
 
       DO i = 0,4
@@ -1546,7 +1546,7 @@ c Case [4,0,0]: (3,0,0)(1,0,0)
       iAng(iAB+2,j1) = 2
       iAng(iAB+3,j1) = 1
 
-	C(iAB  ) = One
+      C(iAB  ) = One
       C(iAB+1) = -(Three*RA(j1)+RB(j1))
       C(iAB+2) = Three*RA(j1)*(RA(j1)+RB(j1))
       C(iAB+3) = -(RA(j1)+Three*RB(j1))*RA(j1)**2
@@ -1558,7 +1558,7 @@ c Case [4,0,0]: (3,0,0)(1,0,0)
       NAB = NAB + 5
 
 c Cases [3,1,0]: (3,0,0)(0,1,0); (2,1,0)(1,0,0) 
-	ELSEIF(iAngFun(1).EQ.3 .OR. iAngFun(2).EQ.3 .OR.
+      ELSEIF(iAngFun(1).EQ.3 .OR. iAngFun(2).EQ.3 .OR.
      &       iAngFun(3).EQ.3) THEN
 
       DO i = 0,7
@@ -1582,18 +1582,18 @@ c Cases [3,1,0]: (3,0,0)(0,1,0); (2,1,0)(1,0,0)
       iAng(iAB+5,j1) = 1
       iAng(iAB+6,j2) = 1
 
-	C(iAB  ) = One
-	C(iAB+1) = -(iAngA(j2)*RA(j2)+iAngB(j2)*RB(j2))
-	C(iAB+2) = -(iAngA(j1)*RA(j1)+iAngB(j1)*RB(j1))
-	C(iAB+3) = C(iAB+1) * C(iAB+2)
-	IF(iAngA(j1).EQ.3) THEN
-	  C(iAB+4) = Three*RA(j1)**2
-	ELSE
-	  C(iAB+4) = RA(j1)*(RA(j1)+Two*RB(j1))
-	ENDIF
-	C(iAB+5) = C(iAB+1) * C(iAB+4)
-	C(iAB+6) = -(RA(j1)**iAngA(j1))*(RB(j1)**iAngB(j1))
-	C(iAB+7) = C(iAB+1) * C(iAB+6)
+      C(iAB  ) = One
+      C(iAB+1) = -(iAngA(j2)*RA(j2)+iAngB(j2)*RB(j2))
+      C(iAB+2) = -(iAngA(j1)*RA(j1)+iAngB(j1)*RB(j1))
+      C(iAB+3) = C(iAB+1) * C(iAB+2)
+      IF(iAngA(j1).EQ.3) THEN
+        C(iAB+4) = Three*RA(j1)**2
+      ELSE
+        C(iAB+4) = RA(j1)*(RA(j1)+Two*RB(j1))
+      ENDIF
+      C(iAB+5) = C(iAB+1) * C(iAB+4)
+      C(iAB+6) = -(RA(j1)**iAngA(j1))*(RB(j1)**iAngB(j1))
+      C(iAB+7) = C(iAB+1) * C(iAB+6)
       DO i = 0,7
         C(iAB+i) = CFun * C(iAB+i)
       ENDDO
@@ -1601,7 +1601,7 @@ c Cases [3,1,0]: (3,0,0)(0,1,0); (2,1,0)(1,0,0)
       NAB = NAB + 8
 
 c Case [2,2,0]: (2,1,0)(0,1,0)
-	ELSEIF(iAngFun(1).EQ.0 .OR. iAngFun(2).EQ.0 .OR.
+      ELSEIF(iAngFun(1).EQ.0 .OR. iAngFun(2).EQ.0 .OR.
      &       iAngFun(3).EQ.0) THEN
 
       DO i = 0,8
@@ -1627,15 +1627,15 @@ c Case [2,2,0]: (2,1,0)(0,1,0)
       iAng(iAB+6,j1) = 1
       iAng(iAB+7,j2) = 1
 
-	C(iAB  ) = One
-	C(iAB+1) = -(RA(j2)+RB(j2))
-	C(iAB+2) = -Two*RA(j1)
-	C(iAB+3) = RA(j2)*RB(j2)
-	C(iAB+4) = RA(j1)**2
-	C(iAB+5) = C(iAB+1) * C(iAB+2)
-	C(iAB+6) = C(iAB+2) * C(iAB+3)
-	C(iAB+7) = C(iAB+1) * C(iAB+4)
-	C(iAB+8) = C(iAB+3) * C(iAB+4)
+      C(iAB  ) = One
+      C(iAB+1) = -(RA(j2)+RB(j2))
+      C(iAB+2) = -Two*RA(j1)
+      C(iAB+3) = RA(j2)*RB(j2)
+      C(iAB+4) = RA(j1)**2
+      C(iAB+5) = C(iAB+1) * C(iAB+2)
+      C(iAB+6) = C(iAB+2) * C(iAB+3)
+      C(iAB+7) = C(iAB+1) * C(iAB+4)
+      C(iAB+8) = C(iAB+3) * C(iAB+4)
       DO i = 0,8
         C(iAB+i) = CFun * C(iAB+i)
       ENDDO
@@ -1643,7 +1643,7 @@ c Case [2,2,0]: (2,1,0)(0,1,0)
       NAB = NAB + 9
 
 c Cases [2,1,1]: (2,1,0)(0,0,1); (1,1,1)(1,0,0)
-	ELSE
+      ELSE
 
       DO i = 0,11
         iAng(iAB+i,1:3) = 0
@@ -1653,12 +1653,12 @@ c Cases [2,1,1]: (2,1,0)(0,0,1); (1,1,1)(1,0,0)
       DO i = 1,3
         IF(iAngFun(i).EQ.2) j1 = i
       ENDDO
-	IF(j1.EQ.3) THEN
-	  j2 = 1
-	ELSE
-	  j2 = j1+1
-	ENDIF
-	j3 = 6 - (j1+j2)
+      IF(j1.EQ.3) THEN
+        j2 = 1
+      ELSE
+        j2 = j1+1
+      ENDIF
+      j3 = 6 - (j1+j2)
 
       iAng(iAB  ,j1) = 2
       iAng(iAB  ,j2) = 1
@@ -1681,29 +1681,29 @@ c Cases [2,1,1]: (2,1,0)(0,0,1); (1,1,1)(1,0,0)
       iAng(iAB+9,j2) = 1
       iAng(iAB+10,j3) = 1
 
-	C(iAB  ) = One
-	C(iAB+1) = -(iAngA(j3)*RA(j3) + iAngB(j3)*RB(j3))
-	C(iAB+2) = -(iAngA(j2)*RA(j2) + iAngB(j2)*RB(j2))
-	C(iAB+3) = -(iAngA(j1)*RA(j1) + iAngB(j1)*RB(j1))
-	C(iAB+4) = C(iAB+1) * C(iAB+2)
-	C(iAB+5) = C(iAB+1) * C(iAB+3)
-	C(iAB+6) = C(iAB+2) * C(iAB+3)
-	IF(iAngA(j1).EQ.2) THEN
-	  C(iAB+7) = RA(j1)**2
-	ELSE
-	  C(iAB+7) = RA(j1)*RB(j1)
-	ENDIF
-	C(iAB+8) = C(iAB+1) * C(iAB+6)
-	C(iAB+9) = C(iAB+1) * C(iAB+7)
-	C(iAB+10) = C(iAB+2) * C(iAB+7)
-	C(iAB+11) = C(iAB+1) * C(iAB+10)
+      C(iAB  ) = One
+      C(iAB+1) = -(iAngA(j3)*RA(j3) + iAngB(j3)*RB(j3))
+      C(iAB+2) = -(iAngA(j2)*RA(j2) + iAngB(j2)*RB(j2))
+      C(iAB+3) = -(iAngA(j1)*RA(j1) + iAngB(j1)*RB(j1))
+      C(iAB+4) = C(iAB+1) * C(iAB+2)
+      C(iAB+5) = C(iAB+1) * C(iAB+3)
+      C(iAB+6) = C(iAB+2) * C(iAB+3)
+      IF(iAngA(j1).EQ.2) THEN
+        C(iAB+7) = RA(j1)**2
+      ELSE
+        C(iAB+7) = RA(j1)*RB(j1)
+      ENDIF
+      C(iAB+8) = C(iAB+1) * C(iAB+6)
+      C(iAB+9) = C(iAB+1) * C(iAB+7)
+      C(iAB+10) = C(iAB+2) * C(iAB+7)
+      C(iAB+11) = C(iAB+1) * C(iAB+10)
       DO i = 0,11
         C(iAB+i) = CFun * C(iAB+i)
       ENDDO
       iAB = iAB + 12
       NAB = NAB + 12
 
-	ENDIF
+      ENDIF
 
 cc
 c  F*S product
@@ -1724,40 +1724,40 @@ c Order terms: F, S
       ENDIF
 
 c case (3,0,0)(0,0,0)
-	IF(iAngA(1).EQ.3 .OR. iAngA(2).EQ.3 .OR.
+      IF(iAngA(1).EQ.3 .OR. iAngA(2).EQ.3 .OR.
      &   iAngA(3).EQ.3) THEN
 
       DO i = 0,3
         iAng(iAB+i,1:3) = 0
         R(iAB+i,1:3) = RFun(1:3)
         Alph(iAB+i) = AlphFun
-	ENDDO
-	DO i = 1,3
-	  IF(iAngFun(i).EQ.3) j1 = i
+      ENDDO
+      DO i = 1,3
+        IF(iAngFun(i).EQ.3) j1 = i
       ENDDO
 
       iAng(iAB  ,j1) = 3
       iAng(iAB+1,j1) = 2
       iAng(iAB+2,j1) = 1
 
-	C(iAB  ) = CFun
-	C(iAB+1) = -CFun * Three * RA(j1)
-	C(iAB+2) = -C(iAB+1) * RA(j1)
+      C(iAB  ) = CFun
+      C(iAB+1) = -CFun * Three * RA(j1)
+      C(iAB+2) = -C(iAB+1) * RA(j1)
       C(iAB+3) = -CFun * RA(j1)**3
 
       iAB = iAB + 4
       NAB = NAB + 4
 
 c case (2,1,0)(0,0,0)
-	ELSEIF(iAngA(1).EQ.2 .OR. iAngA(2).EQ.2 .OR.
+      ELSEIF(iAngA(1).EQ.2 .OR. iAngA(2).EQ.2 .OR.
      &   iAngA(3).EQ.2) THEN
 
       DO i = 0,5
         iAng(iAB+i,1:3) = 0
         R(iAB+i,1:3) = RFun(1:3)
         Alph(iAB+i) = AlphFun
-	ENDDO
-	DO i = 1,3
+      ENDDO
+      DO i = 1,3
         IF(iAngFun(i).EQ.2) j1 = i
         IF(iAngFun(i).EQ.1) j2 = i
       ENDDO
@@ -1770,12 +1770,12 @@ c case (2,1,0)(0,0,0)
       iAng(iAB+3,j1) = 1
       iAng(iAB+4,j2) = 1
 
-	C(iAB  ) = One
-	C(iAB+1) = -RA(j2)
-	C(iAB+2) = -Two * RA(j1)
-	C(iAB+3) = C(iAB+1) * C(iAB+2)
-	C(iAB+4) = RA(j1)**2
-	C(iAB+5) = C(iAB+1) * C(iAB+4)
+      C(iAB  ) = One
+      C(iAB+1) = -RA(j2)
+      C(iAB+2) = -Two * RA(j1)
+      C(iAB+3) = C(iAB+1) * C(iAB+2)
+      C(iAB+4) = RA(j1)**2
+      C(iAB+5) = C(iAB+1) * C(iAB+4)
 
       DO i = 0,5
         C(iAB+i) = CFun * C(iAB+i)
@@ -1784,7 +1784,7 @@ c case (2,1,0)(0,0,0)
       NAB = NAB + 6
 
 c case (1,1,1)(0,0,0)
-	ELSE
+      ELSE
 
       DO i = 0,7
         iAng(iAB+i,1:3) = 0
@@ -1805,14 +1805,14 @@ c case (1,1,1)(0,0,0)
       iAng(iAB+5,2) = 1
       iAng(iAB+6,3) = 1
 
-	C(iAB  ) = One
-	C(iAB+1) = -RA(3)
-	C(iAB+2) = -RA(2)
-	C(iAB+3) = -RA(1)
-	C(iAB+4) = C(iAB+1) * C(iAB+2)
-	C(iAB+5) = C(iAB+1) * C(iAB+3)
-	C(iAB+6) = C(iAB+2) * C(iAB+3)
-	C(iAB+7) = C(iAB+1) * C(iAB+6)
+      C(iAB  ) = One
+      C(iAB+1) = -RA(3)
+      C(iAB+2) = -RA(2)
+      C(iAB+3) = -RA(1)
+      C(iAB+4) = C(iAB+1) * C(iAB+2)
+      C(iAB+5) = C(iAB+1) * C(iAB+3)
+      C(iAB+6) = C(iAB+2) * C(iAB+3)
+      C(iAB+7) = C(iAB+1) * C(iAB+6)
 
       DO i = 0,7
         C(iAB+i) = CFun * C(iAB+i)

@@ -48,7 +48,7 @@ c Oh
  	       dGroup = 34
  	       hGroup = 48
 	     ELSE
- 	       WRITE(iout,*)'ERROR. Only Td and Oh among cubic groups'
+ 	       WRITE(0,*)'ERROR. Only Td and Oh among cubic groups'
  	       STOP
 	     ENDIF
 	   ENDIF

@@ -239,15 +239,15 @@ c Place MOs in Matrix form
 
       ij = 1
       DO i = 1,NMOs
-	    iOrb = 0
-	    DO j = 1,NAOs
-	      DO jj = 1,vecontb(j)
-	        coef_MO(iOrb+jj,i) = coef_mol(ij)
-	      ENDDO
-	      iOrb = iOrb+vecontb(j)
-	      ij = ij+1
-	    ENDDO
-	  ENDDO
+        iOrb = 0
+        DO j = 1,NAOs
+          DO jj = 1,vecontb(j)
+            coef_MO(iOrb+jj,i) = coef_mol(ij)
+          ENDDO
+          iOrb = iOrb+vecontb(j)
+          ij = ij+1
+        ENDDO
+      ENDDO
 
 c
 c Expand x^2-y^2 and z2 only for pure d-orbitals
@@ -260,12 +260,12 @@ c     write(2,*)'expand y2'
           alfa(ij+1) = alfa(i)
           coef(ij+1) = -coef(i)*0.8660254038
           coef(i) = coef(i)*0.8660254038
- 	      DO j = 1,NMOs
- 	        coef_MO(ij+1,j) = coef_MO(i,j)
-	      ENDDO
-	      DO j = 1,3
-	        R_orb(ij+1,j) = R_orb(i,j)
-	      ENDDO
+          DO j = 1,NMOs
+            coef_MO(ij+1,j) = coef_MO(i,j)
+          ENDDO
+          DO j = 1,3
+            R_orb(ij+1,j) = R_orb(i,j)
+          ENDDO
           i_angl(i,1) = 2
           i_angl(i,2) = 0
           i_angl(i,3) = 0
@@ -273,7 +273,7 @@ c     write(2,*)'expand y2'
           i_angl(ij+1,2) = 2
           i_angl(ij+1,3) = 0
           ij = ij+1
-	    END IF
+        END IF
 
 
 c Introduction of  z^2  =  2z^2-x^2-y^2
@@ -307,13 +307,13 @@ c     write(2,*)'expand z2'
       ENDDO
 
 c Compute Normalization Factors
-	  DO iOrb = 1,NOrbX
-	    DO j = 1,3
+      DO iOrb = 1,NOrbX
+        DO j = 1,3
             in(j) = i_angl(iOrb,j)
         ENDDO
-	    CALL norma(in,alfa(iOrb),Dot)
-	    coef(iOrb) = coef(iOrb)*Dot
-	  ENDDO
+        CALL norma(in,alfa(iOrb),Dot)
+        coef(iOrb) = coef(iOrb)*Dot
+      ENDDO
 
 c Product between MO coefficients. Only take needed orbitals
       Nx = (NOrbX)*(NOrbX+1)/2

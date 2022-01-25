@@ -44,6 +44,8 @@ c Initialize some variables
       iCount = 1
       iShellC = 0
       RAB(:) = Zero
+      xOrbType = Zero
+
 
       ATOMS: DO k = 1,NAt
         SHELLS: DO iShell = 1, NShell(k)
@@ -386,6 +388,7 @@ c*****************************************************c
       DATA Zero,Half,One,Two,Four / 0d0,0.5d0,1d0,2d0,4d0  /
 
       PI = Four * DATAN(One)
+      C = Zero
 
 c S orbital
       IF(Shell .eq. 0) THEN

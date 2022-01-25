@@ -30,7 +30,7 @@ c Set PI value and SQRT(3)/2
       Coef = Half * DSQRT(3.d0) 
 
 c Only up to 6th order (nGroup < 7)
-	IF(iGroup .NE. 7) THEN
+      IF(iGroup .NE. 7) THEN
        IF(nGroup.LT.2 .OR. nGroup.GT.6) THEN
         WRITE(iout,*)'ERROR. Irreducible rep. only for n < 7'
         STOP
@@ -58,32 +58,32 @@ c Cn
        ELSEIF(nGroup.EQ.3) THEN
         GrpTbl(1,:) = One
         GrpTbl(2,:) = (/One,-Half,-Half/)
-	  GrpTbl(3,:) = (/Zero,Coef,Coef/)
+      GrpTbl(3,:) = (/Zero,Coef,Coef/)
        ELSEIF(nGroup.EQ.4) THEN
         GrpTbl(1,:) = One
         GrpTbl(2,:) = (/One,-One,-One,One/)
         GrpTbl(3,:) = (/One,Zero,Zero,-One/)
         GrpTbl(4,:) = (/Zero,One,-One,Zero/)
        ELSEIF(nGroup.EQ.5) THEN
-	  theta  = Two * PI / 5.0d0
-	  theta2 = Two * theta
-	  Cth  = DCOS(theta)
-	  C2th = DCOS(theta2)
-	  Sth  = DSIN(theta)
-	  S2th = DSIN(theta2)
+      theta  = Two * PI / 5.0d0
+      theta2 = Two * theta
+      Cth  = DCOS(theta)
+      C2th = DCOS(theta2)
+      Sth  = DSIN(theta)
+      S2th = DSIN(theta2)
         GrpTbl(1,:) = One
-	  GrpTbl(2,:) = (/One,Cth,Cth,C2th,C2th/)
-	  GrpTbl(3,:) = (/Zero,Sth,-Sth,S2th,-S2th/)
-	  GrpTbl(4,:) = (/One,C2th,C2th,Cth,Cth/)
-	  GrpTbl(5,:) = (/Zero,-S2th,S2th,Sth,-S2th/)
+      GrpTbl(2,:) = (/One,Cth,Cth,C2th,C2th/)
+      GrpTbl(3,:) = (/Zero,Sth,-Sth,S2th,-S2th/)
+      GrpTbl(4,:) = (/One,C2th,C2th,Cth,Cth/)
+      GrpTbl(5,:) = (/Zero,-S2th,S2th,Sth,-S2th/)
        ELSEIF(nGroup.EQ.6) THEN
         GrpTbl(1,:) = One
-	  GrpTbl(2,:) = (/One,-One,-One,One,One,-One/)
-	  GrpTbl(3,:) = (/One,Half,Half,-Half,-Half,-One/)
-	  GrpTbl(4,:) = (/Zero,Coef,-Coef,Coef,-Coef,Zero/)
+      GrpTbl(2,:) = (/One,-One,-One,One,One,-One/)
+      GrpTbl(3,:) = (/One,Half,Half,-Half,-Half,-One/)
+      GrpTbl(4,:) = (/Zero,Coef,-Coef,Coef,-Coef,Zero/)
         GrpTbl(5,:) = GrpTbl(3,:)*GrpTbl(2,:)
         GrpTbl(6,:) = GrpTbl(4,:)*GrpTbl(2,:)
-	 ENDIF
+      ENDIF
 c Cnh
       ELSEIF(iGroup.EQ.2) THEN
        IF(nGroup.EQ.2) THEN
@@ -98,19 +98,19 @@ c Cnh
        ELSEIF(nGroup.EQ.3) THEN
         GrpTbl(1,:) = One
         GrpTbl(2,:) = (/One,-Half,-Half,One,-Half,-Half/)
-	  GrpTbl(3,:) = (/Zero,Coef,-Coef,Zero,Coef,-Coef/)
+      GrpTbl(3,:) = (/Zero,Coef,-Coef,Zero,Coef,-Coef/)
         GrpTbl(4,:) = (/One,One,One,-One,-One,-One/)
-	  GrpTbl(5,:) = GrpTbl(2,:)*GrpTbl(4,:)
-	  GrpTbl(6,:) = GrpTbl(3,:)*GrpTbl(4,:)
+      GrpTbl(5,:) = GrpTbl(2,:)*GrpTbl(4,:)
+      GrpTbl(6,:) = GrpTbl(3,:)*GrpTbl(4,:)
        ELSEIF(nGroup.EQ.4) THEN
         GrpTbl(1,:) =  One
-	  GrpTbl(2,:) = (/One,-One,-One,One,One,-One,-One,One/)
-	  GrpTbl(3,:) = (/One,Zero,Zero,-One,-One,Zero,Zero,One/)
-	  GrpTbl(4,:) = (/Zero,One,-One,Zero,Zero,-One,One,Zero/)
-	  GrpTbl(5,:) = (/One,One,One,One,-One,-One,-One,-One/)
-	  GrpTbl(6,:) = GrpTbl(2,:)*GrpTbl(5,:)
-	  GrpTbl(7,:) = GrpTbl(3,:)*GrpTbl(5,:)
-	  GrpTbl(8,:) = GrpTbl(4,:)*GrpTbl(5,:)
+      GrpTbl(2,:) = (/One,-One,-One,One,One,-One,-One,One/)
+      GrpTbl(3,:) = (/One,Zero,Zero,-One,-One,Zero,Zero,One/)
+      GrpTbl(4,:) = (/Zero,One,-One,Zero,Zero,-One,One,Zero/)
+      GrpTbl(5,:) = (/One,One,One,One,-One,-One,-One,-One/)
+      GrpTbl(6,:) = GrpTbl(2,:)*GrpTbl(5,:)
+      GrpTbl(7,:) = GrpTbl(3,:)*GrpTbl(5,:)
+      GrpTbl(8,:) = GrpTbl(4,:)*GrpTbl(5,:)
        ELSEIF(nGroup.EQ.5) THEN
         theta  = Two * PI / 5.0d0
         theta2 = Two * theta
@@ -118,33 +118,33 @@ c Cnh
         C2th = DCOS(theta2)
         Sth  = DCOS(theta)
         S2th = DCOS(theta2)
-	  GrpTbl(1,:) = One
-	  GrpTbl(2,:) = (/One,Cth,Cth,C2th,C2th,
+      GrpTbl(1,:) = One
+      GrpTbl(2,:) = (/One,Cth,Cth,C2th,C2th,
      &                  One,Cth,Cth,C2th,C2th/)
-	  GrpTbl(3,:) = (/Zero,Sth,-Sth,S2th,-S2th,
+      GrpTbl(3,:) = (/Zero,Sth,-Sth,S2th,-S2th,
      &                  Zero,Sth,-Sth,S2th,-S2th/)
-	  GrpTbl(4,:) = (/One,C2th,C2th,Cth,Cth,
+      GrpTbl(4,:) = (/One,C2th,C2th,Cth,Cth,
      &                  One,C2th,C2th,Cth,Cth/)
         GrpTbl(5,:) = (/Zero,-S2th,S2th,Sth,-Sth,
      &                  Zero,-S2th,S2th,Sth,-Sth/)
         GrpTbl(6,:) = (/(One,i=1,5),(-One,i=6,10)/)
-	  GrpTbl(7,:) = GrpTbl(2,:)*GrpTbl(6,:)
-	  GrpTbl(8,:) = GrpTbl(3,:)*GrpTbl(6,:)
-	  GrpTbl(9,:) = GrpTbl(4,:)*GrpTbl(6,:)
-	  GrpTbl(10,:)= GrpTbl(5,:)*GrpTbl(6,:)
+      GrpTbl(7,:) = GrpTbl(2,:)*GrpTbl(6,:)
+      GrpTbl(8,:) = GrpTbl(3,:)*GrpTbl(6,:)
+      GrpTbl(9,:) = GrpTbl(4,:)*GrpTbl(6,:)
+      GrpTbl(10,:)= GrpTbl(5,:)*GrpTbl(6,:)
        ELSEIF(nGroup.EQ.6) THEN
-	  GrpTbl(1,:) = One
-	  GrpTbl(2,:) = (/One,-One,-One,One,One,-One,
+      GrpTbl(1,:) = One
+      GrpTbl(2,:) = (/One,-One,-One,One,One,-One,
      &                 -One,One,One,-One,-One,One/)
-	  GrpTbl(3,:) = (/One,Half,Half,-Half,-Half,-One,
+      GrpTbl(3,:) = (/One,Half,Half,-Half,-Half,-One,
      &                 -One,-Half,-Half,Half,Half,One/)
-	  GrpTbl(4,:) = (/Zero,Coef,-Coef,Coef,-Coef,Zero,
+      GrpTbl(4,:) = (/Zero,Coef,-Coef,Coef,-Coef,Zero,
      &                  Zero,-Coef,Coef,-Coef,Coef,Zero/)
-	  GrpTbl(5,:) = (/One,(-Half,i=2,5),One,
+      GrpTbl(5,:) = (/One,(-Half,i=2,5),One,
      &                  One,(-Half,i=2,5),One/)
         GrpTbl(6,:) = (/Zero,-Coef,Coef,Coef,-Coef,Zero,
      &                  Zero,-Coef,Coef,Coef,-Coef,Zero/)
-	  GrpTbl(7,:) = (/(One,i=1,6),(-One,i=7,12)/)
+      GrpTbl(7,:) = (/(One,i=1,6),(-One,i=7,12)/)
         GrpTbl(8,:) = GrpTbl(2,:)*GrpTbl(7,:)
         GrpTbl(9,:) = GrpTbl(3,:)*GrpTbl(7,:)
         GrpTbl(10,:)= GrpTbl(4,:)*GrpTbl(7,:)
@@ -155,13 +155,13 @@ c Cnv
       ELSEIF(iGroup.EQ.3) THEN
        IF(nGroup.EQ.2) THEN
         GrpTbl(1,:) = One
-	  DO i = 1,2
-	    GrpTbl(2,  i) =  One
-	    GrpTbl(2,2+i) = -One
-	    GrpTbl(3,2*i-1) = One
-	    GrpTbl(3,2*i) = -One
-	  ENDDO
-	  GrpTbl(4,:) = GrpTbl(2,:)*GrpTbl(3,:)
+      DO i = 1,2
+        GrpTbl(2,  i) =  One
+        GrpTbl(2,2+i) = -One
+        GrpTbl(3,2*i-1) = One
+        GrpTbl(3,2*i) = -One
+      ENDDO
+      GrpTbl(4,:) = GrpTbl(2,:)*GrpTbl(3,:)
        ELSEIF(nGroup.EQ.3) THEN
         GrpTbl(1,:) = One
         GrpTbl(2,1:3) = One
@@ -172,8 +172,8 @@ c Cnv
         GrpTbl(6,1:6) = (/One,-Half,-Half,-One,Half,Half/)
        ELSEIF(nGroup.EQ.4) THEN
         GrpTbl(1,:) = One
-	  GrpTbl(2,1:4) = One
-	  GrpTbl(2,5:8) = -One
+      GrpTbl(2,1:4) = One
+      GrpTbl(2,5:8) = -One
         GrpTbl(3,:) = (/One,-One,-One,One,One,-One,One,-One/)
         GrpTbl(4,:) = (/One,-One,-One,One,-One,One,-One,One/)
         GrpTbl(5,:) = (/One,Zero,Zero,-One,-One,Zero,One,Zero/)
@@ -206,11 +206,11 @@ c Cnv
         GrpTbl(10,:) = GrpTbl(2,:)*GrpTbl(7,:)
        ELSEIF(nGroup.EQ.6) THEN
         GrpTbl(1,:) = One
-	  GrpTbl(2,1:6)  = One
-	  GrpTbl(2,7:12) = -One
-	  GrpTbl(3,1:12) = (/One,-One,-One,One,One,-One,
+      GrpTbl(2,1:6)  = One
+      GrpTbl(2,7:12) = -One
+      GrpTbl(3,1:12) = (/One,-One,-One,One,One,-One,
      &                    One,-One,One,-One,One,-One/)
-	  GrpTbl(4,:) = GrpTbl(2,:)*GrpTbl(3,:)
+      GrpTbl(4,:) = GrpTbl(2,:)*GrpTbl(3,:)
 
         GrpTbl(5,:) = (/One,Half,Half,-Half,-Half,-One,
      &                  One,Half,-Half,-One,-Half,Half/)
@@ -228,26 +228,26 @@ c Cnv
 c Dn
       ELSEIF(iGroup.EQ.4) THEN
        IF(nGroup.EQ.2) THEN
-	  GrpTbl(1,:) = One
-	  GrpTbl(2,:) = (/One,One,-One,-One/)
-	  GrpTbl(3,:) = (/One,-One,One,-One/)
-	  GrpTbl(4,:) = GrpTbl(2,:)*GrpTbl(3,:)
+      GrpTbl(1,:) = One
+      GrpTbl(2,:) = (/One,One,-One,-One/)
+      GrpTbl(3,:) = (/One,-One,One,-One/)
+      GrpTbl(4,:) = GrpTbl(2,:)*GrpTbl(3,:)
        ELSEIF(nGroup.EQ.3) THEN
         GrpTbl(1,:) = One
         GrpTbl(2,:) = (/One,One,One, -One,-One,-One/)
         GrpTbl(3,:) = (/One,-Half,-Half,-One,Half,Half/)
         GrpTbl(4,:) = (/Zero,Coef,-Coef,Zero,Coef,-Coef/)
         GrpTbl(5,:) = (/Zero,-Coef,Coef,Zero,Coef,-Coef/)
-	  GrpTbl(6,:) = GrpTbl(2,:)*GrpTbl(3,:)
+      GrpTbl(6,:) = GrpTbl(2,:)*GrpTbl(3,:)
        ELSEIF(nGroup.EQ.4) THEN
         GrpTbl(1,:) = One
         GrpTbl(2,:) = (/One,One,One,One,-One,-One,-One,-One/)
-	  GrpTbl(3,:) = (/One,-One,-One,One,One,-One,One,-One/)
-	  GrpTbl(4,:) = GrpTbl(2,:)*GrpTbl(3,:)
-	  GrpTbl(5,:) = (/One,Zero,Zero,-One, One,Zero,-One,Zero/)
-	  GrpTbl(6,:) = (/Zero,One,-One,Zero,Zero,-One,Zero,One/)
-	  GrpTbl(7,:) = (/Zero,-One,One,Zero,Zero,-One,Zero,One/)
-	  GrpTbl(8,:) = GrpTbl(2,:)*GrpTbl(5,:)
+      GrpTbl(3,:) = (/One,-One,-One,One,One,-One,One,-One/)
+      GrpTbl(4,:) = GrpTbl(2,:)*GrpTbl(3,:)
+      GrpTbl(5,:) = (/One,Zero,Zero,-One, One,Zero,-One,Zero/)
+      GrpTbl(6,:) = (/Zero,One,-One,Zero,Zero,-One,Zero,One/)
+      GrpTbl(7,:) = (/Zero,-One,One,Zero,Zero,-One,Zero,One/)
+      GrpTbl(8,:) = GrpTbl(2,:)*GrpTbl(5,:)
        ELSEIF(nGroup.EQ.5) THEN
         theta  = Two * PI / 5.0d0
         theta2 = Two * theta
@@ -301,12 +301,12 @@ c Dnh
         GrpTbl(2,5:8) = (/One,One,-One,-One/)
         GrpTbl(3,1:4) = (/One,-One,-One,One/)
         GrpTbl(3,5:8) = (/-One,One,One,-One/)
-	  GrpTbl(4,:) = GrpTbl(2,:)*GrpTbl(3,:)
-	  GrpTbl(5,1:4) = One
-	  GrpTbl(5,5:8) = -One
-	  GrpTbl(6,:) = GrpTbl(2,:)*GrpTbl(5,:)
-	  GrpTbl(7,:) = GrpTbl(3,:)*GrpTbl(5,:)
-	  GrpTbl(8,:) = GrpTbl(4,:)*GrpTbl(5,:)
+      GrpTbl(4,:) = GrpTbl(2,:)*GrpTbl(3,:)
+      GrpTbl(5,1:4) = One
+      GrpTbl(5,5:8) = -One
+      GrpTbl(6,:) = GrpTbl(2,:)*GrpTbl(5,:)
+      GrpTbl(7,:) = GrpTbl(3,:)*GrpTbl(5,:)
+      GrpTbl(8,:) = GrpTbl(4,:)*GrpTbl(5,:)
        ELSEIF(nGroup.EQ.3) THEN
         GrpTbl(1,:) = One
         GrpTbl(2,:)  = (/One,One,One,-One,-One,-One,
@@ -318,8 +318,8 @@ c Dnh
         GrpTbl(5,:)  = (/Zero,-Coef,Coef,Zero,Coef,-Coef,
      &                   Zero,-Coef,Coef,Zero,Coef,-Coef/)
         GrpTbl(6,:) = GrpTbl(2,:)*GrpTbl(3,:)
-	  GrpTbl(7,1:6)  = One
-	  GrpTbl(7,7:12) = -One
+      GrpTbl(7,1:6)  = One
+      GrpTbl(7,7:12) = -One
         GrpTbl(8,:)  = GrpTbl(2,:)*GrpTbl(7,:)
         GrpTbl(9,:)  = GrpTbl(3,:)*GrpTbl(7,:)
         GrpTbl(10,:) = GrpTbl(4,:)*GrpTbl(7,:)
@@ -359,10 +359,10 @@ c Dnh
         GrpTbl(2,1:5)   = One
         GrpTbl(2,6:10)  = -One
         GrpTbl(2,11:20) = GrpTbl(2,1:10)
-	  GrpTbl(3,1:10) = (/One,Cth,Cth,C2th,C2th,
+      GrpTbl(3,1:10) = (/One,Cth,Cth,C2th,C2th,
      &                    -One,-Cth,-Cth,-C2th,-Cth/) 
         GrpTbl(3,11:20) = GrpTbl(3,1:10) 
-	  GrpTbl(4,1:10) = (/Zero,Sth,-Sth,S2th,-S2th,
+      GrpTbl(4,1:10) = (/Zero,Sth,-Sth,S2th,-S2th,
      &                     Zero,Sth,S2th,-S2th,-Sth/)
         GrpTbl(4,11:20) = GrpTbl(4,1:10) 
         GrpTbl(5,1:10) = (/Zero,-Sth,Sth,-S2th,S2th,
@@ -379,8 +379,8 @@ c Dnh
      &                     Zero,-S2th,Sth,-Sth,S2th/)
         GrpTbl(9,11:20) = GrpTbl(9,1:10)
         GrpTbl(10,:) = GrpTbl(2,:)*GrpTbl(7,:)
-	  GrpTbl(11,1:10)  = One
-	  GrpTbl(11,11:20) = -One
+      GrpTbl(11,1:10)  = One
+      GrpTbl(11,11:20) = -One
         GrpTbl(12,:) = GrpTbl(2,:)*GrpTbl(11,:)
         GrpTbl(13,:) = GrpTbl(3,:)*GrpTbl(11,:)
         GrpTbl(14,:) = GrpTbl(4,:)*GrpTbl(11,:)
@@ -392,30 +392,30 @@ c Dnh
         GrpTbl(20,:) = GrpTbl(10,:)*GrpTbl(11,:)
        ELSEIF(nGroup.EQ.6) THEN
         GrpTbl(1,:) = One
-	  GrpTbl(2,1:6)  = One
-	  GrpTbl(2,7:12) = -One
-	  GrpTbl(2,13:24) = GrpTbl(2,1:12)
+      GrpTbl(2,1:6)  = One
+      GrpTbl(2,7:12) = -One
+      GrpTbl(2,13:24) = GrpTbl(2,1:12)
         GrpTbl(3,1:12) = (/One,-One,-One,One,One,-One,
      &                     One,-One,One,-One,One,-One/) 
         GrpTbl(3,13:24) = -GrpTbl(3,1:12)
-	  GrpTbl(4,:) = GrpTbl(2,:)*GrpTbl(3,:)
+      GrpTbl(4,:) = GrpTbl(2,:)*GrpTbl(3,:)
 
-	  GrpTbl(5,1:12) = (/One,Half,Half,-Half,-Half,-One,
+      GrpTbl(5,1:12) = (/One,Half,Half,-Half,-Half,-One,
      &                    -One,-Half,Half,One,Half,-Half/)
-	  GrpTbl(5,13:24) = -GrpTbl(5,1:12)
+      GrpTbl(5,13:24) = -GrpTbl(5,1:12)
         GrpTbl(6,1:12) = (/Zero,Coef,-Coef,Coef,-Coef,Zero,
      &                     Zero,Coef,Coef,Zero,-Coef,-Coef/)
-	  GrpTbl(6,13:24) = -GrpTbl(6,1:12)
+      GrpTbl(6,13:24) = -GrpTbl(6,1:12)
         GrpTbl(7,1:12) = (/Zero,-Coef,Coef,-Coef,Coef,Zero,
      &                     Zero,Coef,Coef,Zero,-Coef,-Coef/)
         GrpTbl(7,13:24) = -GrpTbl(7,1:12)
-	  GrpTbl(8,:)  = GrpTbl(2,:)*GrpTbl(5,:)
-	  GrpTbl(9,:)  = GrpTbl(3,:)*GrpTbl(5,:)
-	  GrpTbl(10,:) = GrpTbl(3,:)*GrpTbl(6,:)
-	  GrpTbl(11,:) = GrpTbl(3,:)*GrpTbl(7,:)
-	  GrpTbl(12,:) = GrpTbl(3,:)*GrpTbl(8,:)
-	  GrpTbl(13,1:12)  = One
-	  GrpTbl(13,13:24) = -One
+      GrpTbl(8,:)  = GrpTbl(2,:)*GrpTbl(5,:)
+      GrpTbl(9,:)  = GrpTbl(3,:)*GrpTbl(5,:)
+      GrpTbl(10,:) = GrpTbl(3,:)*GrpTbl(6,:)
+      GrpTbl(11,:) = GrpTbl(3,:)*GrpTbl(7,:)
+      GrpTbl(12,:) = GrpTbl(3,:)*GrpTbl(8,:)
+      GrpTbl(13,1:12)  = One
+      GrpTbl(13,13:24) = -One
         GrpTbl(14,:) = GrpTbl(13,:)*GrpTbl(2,:)
         GrpTbl(15,:) = GrpTbl(13,:)*GrpTbl(3,:)
         GrpTbl(16,:) = GrpTbl(13,:)*GrpTbl(4,:)
@@ -432,17 +432,17 @@ c Dnd
       ELSEIF(iGroup.EQ.6) THEN
        IF(nGroup.EQ.2) THEN
         GrpTbl(1,:) = One
-	  GrpTbl(2,:) = (/One,One,-One,-One,One,One,-One,-One/)
-	  GrpTbl(3,:) = (/One,One,One,One,-One,-One,-One,-One/)
+      GrpTbl(2,:) = (/One,One,-One,-One,One,One,-One,-One/)
+      GrpTbl(3,:) = (/One,One,One,One,-One,-One,-One,-One/)
         GrpTbl(4,:) = GrpTbl(2,:)*GrpTbl(3,:)
-	  GrpTbl(5,:) = (/One,-One,-One,One,Zero,Zero,Zero/)
+      GrpTbl(5,:) = (/One,-One,-One,One,Zero,Zero,Zero/)
         GrpTbl(6,:) = (/Zero,Zero,Zero,Zero,-One,One,-One,One/)
         GrpTbl(7,:) = (/Zero,Zero,Zero,Zero,One,-One,-One,One/)
         GrpTbl(8,:) = GrpTbl(2,:)*GrpTbl(5,:)
        ELSEIF(nGroup.EQ.3) THEN
         GrpTbl(1,:) = One
         GrpTbl(2,1:6) = (/One,One,One,-One,-One,-One/)
-	  GrpTbl(2,7:12) = GrpTbl(2,1:6)
+      GrpTbl(2,7:12) = GrpTbl(2,1:6)
         GrpTbl(3,:) = (/One,-Half,-Half,One,-Half,-Half,
      &                  -Half,-Half,One,-Half,One,-Half/)
         GrpTbl(4,:) = (/Zero,Coef,-Coef,Zero,-Coef,Coef,
@@ -458,14 +458,14 @@ c Dnd
         GrpTbl(11,:) = GrpTbl(5,:)*GrpTbl(7,:)
         GrpTbl(12,:) = GrpTbl(6,:)*GrpTbl(7,:)
        ELSEIF(nGroup.EQ.4) THEN
-	  Cf = One/DSQRT(Two)
+      Cf = One/DSQRT(Two)
         GrpTbl(1,:) = One
-	  GrpTbl(2,1:8) = (/One,One,One,One,-One,-One,-One,-One/)
-	  GrpTbl(2,9:16) = GrpTbl(2,1:8)
-	  GrpTbl(3,1:8)  = One
-	  GrpTbl(3,9:16) = -One
-	  GrpTbl(4,:) = GrpTbl(2,:)*GrpTbl(3,:)
-	  GrpTbl(5,:) = (/One,Zero,Zero,-One,Zero,One,Zero,-One,
+      GrpTbl(2,1:8) = (/One,One,One,One,-One,-One,-One,-One/)
+      GrpTbl(2,9:16) = GrpTbl(2,1:8)
+      GrpTbl(3,1:8)  = One
+      GrpTbl(3,9:16) = -One
+      GrpTbl(4,:) = GrpTbl(2,:)*GrpTbl(3,:)
+      GrpTbl(5,:) = (/One,Zero,Zero,-One,Zero,One,Zero,-One,
      &                  Cf,Cf,-Cf,-Cf,Cf,Cf,-Cf,-Cf/)
         GrpTbl(6,:) = (/Zero,One,-One,Zero,One,Zero,-One,Zero,
      &                  Cf,-Cf,Cf,-Cf,Cf,-Cf,-Cf,Cf/)
@@ -491,9 +491,9 @@ c Dnd
         Sth  = DSIN(theta)
         S2th = DSIN(theta2)
         GrpTbl(1,:) = One
-	GrpTbl(2,1:10) = (/One,One,One,One,One,-One,-One,-One,-One,-One/)
-	  GrpTbl(2,11:20) = GrpTbl(2,1:10)
-	  GrpTbl(3,:) = (/One,Cth,Cth,C2th,C2th,One,Cth,C2th,C2th,Cth,
+      GrpTbl(2,1:10) = (/One,One,One,One,One,-One,-One,-One,-One,-One/)
+      GrpTbl(2,11:20) = GrpTbl(2,1:10)
+      GrpTbl(3,:) = (/One,Cth,Cth,C2th,C2th,One,Cth,C2th,C2th,Cth,
      &                  C2th,C2th,Cth,Cth,One,C2th,Cth,One,Cth,C2th/)
         GrpTbl(4,:) = (/Zero,Sth,-Sth,S2th,-S2th,Zero,
      &    -Sth,-S2th,S2th,Sth, -S2th,S2th,-Sth,Sth,Zero,
@@ -525,12 +525,12 @@ c Dnd
         GrpTbl(20,:) = GrpTbl(11,:)*GrpTbl(10,:)
        ELSEIF(nGroup.EQ.6) THEN
         GrpTbl(1,:) = One
-	  GrpTbl(2,1:6)   = One
-	  GrpTbl(2,7:12)  = -One
-	  GrpTbl(2,13:18) = One
-	  GrpTbl(2,19:24) = -One
-	  GrpTbl(3,1:12)  = One
-	  GrpTbl(3,13:24) = -One
+      GrpTbl(2,1:6)   = One
+      GrpTbl(2,7:12)  = -One
+      GrpTbl(2,13:18) = One
+      GrpTbl(2,19:24) = -One
+      GrpTbl(3,1:12)  = One
+      GrpTbl(3,13:24) = -One
         GrpTbl(4,:) = GrpTbl(2,:)*GrpTbl(3,:)
         GrpTbl(5,:) = (/One,Half,Half,-Half,-Half,-One,
      &                 -One,-Half,Half,One,Half,-Half, 
@@ -582,29 +582,29 @@ c Dnd
 c Sn
       ELSEIF(iGroup.EQ.7) THEN
        IF(nGroup.EQ.4) THEN
-	  GrpTbl(1,:) = One 
-	  GrpTbl(2,:) = (/One,-One,-One,One/) 
-	  GrpTbl(3,:) = (/One,Zero,Zero,-One/) 
-	  GrpTbl(4,:) = (/Zero,-One,One,Zero/)
+      GrpTbl(1,:) = One
+      GrpTbl(2,:) = (/One,-One,-One,One/)
+      GrpTbl(3,:) = (/One,Zero,Zero,-One/)
+      GrpTbl(4,:) = (/Zero,-One,One,Zero/)
        ELSEIF(nGroup.EQ.6) THEN
-	  GrpTbl(1,:) = One 
-	  GrpTbl(2,:) = (/One,(-Half,i=2,5),One/) 
-	  GrpTbl(3,:) = (/Zero,-Coef,Coef,Coef,-Coef,Zero/)
-	  GrpTbl(4,:) = (/One,-One,-One,One,One,-One/)
+      GrpTbl(1,:) = One
+      GrpTbl(2,:) = (/One,(-Half,i=2,5),One/)
+      GrpTbl(3,:) = (/Zero,-Coef,Coef,Coef,-Coef,Zero/)
+      GrpTbl(4,:) = (/One,-One,-One,One,One,-One/)
         GrpTbl(5,:) = GrpTbl(2,:)*GrpTbl(4,:)
         GrpTbl(6,:) = GrpTbl(3,:)*GrpTbl(4,:)
        ELSEIF(nGroup.EQ.8) THEN
-	  Cf = One/DSQRT(Two)
-	  GrpTbl(1,:) = One 
-	  GrpTbl(2,:) = (/One,-One,-One,One,
+      Cf = One/DSQRT(Two)
+      GrpTbl(1,:) = One
+      GrpTbl(2,:) = (/One,-One,-One,One,
      &                  One,-One,-One,One/)
-	  GrpTbl(3,:) = (/One,Cf,Cf,Zero,
+      GrpTbl(3,:) = (/One,Cf,Cf,Zero,
      &                 Zero,-Cf,-Cf,-One/)
         GrpTbl(4,:) = (/Zero,Cf,-Cf,One
      &                 -One,Cf,-Cf,Zero/)
         GrpTbl(5,:) = (/One,Zero,Zero,-One,
      &                 -One,Zero,Zero,One/)
-	  GrpTbl(6,:) = (/Zero,-One,One,Zero,
+      GrpTbl(6,:) = (/Zero,-One,One,Zero,
      &                 Zero,One,-One,Zero/)
         GrpTbl(7,:) = GrpTbl(3,:)*GrpTbl(2,:)
         GrpTbl(8,:) = GrpTbl(4,:)*GrpTbl(2,:)
@@ -615,8 +615,8 @@ c Sn
         C2th = DCOS(theta2)
         Sth  = DSIN(theta)
         S2th = DSIN(theta2)
-	  GrpTbl(1,:) = One 
-	  GrpTbl(2,:) = (/One,C2th,C2th,Cth,Cth,
+      GrpTbl(1,:) = One
+      GrpTbl(2,:) = (/One,C2th,C2th,Cth,Cth,
      &                  Cth,Cth,C2th,C2th,One/)
         GrpTbl(3,:) = (/Zero,-S2th,S2th,Sth,-Sth,
      &                 -Sth,Sth,S2th,-S2th,Zero/)
@@ -631,12 +631,12 @@ c Sn
         GrpTbl(9,:) = GrpTbl(4,:)*GrpTbl(6,:)
         GrpTbl(10,:)= GrpTbl(5,:)*GrpTbl(6,:)
        ELSEIF(nGroup.EQ.12) THEN
-	  GrpTbl(1,:) = One 
-	  GrpTbl(2,:) = (/One,-One,-One,One,One,-One,
+      GrpTbl(1,:) = One
+      GrpTbl(2,:) = (/One,-One,-One,One,One,-One,
      &                 -One,One,One,-One,-One,One/) 
         GrpTbl(3,:) = (/One,Coef,Coef,Half,Half,Zero,
      &             Zero,-Half,-Half,-Coef,-Coef,-One/)
-	  GrpTbl(4,:) = (/Zero,Half,-Half,Coef,-Coef,One,
+      GrpTbl(4,:) = (/Zero,Half,-Half,Coef,-Coef,One,
      &             -One,Coef,-Coef,Half,-Half,Zero/)
         GrpTbl(5,:) = (/One,Half,Half,-Half,-Half,-One,
      &             -One,-Half,-Half,Half,Half,One/)
@@ -658,7 +658,7 @@ c Td
         GrpTbl(1,:) = One
         GrpTbl(2,1:12)  = One
         GrpTbl(2,13:24) = -One
-	  GrpTbl(3,:) = (/One,(-Half,i=2,9),(One,i=10,14),
+      GrpTbl(3,:) = (/One,(-Half,i=2,9),(One,i=10,14),
      &   (-Half,i=15,18),One,-Half,-Half,One,-Half,-Half/)
         GrpTbl(4,:) = (/Zero,Coef,-Coef,Coef,-Coef,Coef,-Coef,
      &   Coef,-Coef,(Zero,i=10,14),Coef,Coef,-Coef,-Coef,
@@ -668,7 +668,7 @@ c Td
      &   Zero,Coef,-Coef,Zero,Coef,-Coef/)
         GrpTbl(6,:) = GrpTbl(2,:)*GrpTbl(3,:)
 
-	  GrpTbl(7,:) = (/One,(Zero,i=2,9),-One,-One,One,
+      GrpTbl(7,:) = (/One,(Zero,i=2,9),-One,-One,One,
      &   (Zero,i=13,16),One,One,Zero,Zero,-One,Zero,Zero,-One/)
         GrpTbl(8,:) = (/Zero,-One,Zero,-One,Zero,One,Zero,One,Zero,
      &   Zero,Zero,Zero,One,-One,(Zero,i=15,18),
@@ -691,15 +691,15 @@ c Td
      &   (Zero,i=10,16),-One,One,Zero,Zero,One,Zero,Zero,-One/)
         GrpTbl(15,:) = (/One,(Zero,i=2,9),One,-One,-One,One,One,
      &   (Zero,i=15,18),-One,Zero,Zero,-One,Zero,Zero/)
-	  DO i = 7,15
+      DO i = 7,15
           GrpTbl(i+9,:) = GrpTbl(2,:)*GrpTbl(i,:)
- 	  ENDDO
+      ENDDO
 c Oh
        ELSEIF(nGroup.EQ.5) THEN
         GrpTbl(1,:) = One
-	  GrpTbl(2,:) = (/(One,i=1,9),(-One,i=10,21),(One,i=22,25),
+      GrpTbl(2,:) = (/(One,i=1,9),(-One,i=10,21),(One,i=22,25),
      &   (-One,i=26,31),(One,i=32,42),(-One,i=43,48)/)
-	  GrpTbl(3,:) = (/One,(-Half,i=2,13),(One,i=14,17),
+      GrpTbl(3,:) = (/One,(-Half,i=2,13),(One,i=14,17),
      &   (-Half,i=18,21),(One,i=22,27),(-Half,i=28,39),
      &   (One,i=40,42),(-Half,i=43,46), One,One/)
 c                        1      2    3    4    5    6     7    8
@@ -765,23 +765,23 @@ c          41    42   43   44    45   46    47   48
         DO i = 7,15
           GrpTbl(i+9,:) = GrpTbl(2,:)*GrpTbl(i,:)
         ENDDO
-	  GrpTbl(25,:) = (/(One,i=1,24),(-One,i=25,48)/)
+      GrpTbl(25,:) = (/(One,i=1,24),(-One,i=25,48)/)
         DO i = 2,24
-	    GrpTbl(24+i,:) = GrpTbl(25,:)*GrpTbl(i,:)
-	  ENDDO
+        GrpTbl(24+i,:) = GrpTbl(25,:)*GrpTbl(i,:)
+      ENDDO
 
-	 ELSE
-         WRITE(*,*)'ERROR. Only Td of Oh (Higher) groups ready'
-         STOP
-       ENDIF
+      ELSE
+        WRITE(*,*)'ERROR. Only Td of Oh (Higher) groups ready'
+        STOP
+      ENDIF
 c Linear
       ELSEIF(iGroup.EQ.9) THEN
         WRITE(iout,*)'ERROR. Irred. rep. not ready for Linear groups'
         STOP
-	ENDIF
+      ENDIF
 
-	RETURN
-	END
+      RETURN
+      END
 
 
       SUBROUTINE group_labels(IRLab,nIR,iGroup,nGroup,iout)
@@ -804,7 +804,7 @@ c       DCC: 10/10                                    c
 c                                                     c
 c*****************************************************c
       IMPLICIT REAL*8  (a-h, o-z)
-	INTEGER    iGroup,nGroup
+      INTEGER    iGroup,nGroup
       CHARACTER  IRLab(nIR)*3
 
       SAVE Zero,One,Two
@@ -823,41 +823,41 @@ c***********************c
 c Make character tables c
 c***********************c
 c Nonaxial
-	IF(iGroup.EQ.0) THEN
-	 IF(nGroup.EQ.1) THEN
+      IF(iGroup.EQ.0) THEN
+      IF(nGroup.EQ.1) THEN
         WRITE(iout,*)'ERROR. Irred. rep. not ready for C1'
         STOP
-	 ELSEIF(nGroup.EQ.2) THEN
-	   IRLab(1) = 'Ag '
-	   IRLab(2) = 'Au '
-	 ELSEIF(nGroup.EQ.3) THEN
-	   IRLab(1) = "A' "
-	   IRLab(2) = 'A" '
-	 ENDIF
+      ELSEIF(nGroup.EQ.2) THEN
+        IRLab(1) = 'Ag '
+        IRLab(2) = 'Au '
+      ELSEIF(nGroup.EQ.3) THEN
+        IRLab(1) = "A' "
+        IRLab(2) = 'A" '
+      ENDIF
 c Cn
-	ELSEIF(iGroup.EQ.1) THEN
-	 IF(nGroup.EQ.2) THEN
+      ELSEIF(iGroup.EQ.1) THEN
+      IF(nGroup.EQ.2) THEN
          IRLab(1) = 'A  '
          IRLab(2) = 'B  '
-	 ELSEIF(nGroup.EQ.3) THEN
+      ELSEIF(nGroup.EQ.3) THEN
          IRLab(1) = 'A  '
          IRLab(2) = 'E  '
-	 ELSEIF(nGroup.EQ.4) THEN
+      ELSEIF(nGroup.EQ.4) THEN
          IRLab(1) = 'A  '
          IRLab(2) = 'B  '
          IRLab(3) = 'E  '
-	 ELSEIF(nGroup.EQ.5) THEN
+      ELSEIF(nGroup.EQ.5) THEN
          IRLab(1) = 'A  '
          IRLab(2) = 'E1 '
          IRLab(3) = 'E2 '
-	 ELSEIF(nGroup.EQ.6) THEN
+      ELSEIF(nGroup.EQ.6) THEN
          IRLab(1) = 'A  '
          IRLab(2) = 'B  '
          IRLab(3) = 'E1 '
          IRLab(4) = 'E2 '
-	 ENDIF
+      ENDIF
 c Cnh
-	ELSEIF(iGroup.EQ.2) THEN
+      ELSEIF(iGroup.EQ.2) THEN
        IF(nGroup.EQ.2) THEN
          IRLab(1) = 'Ag '
          IRLab(2) = 'Bg '
@@ -893,7 +893,7 @@ c Cnh
          IRLab(8) = 'E2u'
        ENDIF
 c Cnv
-	ELSEIF(iGroup.EQ.3) THEN
+      ELSEIF(iGroup.EQ.3) THEN
        IF(nGroup.EQ.2) THEN
          IRLab(1) = 'A1 '
          IRLab(2) = 'A2 '
@@ -923,7 +923,7 @@ c Cnv
          IRLab(6) = 'E2 '
        ENDIF
 c Dn
-	ELSEIF(iGroup.EQ.4) THEN
+      ELSEIF(iGroup.EQ.4) THEN
        IF(nGroup.EQ.2) THEN
          IRLab(1) = 'A  '
          IRLab(2) = 'B1 '
@@ -953,7 +953,7 @@ c Dn
          IRLab(6) = 'E2 '
        ENDIF
 c Dnh
-	ELSEIF(iGroup.EQ.5) THEN
+      ELSEIF(iGroup.EQ.5) THEN
        IF(nGroup.EQ.2) THEN
          IRLab(1) = 'Ag '
          IRLab(2) = 'B1g'
@@ -1005,7 +1005,7 @@ c Dnh
          IRLab(12) = 'E2u'
        ENDIF
 c Dnd
-	ELSEIF(iGroup.EQ.6) THEN
+      ELSEIF(iGroup.EQ.6) THEN
        IF(nGroup.EQ.2) THEN
          IRLab(1) = 'A1 '
          IRLab(2) = 'A2 '
@@ -1048,7 +1048,7 @@ c Dnd
          IRLab(9) = 'E5 '
        ENDIF
 c Sn
-	ELSEIF(iGroup.EQ.7) THEN
+      ELSEIF(iGroup.EQ.7) THEN
        IF(nGroup.EQ.4) THEN
          IRLab(1) = 'A  '
          IRLab(2) = 'B  '
@@ -1079,12 +1079,12 @@ c Sn
          IRLab(5) = 'E3 '
          IRLab(6) = 'E4 '
          IRLab(7) = 'E5 '
-	 ELSE
-	   WRITE(iout,*)'ERROR. Only considering n = 4,6,8,10,12.'
-	   STOP
+      ELSE
+       WRITE(iout,*)'ERROR. Only considering n = 4,6,8,10,12.'
+       STOP
        ENDIF
 c Cubic
-	ELSEIF(iGroup.EQ.8) THEN
+      ELSEIF(iGroup.EQ.8) THEN
 c Td
        IF(nGroup.EQ.3) THEN
          IRLab(1) = 'A1 '
@@ -1104,19 +1104,19 @@ c Oh
          IRLab(8)  = 'Eu '
          IRLab(9)  = 'T1u'
          IRLab(10) = 'T2u'
-	 ELSE 	 
+      ELSE
          WRITE(*,*)'ERROR. Only Td and Oh (Higher) groups ready'
-	   STOP
+       STOP
        ENDIF
 c Linear
-	ELSEIF(iGroup.EQ.9) THEN
+      ELSEIF(iGroup.EQ.9) THEN
         WRITE(iout,*)'ERROR. Irred. rep. not ready for Linear groups'
-	  STOP
+      STOP
 
-	ENDIF
+      ENDIF
 
-	RETURN
-	END
+      RETURN
+      END
 
       SUBROUTINE group_mult(IRMul,nIR,iGroup,nGroup,iout)
 c*****************************************************c
@@ -1154,92 +1154,92 @@ c Only up to 6th order (nGroup < 7)
 c Define IRMul = 1 by default
       IRMul(:) = 1
 c Cn,Cnh
-	IF(iGroup.EQ.1 .OR. iGroup.EQ.2) THEN
-	 IF(nGroup.EQ.3) THEN
-         IRMul(2) = 2
-         IF(iGroup.EQ.2) IRMul(4) = 2
-       ELSEIF(nGroup.EQ.4) THEN
-         IRMul(3) = 2
-         IF(iGroup.EQ.2) IRMul(6) = 2
-       ELSEIF(nGroup.EQ.5) THEN
-         IRMul(2:3) = 2
-         IF(iGroup.EQ.2) IRMul(5:6) = 2
-       ELSEIF(nGroup.EQ.6) THEN
-         IRMul(3:4) = 2
-         IF(iGroup.EQ.2) IRMul(7:8) = 2
-	 ENDIF
+      IF(iGroup.EQ.1 .OR. iGroup.EQ.2) THEN
+        IF(nGroup.EQ.3) THEN
+          IRMul(2) = 2
+          IF(iGroup.EQ.2) IRMul(4) = 2
+        ELSEIF(nGroup.EQ.4) THEN
+          IRMul(3) = 2
+          IF(iGroup.EQ.2) IRMul(6) = 2
+        ELSEIF(nGroup.EQ.5) THEN
+          IRMul(2:3) = 2
+          IF(iGroup.EQ.2) IRMul(5:6) = 2
+        ELSEIF(nGroup.EQ.6) THEN
+          IRMul(3:4) = 2
+        IF(iGroup.EQ.2) IRMul(7:8) = 2
+      ENDIF
 c Cnv, Dn
       ELSEIF(iGroup.EQ.3 .OR. iGroup.EQ.4) THEN
-	
-       IF(nGroup.EQ.3) THEN
-         IRMul(3) = 4
-       ELSEIF(nGroup.EQ.4) THEN
-         IRMul(5) = 4
-       ELSEIF(nGroup.EQ.5) THEN
-         IRMul(3:4) = 4
-       ELSEIF(nGroup.EQ.6) THEN
-         IRMul(5:6) = 4
-       ENDIF
+
+      IF(nGroup.EQ.3) THEN
+        IRMul(3) = 4
+      ELSEIF(nGroup.EQ.4) THEN
+        IRMul(5) = 4
+      ELSEIF(nGroup.EQ.5) THEN
+        IRMul(3:4) = 4
+      ELSEIF(nGroup.EQ.6) THEN
+        IRMul(5:6) = 4
+      ENDIF
 c Dnh
       ELSEIF(iGroup.EQ.5) THEN
-       IF(nGroup.EQ.3) THEN
-         IRMul(3) = 4
-         IRMul(6) = 4
-       ELSEIF(nGroup.EQ.4) THEN
-         IRMul(5)  = 4
-         IRMul(10) = 4
-       ELSEIF(nGroup.EQ.5) THEN
-         IRMul(3:4) = 4
-         IRMul(7:8) = 4
-       ELSEIF(nGroup.EQ.6) THEN
-         IRMul(5:6)   = 4
-         IRMul(11:12) = 4
-       ENDIF
+        IF(nGroup.EQ.3) THEN
+          IRMul(3) = 4
+          IRMul(6) = 4
+        ELSEIF(nGroup.EQ.4) THEN
+          IRMul(5)  = 4
+          IRMul(10) = 4
+        ELSEIF(nGroup.EQ.5) THEN
+          IRMul(3:4) = 4
+          IRMul(7:8) = 4
+        ELSEIF(nGroup.EQ.6) THEN
+        IRMul(5:6)   = 4
+        IRMul(11:12) = 4
+      ENDIF
 c Dnd
       ELSEIF(iGroup.EQ.6) THEN
-       IF(nGroup.EQ.2) THEN
-         IRMul(5) = 4
-       ELSEIF(nGroup.EQ.3) THEN
-         IRMul(3) = 4
-         IRMul(6) = 4
-       ELSEIF(nGroup.EQ.4) THEN
-         IRMul(5:7) = 4
-       ELSEIF(nGroup.EQ.5) THEN
-         IRMul(3:4) = 4
-         IRMul(7:8) = 4
-       ELSEIF(nGroup.EQ.6) THEN
-         IRMul(5:9) = 4
-       ENDIF
+        IF(nGroup.EQ.2) THEN
+          IRMul(5) = 4
+        ELSEIF(nGroup.EQ.3) THEN
+          IRMul(3) = 4
+          IRMul(6) = 4
+        ELSEIF(nGroup.EQ.4) THEN
+          IRMul(5:7) = 4
+        ELSEIF(nGroup.EQ.5) THEN
+          IRMul(3:4) = 4
+          IRMul(7:8) = 4
+        ELSEIF(nGroup.EQ.6) THEN
+          IRMul(5:9) = 4
+        ENDIF
 c Sn
       ELSEIF(iGroup.EQ.7) THEN
-       IF(nGroup.EQ.4) THEN
-         IRMul(3) = 2
-       ELSEIF(nGroup.EQ.6) THEN
-         IRMul(2) = 2
-         IRMul(4) = 2
-       ELSEIF(nGroup.EQ.8) THEN
-         IRMul(3:5) = 2
-       ELSEIF(nGroup.EQ.10) THEN
-         IRMul(2:3) = 2
-         IRMul(5:6) = 2
-       ELSEIF(nGroup.EQ.12) THEN
-         IRMul(3:7) = 2
-       ENDIF
+        IF(nGroup.EQ.4) THEN
+          IRMul(3) = 2
+        ELSEIF(nGroup.EQ.6) THEN
+          IRMul(2) = 2
+          IRMul(4) = 2
+        ELSEIF(nGroup.EQ.8) THEN
+          IRMul(3:5) = 2
+        ELSEIF(nGroup.EQ.10) THEN
+          IRMul(2:3) = 2
+          IRMul(5:6) = 2
+        ELSEIF(nGroup.EQ.12) THEN
+          IRMul(3:7) = 2
+        ENDIF
 
 c Cubic
       ELSEIF(iGroup.EQ.8) THEN
 c Td
-       IF(nGroup.EQ.3) THEN
-         IRMul(3)   = 4
-         IRMul(4:5) = 9
+        IF(nGroup.EQ.3) THEN
+          IRMul(3)   = 4
+          IRMul(4:5) = 9
 c Oh
-       ELSEIF(nGroup.EQ.5) THEN
-         IRMul(3:5)  = (/4,9,9/)
-         IRMul(8:10) = (/4,9,9/)
-       ELSE
-         WRITE(*,*)'ERROR. Only Td and Oh (Higher) groups ready'
-         STOP
-       ENDIF
+        ELSEIF(nGroup.EQ.5) THEN
+          IRMul(3:5)  = (/4,9,9/)
+          IRMul(8:10) = (/4,9,9/)
+        ELSE
+          WRITE(*,*)'ERROR. Only Td and Oh (Higher) groups ready'
+          STOP
+        ENDIF
 c Linear
       ELSEIF(iGroup.EQ.9) THEN
         WRITE(iout,*)'ERROR. Irred. rep. not ready for Linear groups'
@@ -1292,22 +1292,22 @@ c Dnd
 c Cubic
       ELSEIF(iGroup.EQ.8) THEN
         IF(nGroup.EQ.1) THEN
-	    nIR = 3
+        nIR = 3
         ELSEIF(nGroup.EQ.2) THEN
-	    nIR = 6
+        nIR = 6
 c Td
         ELSEIF(nGroup.EQ.3) THEN
-	    nIR = 5
+        nIR = 5
         ELSEIF(nGroup.EQ.4 .OR. nGroup.EQ.6) THEN
-	    nIR = 5
+        nIR = 5
         ELSEIF(nGroup.EQ.5 .OR. nGroup.EQ.7) THEN
-	    nIR = 10
-	  ENDIF
+        nIR = 10
+      ENDIF
 c Linear
       ELSEIF(iGroup.EQ.9) THEN
         WRITE(iout,*)'ERROR. Irred. rep. not ready for Linear groups'
         STOP
       ENDIF
 
-	RETURN
-	END
+      RETURN
+      END

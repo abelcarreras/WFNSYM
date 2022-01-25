@@ -1,7 +1,7 @@
 
-        SUBROUTINE dens_basis(iAng,ROrb,R,NCvec,NAt,NOrbX,
-     &                       NPrim,NTotShell,NShell,shell_type,NOrb)
-c*****************************************************c
+      SUBROUTINE dens_basis(iAng,ROrb,R,NCvec,NAt,NOrbX,
+     &                      NPrim,NTotShell,NShell,shell_type,NOrb)
+c******************************************************c
 c                                                     c
 c       Reads AOs from disk                           c
 c                                                     c

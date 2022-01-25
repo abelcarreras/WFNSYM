@@ -99,44 +99,44 @@ c******************c
  10       IF(Group.EQ.'C' .OR. Group.EQ.'D') THEN
             i = 1
             k1 = ichar(SubG(1:1))
- 	     IF (k1.GE.48 .and. k1.LE.57) THEN
-	       i = 2
-	       k2 = ichar(SubG(2:2))
- 	       IF (k2.GE.48 .and. k2.LE.57) THEN
-		   i = 3
-	         k3 = ichar(SubG(3:3))
-		   IF (k3.GE.48 .and. k3.LE.57) THEN
-		     WRITE(iunit,*) 'ERROR. GROUP ORDER MUST BE < 100'
-	           STOP
-	         ENDIF
-	       ENDIF
-	     ENDIF
+         IF (k1.GE.48 .and. k1.LE.57) THEN
+           i = 2
+           k2 = ichar(SubG(2:2))
+           IF (k2.GE.48 .and. k2.LE.57) THEN
+           i = 3
+             k3 = ichar(SubG(3:3))
+           IF (k3.GE.48 .and. k3.LE.57) THEN
+             WRITE(iunit,*) 'ERROR. GROUP ORDER MUST BE < 100'
+               STOP
+             ENDIF
+           ENDIF
+         ENDIF
 c C Groups
-	   IF(Group.EQ.'C') THEN
+       IF(Group.EQ.'C') THEN
            IF(SubG(i:i).EQ.'H') THEN
-		 iGroup = 2  ! Cnh
+         iGroup = 2  ! Cnh
            ELSEIF(SubG(i:i).EQ.'V') THEN
-		 iGroup = 3  ! Cnv
+         iGroup = 3  ! Cnv
            ELSEIF(SubG(1:3).EQ.'1  ') THEN
-	       iGroup = 0   
+           iGroup = 0
              nGroup = 1   ! C1
            ELSEIF(SubG(1:3).EQ.'I  ') THEN
              iGroup = 0
              nGroup = 2  ! Ci
            ELSEIF(SubG(1:3).EQ.'S  ') THEN
              iGroup = 0
-		 nGroup = 3  ! Cs
+         nGroup = 3  ! Cs
            ELSEIF(SubG(1:3).EQ.'INF') THEN
              iGroup = 9
              nGroup = 1  ! Cinf
            ELSEIF(SubG(i:i).EQ.' ') THEN
              i = 4
              iGroup = 1  ! Cn
-	     ENDIF
+         ENDIF
 c D Groups
-	   ELSE
+       ELSE
            IF(SubG(i:i).EQ.'H') THEN
-		 iGroup = 5  ! Dnh
+         iGroup = 5  ! Dnh
            ELSEIF(SubG(i:i).EQ.'D') THEN
              iGroup = 6  ! Dnd
            ELSEIF(SubG(1:3).EQ.'INF') THEN
@@ -145,8 +145,8 @@ c D Groups
            ELSEIF(SubG(i:i).EQ.' ') THEN
              i = 4
              iGroup = 4  ! Dn
-	     ENDIF
-	   ENDIF
+         ENDIF
+       ENDIF
 
          IF(iGroup.GE.1 .AND. iGroup.LE.7) THEN
            READ(SubG(1:i-1),'(I4)') nGroup
@@ -159,18 +159,18 @@ c Sn group
          ELSEIF(Group.EQ.'S') THEN
            iGroup = 7
            READ(SubG,*) nGroup
-	     IF(nGroup .EQ. 2) THEN
-	       Group = 'C'
+         IF(nGroup .EQ. 2) THEN
+           Group = 'C'
              SubG(1:3) = 'I  '
              iGroup = 0  ! Sn -> Ci
-	     ELSEIF(2*(nGroup/2).NE.nGroup) THEN
-	       Group = 'C'
-		 iGroup = 1  ! Sn -> Cn
-	     ENDIF
+         ELSEIF(2*(nGroup/2).NE.nGroup) THEN
+           Group = 'C'
+         iGroup = 1  ! Sn -> Cn
+         ENDIF
            IF(nGroup.GE.100) THEN
-	       WRITE(iunit,*) 'ERROR. GROUP ORDER MUST BE < 100'
-	       STOP
-	     ENDIF
+           WRITE(iunit,*) 'ERROR. GROUP ORDER MUST BE < 100'
+           STOP
+         ENDIF
 c T,Th,Td group
          ELSEIF(Group.EQ.'T') THEN
            iGroup = 8
@@ -180,15 +180,15 @@ c T,Th,Td group
              nGroup = 2
            ELSEIF(SubG(1:1).EQ.'D') THEN
              nGroup = 3
-	     ENDIF
+         ENDIF
 c O,Oh group
          ELSEIF(Group.EQ.'O') THEN
            iGroup = 8
-	     IF(SubG(1:1).EQ.' ') THEN
+         IF(SubG(1:1).EQ.' ') THEN
              nGroup = 4
-	     ELSEIF(SubG(1:1).EQ.'H') THEN
+         ELSEIF(SubG(1:1).EQ.'H') THEN
              nGroup = 5
-	     ENDIF
+         ENDIF
 c I,Ih group
          ELSEIF(Group.EQ.'I') THEN
            iGroup = 8
@@ -284,7 +284,7 @@ c Consistency Control
           k = len_trim(opt0)
           opt0 = repeat(' ',k)//opt(k+1:80)
           read(opt0,*) IAxis(1),IAxis(2)
-	    AxVec = .TRUE.
+        AxVec = .TRUE.
 
         case('%AXIS2_2ATOMS')
           k = len_trim(opt0)
@@ -296,7 +296,7 @@ c Consistency Control
           k = len_trim(opt0)
           opt0 = repeat(' ',k)//opt(k+1:80)
           read(opt0,*) IAxis(1),IAxis(2),IAxis(3)
-	    AxPlane = .TRUE.
+        AxPlane = .TRUE.
 
         case('%AXIS2_3ATOMS')
           k = len_trim(opt0)
@@ -330,7 +330,7 @@ c Consistency Control
          read(opt0,*) NPrint
 
         case('%PRINT_SYM_ORB')
-	    DoSymOrb = .TRUE.
+        DoSymOrb = .TRUE.
 
         case('%UHFNO')
           UHFNO = .TRUE.

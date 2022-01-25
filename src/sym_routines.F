@@ -191,6 +191,7 @@ c C2',C2": Dn,Dnh,Dnd
 
 c s_v,s_d: Cnv,Dnh,Dnd
             IF(iGroup.EQ.3.OR.iGroup.EQ.5.OR.iGroup.EQ.6) THEN
+              iOff = 0
               IF(iGroup.EQ.3) THEN  ! Cnv
                 iOff = nGroup/2+1
                 VAux2(:) = VAux0(:)
