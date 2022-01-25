@@ -32,7 +32,7 @@ wfnsymlib = Extension('wfnsympy.WFNSYMLIB',
                       # extra_compile_args=['-ffixed-form', '-ffixed-line-length-none'],
                       # include_dirs=include_dirs_numpy,
                       include_dirs=[i_dir],
-                      # libraries=['lapack', 'blas'],
+                      libraries=['lapack', 'blas'],
                       sources=['WFNSYMLIB.pyf',
                                s_dir + 'VRoutines.F',
                                s_dir + 'aos_product.F',
@@ -76,16 +76,5 @@ setup(name='wfnsympy',
       author_email='abelcarreras83@gmail.com',
       install_requires=['numpy', 'scipy'],
       packages=['wfnsympy'],
-      package_data={"": ["*.dll"],},
       include_package_data=True,
       ext_modules=[wfnsymlib, qsymlib])
-
-
-# If windows
-if sys.platform.startswith('win'):
-    from shutil import copyfile
-    dir = os.path.dirname(__file__)
-    files = os.listdir(dir + '/wfnsympy/.libs')
-    for file in files:
-        filename = os.path.join(dir, 'wfnsympy','.libs', file)
-        copyfile(filename, os.path.join(dir, 'wfnsympy', file))
