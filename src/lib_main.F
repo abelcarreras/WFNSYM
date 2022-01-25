@@ -1,13 +1,12 @@
 #include "wfnsym.h"
 
-c      PROGRAM Prog_Main
       SUBROUTINE mainlib(AOccup, BOccup, NBas, NMo, Norb,
      & NAt_2, NTotShell, iZAt, AtLab, Alph, COrb, NShell,
-     & RAt, NPrim, shell_type, igroup_2, ngroup_2, Ca, Cb,
+     & RAt, NPrim, shell_type, igroup_2, ngroup_2, Ca,Cb,
      & RCread_2, VAxis_2, VAxis2_2, DoOp,
      & OutDim, OutGrim, OutCSM, OutSymLab,
      & OutSDiagA, OutSDiagB, OutWDiagA, OutWDiagB, OutTbl,
-     & OutIRLab, OutgIRA, OutgIRB,OutgIRwfA,OutgIRwfB,
+     & OutIRLab, OutgIRA, OutgIRB, OutgIRwfA, OutgIRwfB,
      & OutgIRwf, OutSymMat)
 
 c--------------------------------------------------------------

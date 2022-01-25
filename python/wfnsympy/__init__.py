@@ -1,4 +1,4 @@
-__version__ = '0.2.28'
+__version__ = '0.2.29'
 
 from wfnsympy.WFNSYMLIB import mainlib, overlap_mat
 from wfnsympy.QSYMLIB import denslib, center_charge, build_density
@@ -216,10 +216,10 @@ def get_perpendicular_axis(axis):
 
 def _build_density(coordinates, l_dens, alpha_exponents, uncontracted_coefficients, n_primitives, n_shell, shell_type,
                    occupancy, mo_coefficients, n_mos, n_bas, n_c_mos, toldens):
-    denisty_ouptut = build_density(coordinates, l_dens, alpha_exponents, uncontracted_coefficients, n_primitives,
+    density_output = build_density(coordinates, l_dens, alpha_exponents, uncontracted_coefficients, n_primitives,
                                    n_shell, shell_type, mo_coefficients, n_mos, n_bas, n_c_mos, occupancy, toldens)
 
-    index_list, exponents, dens_coefs, dens_positions, dens_lenght = denisty_ouptut
+    index_list, exponents, dens_coefs, dens_positions, dens_lenght = density_output
     index_list = index_list[:dens_lenght]
     exponents = exponents[:dens_lenght]
     dens_coefs = dens_coefs[:dens_lenght]
