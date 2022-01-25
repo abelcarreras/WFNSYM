@@ -1,4 +1,3 @@
-
         SUBROUTINE make_molden(NAt,iZAt,AtLab,RAt,Basis,input,
      &             NOcc,NBas,SGrp,WGrp,PureCart)        
 c*****************************************************c
@@ -88,4 +87,3 @@ c Print MOs
 
       RETURN
       END
-

@@ -1,5 +1,4 @@
-
-	SUBROUTINE PrintHead(iout)
+      SUBROUTINE PrintHead(iout)
 c
 c Prints program header to iout unit
 c
@@ -14,8 +13,8 @@ c
       WRITE(iout,*)'  by David Casanova, University of Barcelona'
       WRITE(iout,*)' '
 
-	RETURN
-	END
+      RETURN
+      END
 
       SUBROUTINE PrintOperGrp()
 c
@@ -23,7 +22,7 @@ c Print available symmetry operations and groups
 c
 
 c Header
-	CALL PrintHead(6)
+      CALL PrintHead(6)
 
 c OPERATIONS
       WRITE(6,*)' '
@@ -63,8 +62,8 @@ c GROUPS
       WRITE(6,*)'  Td, Oh'
       WRITE(6,*)' ' 
 
-	RETURN
-	END
+      RETURN
+      END
 
 
       SUBROUTINE PrintKeys()
@@ -103,8 +102,8 @@ c Keywords
       WRITE(6,"(' %HighPrec            Results print level')")
       write(6,*)' '
 
-	RETURN
-	END
+      RETURN
+      END
 
 
       SUBROUTINE PrintMatrix(M,cLab,LabC,LabR,N,Title,iUnit)
@@ -152,4 +151,3 @@ c Prints Square matrices with labels
 
       RETURN
       END
-

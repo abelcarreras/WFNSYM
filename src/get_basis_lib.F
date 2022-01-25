@@ -1,5 +1,4 @@
-
-        SUBROUTINE get_basis(RAt,iAng,Alph,
+       SUBROUTINE get_basis(RAt,iAng,Alph,
      & ROrb,COrb,iContr,iLAO,cLAO,NAt,NBas,NOrb,
      & NPrim, NTotShell, NShell, shell_type)
 c*****************************************************c
@@ -12,7 +11,7 @@ c      RAt    atomic position                         c
 c      Nprim  Number of primitives per shell          c
 c      Alph   exponents (uncontracted functions)      c
 c      COrb   coeffs                                  c
-c      NC     contracted functions                     c
+c      NC     contracted functions                    c
 c                                                     c
 c    OUTPUT                                           c
 c      ROrb   center  (uncontracted function)         c

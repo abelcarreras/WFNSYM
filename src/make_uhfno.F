@@ -24,7 +24,7 @@ c*****************************************************c
       CHARACTER*4 :: cLAO(NBas)
       REAL*8, ALLOCATABLE :: work(:)
 
-	NBas2 = NBas**2
+      NBas2 = NBas**2
 c Open 54.0 file for binary IO (input/output)
       inquire(iolength=reclength) Ca,Cb
 c  reclength = reclength*8
@@ -46,7 +46,7 @@ c Print Ca and Cb
       CALL PrintMatrix(Cb,cLAO,.FALSE.,.FALSE.,NBas,line,2)
 
 c Add alpha and beta densities: Ca = Ca + Cb
-	CALL VRadd2(Ca,Cb,NBas2)
+      CALL VRadd2(Ca,Cb,NBas2)
       line = 'Total Density Matrix'
       CALL PrintMatrix(Ca,cLAO,.FALSE.,.FALSE.,NBas,line,2)
 
