@@ -7,7 +7,7 @@ python module QSYMLIB ! in
         iangdens,alphdens,cdens,rdens,ndens,&
         OutDim,OutCSM_i,OutCSM,OutSymLab,OutSsimilarity) ! in :QSYMLIB:lib_main.F
 !           Intput
-            integer :: norbx,igroup,ngroup
+            integer :: norbx,igroup,ngroup, ndens
             real*8 dimension(3) :: vaxis_2,vaxis2_2
             real*8 dimension(ndens),depend(ndens) :: alphdens
             integer dimension(ndens,3),depend(ndens) :: iangdens
@@ -24,6 +24,7 @@ python module QSYMLIB ! in
 
         subroutine center_charge(alphdens,iangdens,rdens,cdens,&
         n_elec,elec_total,outrc,ndens) ! in :QSYMLIB:lib_main.F
+            integer :: ndens
 
             real*8 dimension(ndens),depend(ndens) :: alphdens
             integer dimension(ndens,3),depend(ndens) :: iangdens
