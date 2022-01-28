@@ -9,7 +9,7 @@ python module QSYMLIB ! in
 !           Intput
             integer :: norbx,igroup,ngroup
             real*8 dimension(3) :: vaxis_2,vaxis2_2
-            real*8 dimension(ndens) :: alphdens
+            real*8 dimension(ndens),depend(ndens) :: alphdens
             integer dimension(ndens,3),depend(ndens) :: iangdens
             real*8 dimension(ndens,3),depend(ndens) :: rdens
             real*8 dimension(ndens),depend(ndens) :: cdens
@@ -25,7 +25,7 @@ python module QSYMLIB ! in
         subroutine center_charge(alphdens,iangdens,rdens,cdens,&
         n_elec,elec_total,outrc,ndens) ! in :QSYMLIB:lib_main.F
 
-            real*8 dimension(ndens) :: alphdens
+            real*8 dimension(ndens),depend(ndens) :: alphdens
             integer dimension(ndens,3),depend(ndens) :: iangdens
             real*8 dimension(ndens,3),depend(ndens) :: rdens
             real*8 dimension(ndens),depend(ndens) :: cdens
@@ -43,7 +43,7 @@ python module QSYMLIB ! in
             real*8 dimension(nat_2,3) :: r
             integer :: n_elec
             integer :: ldens
-            real*8 dimension(norb) :: alfa2
+            real*8 dimension(norb),depend(norb) :: alfa2
             real*8 dimension(norb),depend(norb) :: coef2
             integer dimension(ntotshell) :: nprim
             integer dimension(nat_2),depend(nat_2) :: nshell
@@ -58,9 +58,9 @@ python module QSYMLIB ! in
             integer, optional,check(shape(r,0)==nat_2),depend(r) :: nat_2=shape(r,0)
             integer, optional,check(len(nprim)>=ntotshell),depend(nprim) :: ntotshell=len(nprim)
         ! Output
-            integer dimension(ldens,3), intent(out) :: iAngDens
-            real*8 dimension(ldens,3), intent(out) :: RDens
-            real*8 dimension(ldens), intent(out) :: AlphDens,CDens
+            integer dimension(ldens,3), intent(out),depend(ldens) :: iAngDens
+            real*8 dimension(ldens,3), intent(out),depend(ldens) :: RDens
+            real*8 dimension(ldens), intent(out),depend(ldens) :: AlphDens,CDens
             integer, intent(out) :: NDens
         end subroutine build_density
 
