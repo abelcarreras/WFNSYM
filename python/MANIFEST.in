@@ -1,2 +1,3 @@
 include include/*
 include README.md
+include *.pyf
