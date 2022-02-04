@@ -72,7 +72,13 @@ def _get_rotation_axis(sym_matrix, type):
         y = np.sqrt((1 - sym_matrix[1][1]) / 2)
         z = np.sqrt((1 - sym_matrix[2][2]) / 2)
         return [x, y, z]
-    angle = np.arccos((np.sum(np.diag(sym_matrix)) - 1) / 2) * 180 / np.pi
+
+    # TODO: This I don't understand. Just poorly silenced
+    if abs((np.sum(np.diag(sym_matrix)) - 1) / 2) <= 1:
+        angle = np.arccos((np.sum(np.diag(sym_matrix)) - 1) / 2) * 180 / np.pi
+    else:
+        angle = np.nan
+
     if (180 - abs(angle)) < threshold:
         x = np.sqrt((sym_matrix[0][0] + 1) / 2)
         y = np.sqrt((sym_matrix[1][1] + 1) / 2)
@@ -679,7 +685,7 @@ class WfnSympy:
     def print_symmetry_operation_matrix(self, nop):
         if nop > len(self._SymMat):
             print('Not existent')
-            exit()
+            return
 
         np.set_printoptions(formatter={'float': '{: 0.8f}'.format})
         #        for i, mat in enumerate(self._SymMat):
