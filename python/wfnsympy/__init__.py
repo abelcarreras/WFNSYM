@@ -99,6 +99,8 @@ def _get_group_num_from_label(label):
             label_2 += label[2:].upper()
         except:
             pass
+        if ngroup < 2:
+            raise LabelNotFound(label)
     except:
         label_2 += label[1:]
         ngroup = 0

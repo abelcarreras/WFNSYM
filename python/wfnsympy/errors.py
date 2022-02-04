@@ -13,7 +13,7 @@ class LabelNotFound(Exception):
         self._label = label
 
     def __str__(self):
-        return 'Symmetry label {} not defined'.format(self._label)
+        return 'Symmetry label {} not defined or not implemented'.format(self._label)
 
 
 class ChangedAxisWarning(UserWarning):
