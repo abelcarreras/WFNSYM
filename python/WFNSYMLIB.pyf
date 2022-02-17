@@ -18,7 +18,7 @@ python module WFNSYMLIB ! in
             ! integer, check(len(Ca)/NBas>=NMo),depend(Ca), intent(hide) :: NMo=len(Ca)/NBas
             ! integer, intent(hide) :: NOrb_w
 
-            real*8 dimension(3),intent(in) :: RCread, VAxis, VAxis2
+            real*8 dimension(3),intent(in) :: RCread
             real*8 dimension(NMo*NBas),intent(in), depend(NMo, NBas) :: Ca, Cb
             real*8 dimension(Norb),intent(in),depend(Norb) :: Alph, COrb
             real*8 dimension(NAt,3),intent(in),depend(NAt) :: RAt
@@ -27,6 +27,7 @@ python module WFNSYMLIB ! in
             character dimension(NAt),intent(in),depend(NAt) :: AtLab*2
             real*8 dimension(NMo), intent(in),depend(NMo) :: AOccup
             real*8 dimension(NMo), intent(in),depend(NMo) :: BOccup
+            real*8 dimension(3),intent(inout) :: VAxis, VAxis2
 
 !           Outputs
             integer dimension(3),intent(out) :: OutDim

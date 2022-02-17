@@ -1,13 +1,11 @@
-__version__ = '0.2.32'
+__version__ = '0.3.0'
 
 from wfnsympy.WFNSYMLIB import mainlib, overlap_mat
 from wfnsympy.QSYMLIB import denslib, center_charge, build_density
 from wfnsympy.errors import MultiplicityError, ChangedAxisWarning, LabelNotFound
 from wfnsympy.optimize import minimize_axis, minimize_axis2, rotation_xy, rotation_axis
 from itertools import combinations
-import warnings
 import numpy as np
-import sys, os, io, tempfile
 
 
 _bohr_to_angstrom = 0.529177249
@@ -20,28 +18,6 @@ shell_type_list = {'-1': ['sp', 4],
                    '3': ['f', 10],
                    '-2': ['d_', 5],  # pure
                    '-3': ['f_', 7]}  # pure
-
-
-class _captured_stdout:
-    def __init__(self):
-        self.old_stdout = None
-        self.fnull = None
-
-    def __enter__(self):
-        self.F = tempfile.NamedTemporaryFile()
-        try:
-            self.old_error = os.dup(sys.stderr.fileno())
-            os.dup2(self.F.fileno(), sys.stderr.fileno())
-        except (AttributeError, io.UnsupportedOperation):
-            self.old_error = None
-        return self.F
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        if self.old_error is not None:
-            os.dup2(self.old_error, sys.stderr.fileno())
-
-        self.F.close()
-
 
 # def get_valence_electrons(atomic_numbers, charge):
 #     valence_electrons = 0
@@ -506,16 +482,15 @@ class WfnSympy:
         # Check axis
         if self._axis is None:
             def target_function(alpha, beta, gamma=0.0):
-                VAxis = np.dot(rotation_xy(alpha, beta), [1, 0, 0])
-                VAxis2 = np.dot(rotation_axis(VAxis, gamma), get_perpendicular_axis(VAxis))
+                VAxis = np.array(np.dot(rotation_xy(alpha, beta), [1.0, 0, 0]), dtype=float)
+                VAxis2 = np.array(np.dot(rotation_axis(VAxis, gamma), get_perpendicular_axis(VAxis)), dtype=float)
 
-                with _captured_stdout():
-                    coordinates_bohr = np.array(self._coordinates) / _bohr_to_angstrom
-                    out_data = mainlib(self._alpha_occupancy, self._beta_occupancy, self._n_bas, self._n_mo,
-                                       self._n_uncontr_orbitals, self._n_atoms, self._ntot_shell, self._atomic_numbers,
-                                       self._symbols, self._alpha, self._uncontracted_coefficients, self._n_shell,
-                                       coordinates_bohr, self._n_primitives, self._shell_type, self._igroup, self._ngroup,
-                                       self._ca, self._cb, self._center, VAxis, VAxis2, self._do_operation)
+                coordinates_bohr = np.array(self._coordinates) / _bohr_to_angstrom
+                out_data = mainlib(self._alpha_occupancy, self._beta_occupancy, self._n_bas, self._n_mo,
+                                   self._n_uncontr_orbitals, self._n_atoms, self._ntot_shell, self._atomic_numbers,
+                                   self._symbols, self._alpha, self._uncontracted_coefficients, self._n_shell,
+                                   coordinates_bohr, self._n_primitives, self._shell_type, self._igroup, self._ngroup,
+                                   self._ca, self._cb, self._center, VAxis, VAxis2, self._do_operation)
                 nIR = out_data[0][2]
                 wf_IRd = out_data[14][0:nIR]
                 return np.sum([np.prod(pair) for pair in combinations(wf_IRd, 2)])
@@ -530,16 +505,15 @@ class WfnSympy:
             if self._igroup == 8:  # tetrahedron and octahedron groups
 
                 def target_function(gamma, VAxis):
-                    VAxis2 = np.dot(rotation_axis(VAxis, gamma), get_perpendicular_axis(VAxis))
+                    VAxis = np.array(VAxis, dtype=float)
+                    VAxis2 = np.array(np.dot(rotation_axis(VAxis, gamma), get_perpendicular_axis(VAxis)), dtype=float)
 
-                    with _captured_stdout():
-                        coordinates_bohr = np.array(self._coordinates) / _bohr_to_angstrom
-                        out_data = mainlib(self._alpha_occupancy, self._beta_occupancy, self._n_bas, self._n_mo,
-                                           self._n_uncontr_orbitals, self._n_atoms, self._ntot_shell, self._atomic_numbers,
-                                           self._symbols, self._alpha, self._uncontracted_coefficients, self._n_shell,
-                                           coordinates_bohr, self._n_primitives, self._shell_type, self._igroup, self._ngroup,
-                                           self._ca, self._cb, self._center, VAxis, VAxis2, self._do_operation)
-
+                    coordinates_bohr = np.array(self._coordinates) / _bohr_to_angstrom
+                    out_data = mainlib(self._alpha_occupancy, self._beta_occupancy, self._n_bas, self._n_mo,
+                                       self._n_uncontr_orbitals, self._n_atoms, self._ntot_shell, self._atomic_numbers,
+                                       self._symbols, self._alpha, self._uncontracted_coefficients, self._n_shell,
+                                       coordinates_bohr, self._n_primitives, self._shell_type, self._igroup, self._ngroup,
+                                       self._ca, self._cb, self._center, VAxis, VAxis2, self._do_operation)
 
                     nIR = out_data[0][2]
                     wf_IRd = out_data[14][0:nIR]
@@ -550,22 +524,16 @@ class WfnSympy:
             else:
                 self._axis2 = get_perpendicular_axis(self._axis)
 
+        self._axis = np.array(self._axis, dtype=float)
+        self._axis2 = np.array(self._axis2, dtype=float)
+
         # Start calculation
-        with _captured_stdout() as E:
-            coordinates_bohr = np.array(self._coordinates) / _bohr_to_angstrom
-            out_data = mainlib(self._alpha_occupancy, self._beta_occupancy, self._n_bas, self._n_mo,
-                               self._n_uncontr_orbitals, self._n_atoms, self._ntot_shell, self._atomic_numbers,
-                               self._symbols, self._alpha, self._uncontracted_coefficients, self._n_shell,
-                               coordinates_bohr, self._n_primitives, self._shell_type, self._igroup, self._ngroup,
-                               self._ca, self._cb, self._center, self._axis, self._axis2, self._do_operation)
-            E.seek(0)
-            capture = E.read()
-        capture = capture.decode().split('\n')
-        for i, c in enumerate(capture):
-            if 'ERROR. Axes not valid' in c:
-                self._axis = [float(v) for v in capture[i+3].split()[-3:]]
-                self._axis2 = [float(v) for v in capture[i+4].split()[-3:]]
-                warnings.warn(ChangedAxisWarning(self._axis, self._axis2))
+        coordinates_bohr = np.array(self._coordinates) / _bohr_to_angstrom
+        out_data = mainlib(self._alpha_occupancy, self._beta_occupancy, self._n_bas, self._n_mo,
+                           self._n_uncontr_orbitals, self._n_atoms, self._ntot_shell, self._atomic_numbers,
+                           self._symbols, self._alpha, self._uncontracted_coefficients, self._n_shell,
+                           coordinates_bohr, self._n_primitives, self._shell_type, self._igroup, self._ngroup,
+                           self._ca, self._cb, self._center, self._axis, self._axis2, self._do_operation)
 
         # Process outputs
         # dgroup = out_data[0][0]
@@ -603,12 +571,11 @@ class WfnSympy:
         self._SymAxes = [_get_rotation_axis(sym_matrix, self._SymLab[ids]) for ids, sym_matrix in enumerate(self._SymMat)]
 
     def calculate_csm_density(self):
-        with _captured_stdout():
-            density = denspy(self._coordinates, self._l_dens, self._alpha, self._uncontracted_coefficients,
-                             self._n_primitives, self._n_shell, self._shell_type, self._alpha_occupancy,
-                             self._ca, self._n_mo, self._n_bas, self._n_c_mos, self._total_electrons, self._axis,
-                             self._axis2, self._center, self._igroup, self._ngroup, self._do_operation, self._toldens,
-                             self._beta_occupancy, self._cb, self._unrestricted)
+        density = denspy(self._coordinates, self._l_dens, self._alpha, self._uncontracted_coefficients,
+                         self._n_primitives, self._n_shell, self._shell_type, self._alpha_occupancy,
+                         self._ca, self._n_mo, self._n_bas, self._n_c_mos, self._total_electrons, self._axis,
+                         self._axis2, self._center, self._igroup, self._ngroup, self._do_operation, self._toldens,
+                         self._beta_occupancy, self._cb, self._unrestricted)
 
         # Process outputs
         # dGroup, hGroup, nIR = density[0]
@@ -617,13 +584,12 @@ class WfnSympy:
         self._self_similarity = density[4]
 
         if self._unrestricted:
-            with _captured_stdout():
-                spin_density = denspy(self._coordinates, self._l_dens, self._alpha, self._uncontracted_coefficients,
-                                      self._n_primitives, self._n_shell, self._shell_type, self._alpha_occupancy,
-                                      self._ca, self._n_mo, self._n_bas, self._n_c_mos, self._total_electrons,
-                                      self._axis, self._axis2, self._center, self._igroup, self._ngroup,
-                                      self._do_operation, self._toldens, self._beta_occupancy, self._cb,
-                                      self._unrestricted, spin_density=True)
+            spin_density = denspy(self._coordinates, self._l_dens, self._alpha, self._uncontracted_coefficients,
+                                  self._n_primitives, self._n_shell, self._shell_type, self._alpha_occupancy,
+                                  self._ca, self._n_mo, self._n_bas, self._n_c_mos, self._total_electrons,
+                                  self._axis, self._axis2, self._center, self._igroup, self._ngroup,
+                                  self._do_operation, self._toldens, self._beta_occupancy, self._cb,
+                                  self._unrestricted, spin_density=True)
 
             # Process outputs
             # dGroup, hGroup, nIR = spin_density[0]
@@ -822,11 +788,11 @@ class WfnSympy:
 
     @property
     def axis(self):
-        return self._axis
+        return np.array(self._axis).tolist()
 
     @property
     def axis2(self):
-        return self._axis2
+        return np.array(self._axis2).tolist()
 
     @property
     def _min_function(self):

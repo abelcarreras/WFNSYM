@@ -886,6 +886,9 @@ c     Generate outputs
       OutDim(2) = hGroup
       OutDim(3) = nIR
 
+      Vaxis_2 = Vaxis
+      Vaxis2_2 = Vaxis2
+
       END
 
 
