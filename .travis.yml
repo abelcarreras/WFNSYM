@@ -14,12 +14,10 @@ branches:
   only:
     - master
     - development
-    - development_efrem
 
 notifications:
   email:
   - abelcarreras83@gmail.com
-  - komuisan@gmail.com
 
 env:
   - TRAVIS_WFNSYM=true
@@ -37,11 +35,7 @@ install:
 script:
     - export PYTHONPATH=$(pwd)
     - cd unittest
-#    - py.test test_pirrol.py
-#    - coverage report -m
     - coverage run --source=../wfnsympy -m unittest discover . "test_*.py"
-#    - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then coverage run --source=../wfnsympy -m unittest discover . "test_*.py"; fi
-#    - if [[ $TRAVIS_PYTHON_VERSION == '3.8' ]]; then coverage run --source=../wfnsympy -m unittest discover . "test_*.py"; fi
 
 after_success:
     - coveralls
