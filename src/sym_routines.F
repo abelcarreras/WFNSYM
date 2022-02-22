@@ -167,15 +167,15 @@ c s_v,s_d: Cnv, Dnh, Dnd
           Dot = DABS(Dot)
           CALL OrthoAxis2(VAxis,VAxis2)
           IF(Dot.GT.Thresh) THEN
-            WRITE(iunit,"('Axis  = ',3(1x,f9.5))") (VAxis(j),j=1,3)
-            WRITE(iunit,"('Axis2 = ',3(1x,f9.5))") (VAxis2(j),j=1,3)
-            WRITE(iunit,*)'Input cosine between axes = ',Dot
+c            WRITE(iunit,"('Axis  = ',3(1x,f9.5))") (VAxis(j),j=1,3)
+c            WRITE(iunit,"('Axis2 = ',3(1x,f9.5))") (VAxis2(j),j=1,3)
+c            WRITE(iunit,*)'Input cosine between axes = ',Dot
 !            WRITE(iunit,*)'ERROR. Axes not valid'
 !            WRITE(iunit,"(' IAx_Thresh = ',I2)") IAx_Thresh
-            WRITE(iunit,*)'Modified Oh axes: '
+c            WRITE(iunit,*)'Modified Oh axes: '
 !            CALL OrthoAxis2(VAxis,VAxis2)
-            WRITE(iunit,"('Axis  = ',3(1x,f15.9))") (VAxis(j),j=1,3)
-            WRITE(iunit,"('Axis2 = ',3(1x,f15.9))") (VAxis2(j),j=1,3)
+c            WRITE(iunit,"('Axis  = ',3(1x,f15.9))") (VAxis(j),j=1,3)
+c            WRITE(iunit,"('Axis2 = ',3(1x,f15.9))") (VAxis2(j),j=1,3)
 !            STOP
           ENDIF
           VAux0(:) = VAxis2(:)
@@ -253,16 +253,16 @@ c       VAxis2(:) = -DSIN(Dot1)*VAxis2(:) + DCOS(Dot1)*VAux0(:)
 c          WRITE(iunit,*)'Diff = ',Dot
           CALL TdAxis2(VAxis,VAxis2)
           IF(Dot.GT.Thresh) THEN
-            WRITE(iunit,"('Axis  = ',3(1x,f15.9))") (VAxis(j),j=1,3)
-            WRITE(iunit,"('Axis2 = ',3(1x,f15.9))") (VAxis2(j),j=1,3)
-            WRITE(iunit,*)'Input cosine between axes = ',Dot
+c            WRITE(iunit,"('Axis  = ',3(1x,f15.9))") (VAxis(j),j=1,3)
+c            WRITE(iunit,"('Axis2 = ',3(1x,f15.9))") (VAxis2(j),j=1,3)
+c            WRITE(iunit,*)'Input cosine between axes = ',Dot
 !            WRITE(iunit,*)'ERROR. Axes not valid'
 !            WRITE(iunit,*)'Ideal cosine between C3 axes = ',DCOS(Dot1)
 c            WRITE(iunit,"(' IAx_Thresh = ',I2)") IAx_Thresh
-            WRITE(iunit,*)'Modified Td axes: '
+c            WRITE(iunit,*)'Modified Td axes: '
 !            CALL TdAxis2(VAxis,VAxis2)
-            WRITE(iunit,"('Axis  = ',3(1x,f15.9))") (VAxis(j),j=1,3)
-            WRITE(iunit,"('Axis2 = ',3(1x,f15.9))") (VAxis2(j),j=1,3)
+c            WRITE(iunit,"('Axis  = ',3(1x,f15.9))") (VAxis(j),j=1,3)
+c            WRITE(iunit,"('Axis2 = ',3(1x,f15.9))") (VAxis2(j),j=1,3)
           ENDIF
 c          WRITE(iunit,"('Td axis orientation')")
           CALL rotation(3,VAxis,SymMat,.FALSE.,.TRUE.)
