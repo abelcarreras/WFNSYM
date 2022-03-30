@@ -147,8 +147,8 @@ c Write transformation matrix and new atomic coordinates
          DEALLOCATE(AlphSym,CSym,RSym)
       END DO
 
-!      OutCSM = 100.d0*(One-S_sym_total/(dGroup*S_total))
-      OutCSM = 100.d0*(One-S_sym_total/(hGroup*S_total))
+      OutCSM = 100.d0*(One-S_sym_total/(dGroup*S_total))
+!      OutCSM = 100.d0*(One-S_sym_total/(hGroup*S_total))
 
       OutDim(1) = dGroup
       OutDim(2) = hGroup
