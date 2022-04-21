@@ -405,5 +405,46 @@ c F orbital
       RETURN
       END
 
+      SUBROUTINE lc_cartesian_orbitals(iAngv,LCC,NLC,iAngi)
+      INTEGER :: iAngv(3,3),iAngi(3),NLC
+      REAL*8  :: LCC(3)
 
-
+        NLC = 1
+        iAngv(1,:) = iAngi
+        LCC(1) = 1.d0
+        sum = iAngi(1)+iAngi(2)+iAngi(3)
+        IF ((iAngi(1).EQ.-2).AND.(sum).EQ.0) THEN
+          iAngv(1,:) = (/2,0,0/)
+          iAngv(2,:) = (/0,2,0/)
+          iAngv(3,:) = (/0,0,2/)
+          LCC(:) = (/-1.d0,-1.d0,2.d0/)
+          NLC = 3
+        ELSEIF ((iAngi(1).EQ.2).AND.(sum).EQ.0) THEN
+          iAngv(1,:) = (/2,0,0/)
+          iAngv(2,:) = (/0,2,0/)
+          iAngv(3,:) = (/0,0,0/)
+          LCC(:) = (/1.d0,-1.d0,0.d0/)
+          NLC = 2
+        ELSEIF ((iAngi(1).EQ.2).AND.(iAngi(3).EQ.1)) THEN
+          iAngv(1,:) = (/2,0,1/)
+          iAngv(2,:) = (/0,2,1/)
+          iAngv(3,:) = (/0,0,0/)
+          LCC(:) = (/-1.d0,-1.d0,0.d0/)
+          NLC = 2
+          IF ((iAngi(2).EQ.-2)) LCC(1) = 1.d0
+        ELSEIF (iAngi(1).EQ.3) THEN
+          iAngv(1,:) = (/3,0,0/)
+          iAngv(2,:) = (/1,2,0/)
+          iAngv(3,:) = (/0,0,0/)
+          LCC(:) = (/-1.d0,-1.d0,0.d0/)
+          NLC = 2
+          IF ((iAngi(2).EQ.-2)) LCC(1) = 1.d0
+        ELSEIF (ABS(iAngi(2)).EQ.3) THEN
+          iAngv(1,:) = (/2,1,0/)
+          iAngv(2,:) = (/0,3,0/)
+          iAngv(3,:) = (/0,0,0/)
+          LCC(:) = (/-1.d0,-1.d0,0.d0/)
+          NLC = 2
+          IF ((iAngi(2).EQ.-3)) LCC(1) = 1.d0
+        ENDIF
+      END
