@@ -5,12 +5,12 @@ import os, sys
 from shutil import copyfile
 
 
-# get version number
 def get_version_number():
-    for l in open('wfnsympy/__init__.py', 'r').readlines():
-        if not(l.find('__version__')):
-            exec(l, globals())
-            return __version__
+    main_ns = {}
+    for line in open('wfnsympy/__init__.py', 'r').readlines():
+        if not(line.find('__version__')):
+            exec(line, main_ns)
+            return main_ns['__version__']
 
 
 if bool('TRAVIS_WFNSYM' in os.environ):
