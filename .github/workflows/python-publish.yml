@@ -49,7 +49,7 @@ jobs:
     name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     needs: [ test_code ]
-    if: github.ref == 'refs/heads/master'
+    #if: github.ref == 'refs/heads/master'
     strategy:
       matrix:
         os: [ubuntu-20.04, windows-2019, macos-10.15]
@@ -100,7 +100,7 @@ jobs:
   upload_pypi:
       needs: [build_wheels, build_sdist, test_code]
       runs-on: ubuntu-latest
-      if: github.ref == 'refs/heads/master'
+      #if: github.ref == 'refs/heads/master'
       # upload to PyPI on every tag starting with 'v'
       # if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
       # alternatively, to publish when a GitHub Release is created, use the following rule:
