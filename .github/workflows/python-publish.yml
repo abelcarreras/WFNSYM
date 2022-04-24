@@ -85,6 +85,7 @@ jobs:
           #CIBW_BEFORE_BUILD_MACOS: brew install gfortran lapack openblas
           #CIBW_BEFORE_BUILD_WINDOWS: xcopy ${{env.working-directory}} . /E /H /C /I
           CIBW_BEFORE_ALL_LINUX: yum install -y lapack-devel blas-devel; apt-get install -y libblas-dev liblapack-dev; apk add openblas-dev; apk add lapack-dev; echo "import platform; print(platform.platform())" | python
+          CIBW_ARCHS_LINUX: x86_64 i686
         #working-directory: ${{env.working-directory}}
 
       - name: Build wheels
@@ -96,6 +97,8 @@ jobs:
           #CIBW_BEFORE_BUILD_MACOS: brew install gfortran lapack openblas
           #CIBW_BEFORE_BUILD_WINDOWS: xcopy ${{env.working-directory}} . /E /H /C /I
           CIBW_BEFORE_ALL_LINUX: yum install -y lapack-devel blas-devel; apt-get install -y libblas-dev liblapack-dev; apk add openblas-dev; apk add lapack-dev; echo "import platform; print(platform.platform())" | python
+          CIBW_ARCHS_LINUX: x86_64 i686
+
         #working-directory: ${{env.working-directory}}
 
       - uses: actions/upload-artifact@v2
