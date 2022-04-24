@@ -67,7 +67,7 @@ jobs:
     steps:
       - name: copy data to root
         run: |
-          ls
+          ls -la
           cp -r ${{env.working-directory}}/* .
 
       - uses: actions/checkout@v2
