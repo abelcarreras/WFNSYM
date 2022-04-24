@@ -67,7 +67,8 @@ jobs:
     steps:
       - name: copy data to root
         run: |
-            cp -r ${{env.working-directory}}/* .
+          ls
+          cp -r ${{env.working-directory}}/* .
 
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
