@@ -47,7 +47,7 @@ jobs:
       - name: Test with pytest
         run: |
           # pytest test
-          cd test
+          cd unittest
           pytest
         working-directory: ${{env.working-directory}}
 
