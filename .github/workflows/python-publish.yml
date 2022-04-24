@@ -73,7 +73,10 @@ jobs:
         env:
           CIBW_BEFORE_BUILD: pip install numpy==1.19.5
           CIBW_BUILD: cp36-* cp37-* cp38-*
-        working-directory: ${{env.working-directory}}
+          CIBW_BEFORE_BUILD_MACOS: cd python
+          CIBW_BEFORE_BUILD_WINDOWS: cd python
+          CIBW_BEFORE_BUILD_LINUX: cd python
+        #working-directory: ${{env.working-directory}}
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.4.0
@@ -81,7 +84,10 @@ jobs:
           CIBW_BEFORE_BUILD: pip install numpy==1.21.6
           CIBW_BUILD: cp39-* cp310-*
           CIBW_ARCHS_MACOS: x86_64 universal2
-        working-directory: ${{env.working-directory}}
+          CIBW_BEFORE_BUILD_MACOS: cd python
+          CIBW_BEFORE_BUILD_WINDOWS: cd python
+          CIBW_BEFORE_BUILD_LINUX: cd python
+        #working-directory: ${{env.working-directory}}
 
       - uses: actions/upload-artifact@v2
         with:
