@@ -18,7 +18,8 @@ jobs:
       working-directory: ./python
     strategy:
       matrix:
-        python-version: [ 3.7, 3.8, 3.9 ]
+        python-version: [ 3.7 ]
+        #python-version: [ 3.7, 3.8, 3.9 ]
 
     steps:
       - uses: actions/checkout@v2
@@ -42,7 +43,7 @@ jobs:
       - name: Build c extensions
         run: |
           python setup.py build_ext --inplace
-          #python setup.py install
+          python setup.py install
         working-directory: ${{env.working-directory}}
       - name: Test with pytest
         run: |
