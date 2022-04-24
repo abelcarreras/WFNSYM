@@ -41,14 +41,14 @@ jobs:
         working-directory: ${{env.working-directory}}
       - name: Build c extensions
         run: |
-          #python setup.py build_ext --inplace
-          python setup.py install
+          python setup.py build_ext --inplace
+          #python setup.py install
         working-directory: ${{env.working-directory}}
       - name: Test with pytest
         run: |
           # pytest test
-          cd unittest
-          pytest
+          # cd unittest
+          pytest unittest
         working-directory: ${{env.working-directory}}
 
   build_wheels:
@@ -106,7 +106,7 @@ jobs:
   upload_pypi:
       needs: [build_wheels, build_sdist, test_code]
       runs-on: ubuntu-latest
-      #if: github.ref == 'refs/heads/master'
+      if: github.ref == 'refs/heads/master'
       # upload to PyPI on every tag starting with 'v'
       # if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
       # alternatively, to publish when a GitHub Release is created, use the following rule:
