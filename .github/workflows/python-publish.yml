@@ -48,8 +48,8 @@ jobs:
       - name: Test with pytest
         run: |
           # pytest test
-          # cd unittest
-          pytest unittest
+          cd unittest
+          pytest
         working-directory: ${{env.working-directory}}
 
   build_wheels:
