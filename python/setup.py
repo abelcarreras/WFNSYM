@@ -31,6 +31,7 @@ else:
 wfnsymlib = Extension('wfnsympy.WFNSYMLIB',
                       # extra_compile_args=['-ffixed-form', '-ffixed-line-length-none'],
                       # include_dirs=include_dirs_numpy,
+                      extra_f77_compile_args=['-ffixed-line-length-0'],
                       include_dirs=[i_dir],
                       libraries=['lapack', 'blas'],
                       sources=['WFNSYMLIB.pyf',
@@ -51,6 +52,7 @@ wfnsymlib = Extension('wfnsympy.WFNSYMLIB',
                                s_dir + 'sym_routines.F'])
 
 qsymlib = Extension('wfnsympy.QSYMLIB',
+                    extra_f77_compile_args=['-ffixed-line-length-0'],
                     include_dirs=[i_dir],
                     libraries=['lapack', 'blas'],
                     sources=['QSYMLIB.pyf',
