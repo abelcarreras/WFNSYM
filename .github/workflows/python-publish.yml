@@ -73,6 +73,12 @@ jobs:
         run: |
           ls -la
           cp -r ${{env.working-directory}}/* .
+        continue-on-error: true
+
+      - name: copy data to root (windows)
+        run: |
+          xcopy ${{env.working-directory}}\* . /E /C /H /R /K /O /Y
+        continue-on-error: true
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.4.0
