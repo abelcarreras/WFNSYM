@@ -19,6 +19,9 @@ if bool('TRAVIS_WFNSYM' in os.environ):
     copy_tree('../include', './include', update=True)
     copyfile(os.path.abspath('../README.md'), os.path.abspath('./README.md'))
 
+if os.path.isfile('../README.md') and not os.path.isfile('./README.md'):
+    copyfile(os.path.abspath('../README.md'), os.path.abspath('./README.md'))
+
 if os.path.isdir('./src') and os.path.isdir('./include'):
     print('exists')
     s_dir = './src/'
