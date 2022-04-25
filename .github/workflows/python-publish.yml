@@ -18,8 +18,8 @@ jobs:
       working-directory: ./python
     strategy:
       matrix:
-        python-version: [ 3.7 ]
-        #python-version: [ 3.7, 3.8, 3.9 ]
+        #python-version: [ 3.7 ]
+        python-version: [ 3.7, 3.8, 3.9 ]
 
     steps:
       - uses: actions/checkout@v2
@@ -61,8 +61,8 @@ jobs:
     #if: github.ref == 'refs/heads/master'
     strategy:
       matrix:
-        #os: [ubuntu-20.04, windows-2019, macos-10.15]
-        os: [windows-2019]
+        os: [ubuntu-20.04, windows-2019, macos-10.15]
+        #os: [windows-2019]
 
     steps:
 
@@ -76,15 +76,15 @@ jobs:
         continue-on-error: true
 
       - uses: suisei-cn/actions-download-file@v1
-        id: downloadfile1  # Remember to give an ID if you need the output filename
-        name: Download lapack
+        id: downloadfile1
+        name: Download lapack for win
         with:
           url: "https://icl.cs.utk.edu/lapack-for-windows/libraries/VisualStudio/3.7.0/Dynamic-MINGW/Win64/libblas.lib"
         continue-on-error: true
 
       - uses: suisei-cn/actions-download-file@v1
-        id: downloadfile2  # Remember to give an ID if you need the output filename
-        name: Download blas
+        id: downloadfile2
+        name: Download blas for win
         with:
           url: "https://icl.cs.utk.edu/lapack-for-windows/libraries/VisualStudio/3.7.0/Dynamic-MINGW/Win64/liblapack.lib"
         continue-on-error: true
@@ -108,7 +108,6 @@ jobs:
             pip install numpy==1.19.5
 
           CIBW_SKIP: "*-musllinux_* *win32*"
-        #working-directory: ${{env.working-directory}}
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.4.0
@@ -125,8 +124,6 @@ jobs:
             pip install numpy==1.21.6
           CIBW_SKIP: "*-musllinux_* *win32*"
 
-        #working-directory: ${{env.working-directory}}
-
       - uses: actions/upload-artifact@v2
         with:
           path: ./wheelhouse/*.whl
@@ -135,7 +132,9 @@ jobs:
     name: Build source distribution
     needs: [ test_code ]
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
+    env:
+      working-directory: ./python
+    #if: github.ref == 'refs/heads/master'
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python
