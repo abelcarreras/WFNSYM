@@ -81,6 +81,7 @@ jobs:
           CIBW_BUILD: cp36-* cp37-* cp38-*
           #CIBW_BEFORE_BUILD_MACOS: brew install gfortran lapack openblas
           CIBW_BEFORE_ALL_MACOS: brew install gfortran
+          CIBW_ENVIRONMENT_MACOS: CC="/usr/local/bin/gcc-11"
           CIBW_BEFORE_ALL_LINUX: yum install -y lapack-devel blas-devel; apt-get install -y libblas-dev liblapack-dev; apk add openblas-dev; apk add lapack-dev; echo "import platform; print(platform.platform())" | python
           CIBW_SKIP: "*-musllinux_*"
         #working-directory: ${{env.working-directory}}
