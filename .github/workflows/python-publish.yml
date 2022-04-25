@@ -103,7 +103,9 @@ jobs:
           CIBW_BEFORE_ALL_LINUX: yum install -y lapack-devel blas-devel; apt-get install -y libblas-dev liblapack-dev; apk add openblas-dev; apk add lapack-dev; echo "import platform; print(platform.platform())" | python
           CIBW_BEFORE_BUILD_WINDOWS: >
             copy libblas.lib C:\ProgramData\Chocolatey\lib\mingw\tools\install\mingw64\lib\gcc\x86_64-w64-mingw32\8.1.0\libblas.a &&
-            copy liblapack.lib C:\ProgramData\Chocolatey\lib\mingw\tools\install\mingw64\lib\gcc\x86_64-w64-mingw32\8.1.0\liblapack.a
+            copy liblapack.lib C:\ProgramData\Chocolatey\lib\mingw\tools\install\mingw64\lib\gcc\x86_64-w64-mingw32\8.1.0\liblapack.a &&
+            pip install numpy==1.19.5
+
           CIBW_SKIP: "*-musllinux_* *win32*"
         #working-directory: ${{env.working-directory}}
 
@@ -116,8 +118,9 @@ jobs:
           CIBW_BEFORE_ALL_MACOS: brew reinstall gcc
           CIBW_BEFORE_ALL_LINUX: yum install -y lapack-devel blas-devel; apt-get install -y libblas-dev liblapack-dev; apk add openblas-dev; apk add lapack-dev; echo "import platform; print(platform.platform())" | python
           CIBW_BEFORE_BUILD_WINDOWS: >
-            copy libblas.lib \ProgramData\Chocolatey\lib\mingw\tools\install\mingw64\lib\gcc\x86_64-w64-mingw32\8.1.0\libblas.a &&
-            copy liblapack.lib \ProgramData\Chocolatey\lib\mingw\tools\install\mingw64\lib\gcc\x86_64-w64-mingw32\8.1.0\liblapack.a
+            copy libblas.lib C:\ProgramData\Chocolatey\lib\mingw\tools\install\mingw64\lib\gcc\x86_64-w64-mingw32\8.1.0\libblas.a &&
+            copy liblapack.lib C:\ProgramData\Chocolatey\lib\mingw\tools\install\mingw64\lib\gcc\x86_64-w64-mingw32\8.1.0\liblapack.a &&
+            pip install numpy==1.19.5
           CIBW_SKIP: "*-musllinux_* *win32*"
 
         #working-directory: ${{env.working-directory}}
