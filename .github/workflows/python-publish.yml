@@ -87,9 +87,8 @@ jobs:
           CIBW_BUILD: cp36-* cp37-* cp38-*
           CIBW_BEFORE_ALL_MACOS: brew reinstall gcc
           CIBW_BEFORE_ALL_LINUX: yum install -y lapack-devel blas-devel; apt-get install -y libblas-dev liblapack-dev; apk add openblas-dev; apk add lapack-dev; echo "import platform; print(platform.platform())" | python
-          CIBW_BEFORE_ALL_WINDOWS: >
-            curl -OutFile libblas.lib https://icl.cs.utk.edu/lapack-for-windows/libraries/VisualStudio/3.7.0/Dynamic-MINGW/Win64/libblas.lib &&
-            curl -OutFile liblapack.lib https://icl.cs.utk.edu/lapack-for-windows/libraries/VisualStudio/3.7.0/Dynamic-MINGW/Win64/liblapack.lib &&
+          CIBW_BEFORE_ALL_WINDOWS: curl -OutFile libblas.lib https://icl.cs.utk.edu/lapack-for-windows/libraries/VisualStudio/3.7.0/Dynamic-MINGW/Win64/libblas.lib;
+            curl -OutFile liblapack.lib https://icl.cs.utk.edu/lapack-for-windows/libraries/VisualStudio/3.7.0/Dynamic-MINGW/Win64/liblapack.lib;
             tree
           CIBW_SKIP: "*-musllinux_*" "*win32*"
         #working-directory: ${{env.working-directory}}
@@ -102,9 +101,8 @@ jobs:
           CIBW_ARCHS_MACOS: x86_64
           CIBW_BEFORE_ALL_MACOS: brew reinstall gcc
           CIBW_BEFORE_ALL_LINUX: yum install -y lapack-devel blas-devel; apt-get install -y libblas-dev liblapack-dev; apk add openblas-dev; apk add lapack-dev; echo "import platform; print(platform.platform())" | python
-          CIBW_BEFORE_ALL_WINDOWS: >
-            curl -OutFile libblas.lib https://icl.cs.utk.edu/lapack-for-windows/libraries/VisualStudio/3.7.0/Dynamic-MINGW/Win64/libblas.lib &&
-            curl -OutFile liblapack.lib https://icl.cs.utk.edu/lapack-for-windows/libraries/VisualStudio/3.7.0/Dynamic-MINGW/Win64/liblapack.lib &&
+          CIBW_BEFORE_ALL_WINDOWS: curl -OutFile libblas.lib https://icl.cs.utk.edu/lapack-for-windows/libraries/VisualStudio/3.7.0/Dynamic-MINGW/Win64/libblas.lib;
+            curl -OutFile liblapack.lib https://icl.cs.utk.edu/lapack-for-windows/libraries/VisualStudio/3.7.0/Dynamic-MINGW/Win64/liblapack.lib;
             tree
           CIBW_SKIP: "*-musllinux_*" "*win32*"
 
