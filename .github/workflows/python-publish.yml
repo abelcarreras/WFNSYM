@@ -133,7 +133,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       working-directory: ./python
-    #if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/master'
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python
