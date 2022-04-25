@@ -91,7 +91,7 @@ jobs:
         env:
           CIBW_BEFORE_BUILD: pip install numpy==1.21.6
           CIBW_BUILD: cp39-* cp310-*
-          CIBW_ARCHS_MACOS: x86_64 universal2
+          CIBW_ARCHS_MACOS: x86_64
           #CIBW_BEFORE_BUILD_MACOS: brew install gfortran lapack openblas
           CIBW_BEFORE_ALL_MACOS: brew reinstall gcc
           #CIBW_ENVIRONMENT_MACOS: CC="/usr/local/bin/gcc-11" FC="/usr/local/bin/gfortran"
