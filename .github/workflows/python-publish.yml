@@ -75,11 +75,17 @@ jobs:
           cp -r ${{env.working-directory}}/* .
         continue-on-error: true
 
+      - uses: suisei-cn/actions-download-file@v1
+        id: downloadfile  # Remember to give an ID if you need the output filename
+        name: Download the file
+        with:
+          url: "https://icl.cs.utk.edu/lapack-for-windows/libraries/VisualStudio/3.7.0/Dynamic-MINGW/Win64/libblas.lib"
+
       - name: copy data to root (windows)
         run: |
           xcopy .\python\* . /E /C /H /R /K /O /Y
-          curl -OutFile libblas.lib https://icl.cs.utk.edu/lapack-for-windows/libraries/VisualStudio/3.7.0/Dynamic-MINGW/Win64/libblas.lib
-          curl -OutFile liblapack.lib https://icl.cs.utk.edu/lapack-for-windows/libraries/VisualStudio/3.7.0/Dynamic-MINGW/Win64/liblapack.lib
+          curl -OutFile libblas.lib "https://icl.cs.utk.edu/lapack-for-windows/libraries/VisualStudio/3.7.0/Dynamic-MINGW/Win64/libblas.lib"
+          curl -OutFile liblapack.lib "https://icl.cs.utk.edu/lapack-for-windows/libraries/VisualStudio/3.7.0/Dynamic-MINGW/Win64/liblapack.lib"
         continue-on-error: true
 
       - name: Build wheels
