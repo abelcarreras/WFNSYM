@@ -77,7 +77,7 @@ jobs:
 
       - name: copy data to root (windows)
         run: |
-          xcopy ${{env.working-directory}}\* . /E /C /H /R /K /O /Y
+          xcopy .\python\* . /E /C /H /R /K /O /Y
         continue-on-error: true
 
       - name: Build wheels
