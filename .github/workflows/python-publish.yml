@@ -74,9 +74,6 @@ jobs:
           ls -la
           cp -r ${{env.working-directory}}/* .
 
-      - name: install libraries
-        run: sudo apt-get install libblas-dev liblapack-dev
-
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.4.0
         env:
