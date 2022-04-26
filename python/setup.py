@@ -79,9 +79,10 @@ class PostInstallCommand(_install):
         _install.run(self)
         from shutil import copyfile
         dir = os.path.dirname(__file__)
-        files = os.listdir(dir + '.libs')
+        print('Current dir:', dir)
+        files = os.listdir(dir + '/wfnsympy/.libs')
         for file in files:
-            filename = os.path.join(dir, '.libs', file)
+            filename = os.path.join(dir, 'wfnsympy', '.libs', file)
             copyfile(filename, os.path.join(dir, 'wfnsympy', file))
             print('copy files: ', filename)
 
