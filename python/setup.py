@@ -80,7 +80,7 @@ class PostInstallCommand(_install):
         from shutil import copyfile
         dir = os.path.dirname(__file__)
         print('Current dir:', dir)
-        files = os.listdir(dir)
+        files = os.listdir(dir + '/wheelhouse')
         print('List files: ', files)
         files = os.listdir('build\bdist.win-amd64\wheel\.\wfnsympy\.libs')
         for file in files:
