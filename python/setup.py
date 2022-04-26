@@ -1,4 +1,6 @@
 from numpy.distutils.core import setup, Extension
+from numpy.distutils.command.install import install as _install
+from distutils.sysconfig import get_python_lib
 from distutils.dir_util import copy_tree
 from distutils.errors import DistutilsFileError
 import os, sys
@@ -72,6 +74,24 @@ qsymlib = Extension('wfnsympy.QSYMLIB',
                              s_dir + 'sym_routines.F',
                              s_dir + 'VRoutines.F'])
 
+class PostInstallCommand(_install):
+    def run(self):
+        _install.run(self)
+        from shutil import copyfile
+        dir = os.path.dirname(__file__)
+        files = os.listdir(dir + '/wfnsympy/.libs')
+        for file in files:
+            filename = os.path.join(dir, 'wfnsympy', '.libs', file)
+            copyfile(filename, os.path.join(dir, 'wfnsympy', file))
+
+        site_dir = get_python_lib()
+        files = [f for f in os.listdir('./wfnsympy/') if os.path.isfile('./wfnsympy/' + f)]
+        for file in files:
+            filename = os.path.join(dir, 'wfnsympy', file)
+            print('file', filename)
+            copyfile(filename, os.path.join(site_dir, 'wfnsympy', file))
+
+
 setup(name='wfnsympy',
       version=get_version_number(),
       description='wfnsympy',
@@ -81,6 +101,7 @@ setup(name='wfnsympy',
       author_email='abelcarreras83@gmail.com',
       install_requires=['numpy', 'scipy'],
       packages=['wfnsympy'],
+      cmdclass={'install': PostInstallCommand} if sys.platform.startswith('win') else {},
       package_data={"": ["*.dll", "*.pyd"],},
       include_package_data=True,
       ext_modules=[wfnsymlib, qsymlib])
