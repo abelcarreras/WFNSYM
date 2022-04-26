@@ -80,12 +80,13 @@ class PostInstallCommand(_install):
         from shutil import copyfile
         dir = os.path.dirname(__file__)
         print('Current dir:', dir)
-        files = os.listdir(dir + '/wheelhouse')
+        files = os.listdir(dir + '\wfnsympy')
         print('List files: ', files)
-        files = os.listdir('build\bdist.win-amd64\wheel\.\wfnsympy\.libs')
+        files = os.listdir(dir + '\wfnsympy\.libs')
+        print('List files dll: ', files)
         for file in files:
-            filename = os.path.join('build\bdist.win-amd64\wheel\.\wfnsympy\.libs', file)
-            copyfile(filename, os.path.join('build\bdist.win-amd64\wheel\.\wfnsympy', file))
+            filename = os.path.join(dir, 'wfnsympy', '.libs', file)
+            copyfile(filename, os.path.join(dir, 'wheelhouse', 'wfnsympy', file))
             print('copy files: ', filename)
 
         print('Here we go!')
@@ -108,5 +109,6 @@ setup(name='wfnsympy',
       packages=['wfnsympy'],
       cmdclass={'install': PostInstallCommand} if sys.platform.startswith('win') else {},
       package_data={"": ["*.dll", "*.pyd"],},
+      data_files=[('wfnsympy', ['.libs/*.dll'])],
       include_package_data=True,
       ext_modules=[wfnsymlib, qsymlib])
