@@ -78,14 +78,16 @@ jobs:
         id: downloadfile1
         name: Download lapack for win
         with:
-          url: "https://icl.cs.utk.edu/lapack-for-windows/libraries/VisualStudio/3.7.0/Dynamic-MINGW/Win64/libblas.lib"
+          # url: "https://icl.cs.utk.edu/lapack-for-windows/libraries/VisualStudio/3.7.0/Dynamic-MINGW/Win64/libblas.lib"
+          url: "https://github.com/abelcarreras/Soot-Spirits/raw/master/libblas.lib"
         continue-on-error: true
 
       - uses: suisei-cn/actions-download-file@v1
         id: downloadfile2
         name: Download blas for win
         with:
-          url: "https://icl.cs.utk.edu/lapack-for-windows/libraries/VisualStudio/3.7.0/Dynamic-MINGW/Win64/liblapack.lib"
+          # url: "https://icl.cs.utk.edu/lapack-for-windows/libraries/VisualStudio/3.7.0/Dynamic-MINGW/Win64/liblapack.lib"
+          url: "https://github.com/abelcarreras/Soot-Spirits/raw/master/liblapack.lib"
         continue-on-error: true
 
       - name: copy data to root (windows)
