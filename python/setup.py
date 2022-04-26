@@ -81,5 +81,6 @@ setup(name='wfnsympy',
       author_email='abelcarreras83@gmail.com',
       install_requires=['numpy', 'scipy'],
       packages=['wfnsympy'],
+      package_data={"": ["*.dll", "*.pyd"],},
       include_package_data=True,
       ext_modules=[wfnsymlib, qsymlib])
