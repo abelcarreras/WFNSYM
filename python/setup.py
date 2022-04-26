@@ -97,6 +97,7 @@ class PostInstallCommand(_install):
         #    print('file', filename)
         #    copyfile(filename, os.path.join(site_dir, 'wfnsympy', file))
 
+from glob import glob
 
 setup(name='wfnsympy',
       version=get_version_number(),
@@ -109,6 +110,7 @@ setup(name='wfnsympy',
       packages=['wfnsympy'],
       #cmdclass={'install': PostInstallCommand} if sys.platform.startswith('win') else {},
       package_data={"": ["*.dll", "*.pyd"],},
-      data_files=[('wfnsympy', ['.libs/*.dll'])],
+      data_files=[('wfnsympy', glob('*win_amd64.dll')),
+                  ],
       include_package_data=True,
       ext_modules=[wfnsymlib, qsymlib])
