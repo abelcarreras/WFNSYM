@@ -79,19 +79,19 @@ class PostInstallCommand(_install):
         _install.run(self)
         from shutil import copyfile
         dir = os.path.dirname(__file__)
-        files = os.listdir(dir + '/.libs')
+        files = os.listdir(dir + '.libs')
         for file in files:
             filename = os.path.join(dir, '.libs', file)
             copyfile(filename, os.path.join(dir, 'wfnsympy', file))
             print('copy files: ', filename)
 
         print('Here we go!')
-        site_dir = get_python_lib()
-        files = [f for f in os.listdir('./wfnsympy/') if os.path.isfile('./wfnsympy/' + f)]
-        for file in files:
-            filename = os.path.join(dir, 'wfnsympy', file)
-            print('file', filename)
-            copyfile(filename, os.path.join(site_dir, 'wfnsympy', file))
+        #site_dir = get_python_lib()
+        #files = [f for f in os.listdir('./wfnsympy/') if os.path.isfile('./wfnsympy/' + f)]
+        #for file in files:
+        #    filename = os.path.join(dir, 'wfnsympy', file)
+        #    print('file', filename)
+        #    copyfile(filename, os.path.join(site_dir, 'wfnsympy', file))
 
 
 setup(name='wfnsympy',
@@ -103,7 +103,7 @@ setup(name='wfnsympy',
       author_email='abelcarreras83@gmail.com',
       install_requires=['numpy', 'scipy'],
       packages=['wfnsympy'],
-      # cmdclass={'install': PostInstallCommand} if sys.platform.startswith('win') else {},
-      # package_data={"": ["*.dll", "*.pyd"],},
+      cmdclass={'install': PostInstallCommand} if sys.platform.startswith('win') else {},
+      package_data={"": ["*.dll", "*.pyd"],},
       include_package_data=True,
       ext_modules=[wfnsymlib, qsymlib])
