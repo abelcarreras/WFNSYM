@@ -287,7 +287,7 @@ c     write(iout,*)'reading AOs'
 
 c Compute AO Overlap Matrix
 c     write(iout,*)'computing AO overlap'
-      ALLOCATE(S_AO(NBas2),S_MOa(NBas2),S_MOb(NBas2),Xaux(NBas2))
+      ALLOCATE(S_AO(NBas2),S_MOa(NMo*NMo),S_MOb(NMo*NMo),Xaux(NBas*NMo))
       MatId(:,:) = Zero
       DO I = 1,3
         MatId(I,I) = One
@@ -376,28 +376,28 @@ c Print AOs Symmetry Measures
       ENDIF
 
 c Transform Overlap Matrix to MOs
-      CALL AtimsB(Xaux,S_AO,CA, NBas,NBas,NBas, NBas,NBas,NBas, 1)
-      CALL AtimsB(S_MOa,CA,Xaux, NBas,NBas,NBas, NBas,NBas,NBas, 2)
+      CALL AtimsB(Xaux,S_AO,CA, NBas,NMo,NBas, NBas,NBas,NBas, 1)
+      CALL AtimsB(S_MOa,CA,Xaux, NMo,NMo,NBas, NMo,NBas,NBas, 2)
       IF(Unrestricted) THEN
-        CALL AtimsB(Xaux,S_AO,CB, NBas,NBas,NBas, NBas,NBas,NBas, 1)
-        CALL AtimsB(S_MOb,CB,Xaux, NBas,NBas,NBas, NBas,NBas,NBas, 2)
+        CALL AtimsB(Xaux,S_AO,CB, NBas,NMo,NBas, NBas,NBas,NBas, 1)
+        CALL AtimsB(S_MOb,CB,Xaux, NMo,NMo,NBas, NMo,NBas,NBas, 2)
       ELSE
-        CALL VRcopy(S_MOb,S_MOa,NBas2)
+        CALL VRcopy(S_MOb,S_MOa,NMo*NMo)
       ENDIF
 
 c Store the NOx,NOx block of S_MOx in SGrpX (if required)
       IF(DoSymOrb) THEN
         DO I = 0,NOa-1
         DO J = 1,NOa
-          SGrpA(J+I*NOa) = SGrpA(J+I*NOa)+S_MOa(J+I*NBas)
+          SGrpA(J+I*NOa) = SGrpA(J+I*NOa)+S_MOa(J+I*NMo)
         ENDDO
         ENDDO
-        CALL writeMat(S_MOa,NBas,iout)
+        CALL writeMat(S_MOa,NMo,iout)
 c       CALL VRadd2(SGrpA,S_MOa,NBas2)
         IF(NOb.NE.0 .AND.(NOa.NE.NOb .OR. Unrestricted))THEN
           DO I = 0,NOb-1
           DO J = 1,NOb
-            SGrpB(J+I*NOb) = SGrpB(J+I*NOb)+S_MOb(J+I*NBas)
+            SGrpB(J+I*NOb) = SGrpB(J+I*NOb)+S_MOb(J+I*NMo)
           ENDDO
           ENDDO
         ENDIF
@@ -408,39 +408,40 @@ c Print Sym trans MO Overlap Matrix
       IF (NPrint .GE. 2) THEN
         WRITE(iout,"('sym-trans oper ',I2,':',1X,A6)") iG,SymLab(iG)
         line = 'Sym alpha-MO Overlap Matrix'
-        CALL PrintMatrix(S_MOa,cLAO,.FALSE.,.FALSE.,NBas,line,iout)
+        CALL PrintMatrix(S_MOa,cLAO,.FALSE.,.FALSE.,NMo,line,iout)
         IF(Unrestricted) THEN
           line = 'Sym beta-MO Overlap Matrix'
-          CALL PrintMatrix(S_MOb,cLAO,.FALSE.,.FALSE.,NBas,line,iout)
+          CALL PrintMatrix(S_MOb,cLAO,.FALSE.,.FALSE.,NMo,line,iout)
         ENDIF
       ENDIF
 
 c Copy the diagonal of S_MO_ to SDiag_
       DO IJ = iOp,iOp+iSymMu(iG)-1
         DO i = 1,NBas
-          SDiagA(i+(IJ-1)*NBas) = S_MOa(i+(i-1)*NBas)
-          SDiagB(i+(IJ-1)*NBas) = S_MOb(i+(i-1)*NBas)
+          SDiagA(i+(IJ-1)*NBas) = S_MOa(i+(i-1)*NMo)
+          SDiagB(i+(IJ-1)*NBas) = S_MOb(i+(i-1)*NMo)
         ENDDO
       ENDDO
+
 
 c Print Alpha MOs S value
       IF (NPrint .GE. 2) THEN
         WRITE(iout,*)' '
         WRITE(iout,*)'MOs: SOEVs  alpha  /  beta'
         WRITE(iout,*)'--------------------------'
-        DO i = 1,NBas
+        DO i = 1,NMo
           WRITE(iout,'(I3,7X,F8.4,2X,F8.4)') i,
-     &    S_MOa(i+(i-1)*NBas),S_MOb(i+(i-1)*NBas)
+     &    S_MOa(i+(i-1)*NMo),S_MOb(i+(i-1)*NMo)
         ENDDO
         WRITE(iout,*)' '
       ENDIF
 
 c Compute the wave function symmetry
-      CALL DGETRF(NOa,NOa,S_MOa,NBas,IpivA,Info)
+      CALL DGETRF(NOa,NOa,S_MOa,NMo,IpivA,Info)
       IF((Unrestricted.OR.(NOa.NE.NOb)) .AND. NOb.GT.0) THEN
-        CALL DGETRF(NOb,NOb,S_MOb,NBas,IpivB,Info)
+        CALL DGETRF(NOb,NOb,S_MOb,NMo,IpivB,Info)
       ELSE
-        CALL VRcopy(S_MOb,S_MOa,NBas2)
+        CALL VRcopy(S_MOb,S_MOa,NOb)
         IpivB(1:NOa) = IpivA(1:NOa)
       ENDIF
 
@@ -450,9 +451,9 @@ c Compute the wave function symmetry
       DO I = 1,NMo
         IF (AOccup(I) > 0.5) THEN
           IF(IpivA(K).EQ.K) THEN
-            S_WFa = S_WFa * S_MOa(I+(I-1)*NBas)
+            S_WFa = S_WFa * S_MOa(I+(I-1)*NMo)
           ELSE
-            S_WFa = - S_WFa * S_MOa(I+(I-1)*NBas)
+            S_WFa = - S_WFa * S_MOa(I+(I-1)*NMo)
           ENDIF
           K = K + 1
         ENDIF
@@ -463,9 +464,9 @@ c Compute the wave function symmetry
           IF (BOccup(I) > 0.5) THEN
             IF(IpivB(K).EQ.K) THEN
 c            write(6,*) 'IpivB(I)', IpivB(I), I
-              S_WFb = S_WFb * S_MOb(I+(I-1)*NBas)
+              S_WFb = S_WFb * S_MOb(I+(I-1)*NMo)
             ELSE
-              S_WFb = - S_WFb * S_MOb(I+(I-1)*NBas)
+              S_WFb = - S_WFb * S_MOb(I+(I-1)*NMo)
             ENDIF
             K = K + 1
           ENDIF
