@@ -277,7 +277,7 @@ c     write(iout,*)'allocating space'
       ALLOCATE(ROrb(NOrb,3),stROrb(NOrb,3))
       ALLOCATE(iContr(NBas))
 c     ALLOCATE(IpivA(NOa),IpivB(NOb))
-      ALLOCATE(IpivA(NBas),IpivB(NBas))
+      ALLOCATE(IpivA(NMo),IpivB(NMo))
 
 c Reading AO Basis Set
 c     write(iout,*)'reading AOs'
@@ -437,12 +437,12 @@ c Print Alpha MOs S value
       ENDIF
 
 c Compute the wave function symmetry
-      CALL DGETRF(NOa,NOa,S_MOa,NMo,IpivA,Info)
+      CALL DGETRF(NMo,NMo,S_MOa,NMo,IpivA,Info)
       IF((Unrestricted.OR.(NOa.NE.NOb)) .AND. NOb.GT.0) THEN
-        CALL DGETRF(NOb,NOb,S_MOb,NMo,IpivB,Info)
+        CALL DGETRF(NMo,NMo,S_MOb,NMo,IpivB,Info)
       ELSE
         CALL VRcopy(S_MOb,S_MOa,NOb)
-        IpivB(1:NOa) = IpivA(1:NOa)
+        IpivB(1:NMo) = IpivA(1:NMo)
       ENDIF
 
       S_WFa = One
@@ -455,8 +455,8 @@ c Compute the wave function symmetry
           ELSE
             S_WFa = - S_WFa * S_MOa(I+(I-1)*NMo)
           ENDIF
-          K = K + 1
         ENDIF
+        K = K + 1
       ENDDO
       IF(NOb.GT.0) THEN
         K = 1
@@ -468,8 +468,8 @@ c            write(6,*) 'IpivB(I)', IpivB(I), I
             ELSE
               S_WFb = - S_WFb * S_MOb(I+(I-1)*NMo)
             ENDIF
-            K = K + 1
           ENDIF
+          K = K + 1
         ENDDO
       ELSE
         S_WFb = Zero
