@@ -288,6 +288,8 @@ c     write(iout,*)'reading AOs'
 c Compute AO Overlap Matrix
 c     write(iout,*)'computing AO overlap'
       ALLOCATE(S_AO(NBas2),S_MOa(NMo*NMo),S_MOb(NMo*NMo),Xaux(NBas*NMo))
+      ALLOCATE(S_MOaWF(NMo*NMo),S_MObWF(NMo*NMo))
+
       MatId(:,:) = Zero
       DO I = 1,3
         MatId(I,I) = One
@@ -403,7 +405,6 @@ c       CALL VRadd2(SGrpA,S_MOa,NBas2)
         ENDIF
       ENDIF
 
-
 c Print Sym trans MO Overlap Matrix
       IF (NPrint .GE. 2) THEN
         WRITE(iout,"('sym-trans oper ',I2,':',1X,A6)") iG,SymLab(iG)
@@ -414,14 +415,6 @@ c Print Sym trans MO Overlap Matrix
           CALL PrintMatrix(S_MOb,cLAO,.FALSE.,.FALSE.,NMo,line,iout)
         ENDIF
       ENDIF
-
-c Copy the diagonal of S_MO_ to SDiag_
-      DO IJ = iOp,iOp+iSymMu(iG)-1
-        DO i = 1,NBas
-          SDiagA(i+(IJ-1)*NBas) = S_MOa(i+(i-1)*NMo)
-          SDiagB(i+(IJ-1)*NBas) = S_MOb(i+(i-1)*NMo)
-        ENDDO
-      ENDDO
 
 
 c Print Alpha MOs S value
@@ -436,44 +429,78 @@ c Print Alpha MOs S value
         WRITE(iout,*)' '
       ENDIF
 
+
+c Set MO in order for WF symmetry computation
+      i2 = 1
+      DO i = 1,NMo
+        j2 = 1
+        IF (AOccup(i) > 0.5) THEN
+          DO j = 1,NMo
+            IF (AOccup(j) > 0.5) THEN
+              S_MOaWF(j2+(i2-1)*NMo) = S_MOa(j+(i-1)*NMo)
+              j2 = j2 + 1
+            ENDIF
+          ENDDO
+          i2 = i2 + 1
+        ENDIF
+      ENDDO
+
+      i2 = 1
+      DO i = 1,NMo
+        j2 = 1
+        IF (BOccup(i) > 0.5) THEN
+          DO j = 1,NMo
+            IF (BOccup(j) > 0.5) THEN
+              S_MObWF(j2+(i2-1)*NMo) = S_MOb(j+(i-1)*NMo)
+              j2 = j2 + 1
+            ENDIF
+          ENDDO
+          i2 = i2 + 1
+        ENDIF
+      ENDDO
+
+
+c Copy the diagonal of S_MO_ to SDiag_
+      DO IJ = iOp,iOp+iSymMu(iG)-1
+        DO i = 1,NBas
+          SDiagA(i+(IJ-1)*NBas) = S_MOa(i+(i-1)*NMo)
+          SDiagB(i+(IJ-1)*NBas) = S_MOb(i+(i-1)*NMo)
+        ENDDO
+      ENDDO
+
+
 c Compute the wave function symmetry
-      CALL DGETRF(NMo,NMo,S_MOa,NMo,IpivA,Info)
+      CALL DGETRF(NOa,NOa,S_MOaWF,NMo,IpivA,Info)
       IF((Unrestricted.OR.(NOa.NE.NOb)) .AND. NOb.GT.0) THEN
-        CALL DGETRF(NMo,NMo,S_MOb,NMo,IpivB,Info)
+        CALL DGETRF(NOb,NOb,S_MObWF,NMo,IpivB,Info)
       ELSE
-        CALL VRcopy(S_MOb,S_MOa,NOb)
+        CALL VRcopy(S_MObWF,S_MOaWF,NOb)
         IpivB(1:NMo) = IpivA(1:NMo)
       ENDIF
 
       S_WFa = One
       S_WFb = One
-      K = 1
-      DO I = 1,NMo
-        IF (AOccup(I) > 0.5) THEN
-          IF(IpivA(K).EQ.K) THEN
-            S_WFa = S_WFa * S_MOa(I+(I-1)*NMo)
+
+      DO I = 1,NOa
+          IF(IpivA(I).EQ.I) THEN
+            S_WFa = S_WFa * S_MOaWF(I+(I-1)*NMo)
           ELSE
-            S_WFa = - S_WFa * S_MOa(I+(I-1)*NMo)
+            S_WFa = - S_WFa * S_MOaWF(I+(I-1)*NMo)
           ENDIF
-        ENDIF
-        K = K + 1
       ENDDO
+
       IF(NOb.GT.0) THEN
-        K = 1
-        DO I = 1,NMo
-          IF (BOccup(I) > 0.5) THEN
-            IF(IpivB(K).EQ.K) THEN
-c            write(6,*) 'IpivB(I)', IpivB(I), I
-              S_WFb = S_WFb * S_MOb(I+(I-1)*NMo)
+        DO I = 1,NOb
+            IF(IpivB(I).EQ.I) THEN
+              S_WFb = S_WFb * S_MObWF(I+(I-1)*NMo)
             ELSE
-              S_WFb = - S_WFb * S_MOb(I+(I-1)*NMo)
+              S_WFb = - S_WFb * S_MObWF(I+(I-1)*NMo)
             ENDIF
-          ENDIF
-          K = K + 1
         ENDDO
       ELSE
         S_WFb = Zero
       ENDIF
+
       DO IJ = iOp,iOp+iSymMu(iG)-1
         WDiagA(IJ) = S_WFa
         WDiagB(IJ) = S_WFb
@@ -628,7 +655,7 @@ c  write(iout,"(1x,f9.5)") Xaux(iG)
 c ENDDO
 c     ENDDO
 
-      DO iOrb = 1,NBas
+      DO iOrb = 1,NMo
         ij = 1
         DO iIR = 1,nIR
           ProjA = Zero
@@ -854,6 +881,7 @@ c--------------------------------------------------------------
 c Free some space
       DEALLOCATE(iAng,iContr)
       DEALLOCATE(S_AO,S_MOa,S_MOb,Xaux)
+      DEALLOCATE(S_MOaWF, S_MObWF)
 c      DEALLOCATE(CA)
 c      IF(Unrestricted) DEALLOCATE(CB)
       DEALLOCATE(iLAO,cLAO)
