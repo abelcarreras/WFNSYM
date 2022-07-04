@@ -73,7 +73,7 @@ def basis_format(basis_set_name,
 def get_data_from_file_fchk(file_name):
     key_list = ['Number of alpha electrons', 'Number of beta electrons', 'Atomic numbers', 'Current cartesian coordinates',
                 'Shell type', 'Number of primitives per shell', 'Shell to atom map', 'Primitive exponents',
-                'Contraction coefficients', 'P(S=P) Contraction coefficients',
+                'Contraction coefficients', 'P(S=P) Contraction coefficients', 'Alpha Orbital Energies',
                 'Alpha MO coefficients', 'Beta MO coefficients']
     input_molecule = [[] for _ in range(len(key_list))]
     read = False
@@ -142,11 +142,17 @@ def get_data_from_file_fchk(file_name):
                              c_coefficients=[float(num) for num in input_molecule[8]],
                              p_c_coefficients=[float(num) for num in input_molecule[9]])
 
-        nbas = int(np.sqrt(len(input_molecule[10])))
+        norb = int(len(input_molecule[10]))
 
-        coefficients = {'alpha': np.array(input_molecule[10], dtype=float).reshape(nbas, nbas).tolist()}
-        if len(input_molecule[11]) != 0:
-            coefficients['beta'] = np.array(input_molecule[11], dtype=float).reshape(nbas, nbas).tolist()
+        def flatten_list(list_data):
+            lines = []
+            for line in list_data:
+                lines += line
+            return np.array(lines, dtype=float)
+
+        coefficients = {'alpha': flatten_list(input_molecule[11]).reshape(norb, -1).tolist()}
+        if len(input_molecule[12]) != 0:
+            coefficients['beta'] = flatten_list(input_molecule[12]).reshape(norb, -1).tolist()
 
         return {'coordinates': coordinates,
                 'symbols': symbols,
