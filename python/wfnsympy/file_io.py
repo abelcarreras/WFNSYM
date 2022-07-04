@@ -71,95 +71,111 @@ def basis_format(basis_set_name,
 
 
 def get_data_from_file_fchk(file_name):
-    key_list = ['Number of alpha electrons', 'Number of beta electrons', 'Atomic numbers', 'Current cartesian coordinates',
-                'Shell type', 'Number of primitives per shell', 'Shell to atom map', 'Primitive exponents',
-                'Contraction coefficients', 'P(S=P) Contraction coefficients', 'Alpha Orbital Energies',
-                'Alpha MO coefficients', 'Beta MO coefficients']
-    input_molecule = [[] for _ in range(len(key_list))]
-    read = False
-    with open(file_name, mode='r') as lines:
-        name = lines.readline()
-        line = lines.readline().split()
-        basis_set = line[-1]
-        if 'R' in line[1]:
-            del key_list[-1]
 
-        n = 1
-        options = True
-        for line in lines:
-            if read:
-                try:
-                    float(line.split()[0])
-                    input_molecule[n].append(line.split())
-                except ValueError:
-                    input_molecule[n] = reformat_input(input_molecule[n])
-                    read = False
+    def convert_to_type(item_type, item):
+        item_types = {'I': int,
+                      'R': float}
 
-            for idn, key in enumerate(key_list):
-                if key in line:
-                    if n == len(key_list) - 1:
+        if type(item) is list:
+            return [item_types[item_type](e) for e in item]
+        else:
+            return item_types[item_type](item)
+
+    key_list = ['Charge', 'Multiplicity', 'Number of alpha electrons', 'Number of beta electrons',
+                'Atomic numbers', 'Current cartesian coordinates', 'Number of basis functions', 'Shell types',
+                'Number of primitives per shell', 'Shell to atom map', 'Primitive exponents',
+                'Contraction coefficients', 'P(S=P) Contraction coefficients', 'Alpha MO coefficients',
+                'Beta MO coefficients', 'Coordinates of each shell', 'Overlap Matrix',
+                'Core Hamiltonian Matrix', 'Alpha Orbital Energies', 'Beta Orbital Energies',
+                'Total SCF Density', 'Spin SCF Density', 'Alpha NATO coefficients', 'Beta NATO coefficients',
+                'Alpha Natural Orbital occupancies', 'Beta Natural Orbital occupancies',
+                'Natural Transition Orbital occupancies', 'Natural Transition Orbital U coefficients',
+                'Natural Transition Orbital V coefficients', 'NTOs occupancies SOC',
+                ]
+
+    with open(file_name, mode='r') as f:
+        output = f.read()
+
+    basis_set = output.split('\n')[1].split()[-1]
+    words_output = output.replace('\n', ' ').split()
+
+    data = {}
+    nw = len(words_output)
+    for key in key_list:
+        wc = len(key.split())
+        for i in range(nw):
+            word = ' '.join(words_output[i:i+wc])
+            if word == key:
+                item_type = words_output[i+wc]
+                for l_step in range(5):
+                    try:
+                        if words_output[l_step + i + wc + 1] == 'N=':
+                            item_type = words_output[l_step + i + wc]
+                            word += ' '.join(words_output[i + wc:l_step + i + wc])
+                            n_elements = int(words_output[l_step + i + wc + 2])
+                            data[word] = convert_to_type(item_type, words_output[l_step + i + wc + 3: l_step + i + wc + n_elements + 3])
+                        else:
+                            item_type = words_output[l_step + i + wc]
+                            data[word] = convert_to_type(item_type, words_output[l_step + i + wc + 1])
                         break
-                    if options and idn != 2:
-                        input_molecule[idn].append(int(line.split()[-1]))
-                        n = idn
-                        break
-                    else:
-                        options = False
-                    if n == idn:
-                        n += 1
-                    else:
-                        n = idn
-                    read = True
-                    break
+                    except KeyError:
+                        pass
+                break
 
-        bohr_to_angstrom = 0.529177249
-        coordinates = np.array(input_molecule[3], dtype=float).reshape(-1, 3) * bohr_to_angstrom
+    bohr_to_angstrom = 0.529177249
 
-        def get_symbols_from_atomic_numbers(atomic_numbers):
-            symbols = []
-            for n in atomic_numbers:
-                for symbol, n2 in symbol_map.items():
-                    if int(n2) == n:
-                        symbols.append(symbol)
-            return symbols
+    coordinates = np.array(data['Current cartesian coordinates']).reshape(-1, 3) * bohr_to_angstrom
 
-        atomic_numbers = [int(num) for num in input_molecule[2]]
-        symbols = get_symbols_from_atomic_numbers(atomic_numbers)
+    if not 'P(S=P) Contraction coefficients' in data:
+        data['P(S=P) Contraction coefficients'] = np.zeros_like(data['Contraction coefficients']).tolist()
 
-        alpha_occupancy = [1] * int(input_molecule[0][0])
-        beta_occupancy = [1] * int(input_molecule[1][0])
-        if len(alpha_occupancy) != len(beta_occupancy):
-            for i in range(abs(len(alpha_occupancy) - len(beta_occupancy))):
-                beta_occupancy.append(0)
+    def get_symbols_from_atomic_numbers(atomic_numbers):
+        symbols = []
+        for n in atomic_numbers:
+            for symbol, n2 in symbol_map.items():
+                if int(n2) == n:
+                    symbols.append(symbol)
+        return symbols
 
-        basis = basis_format(basis_set_name=basis_set,
-                             atomic_numbers=atomic_numbers,
-                             atomic_symbols=symbols,
-                             shell_type=[int(num) for num in input_molecule[4]],
-                             n_primitives=[int(num) for num in input_molecule[5]],
-                             atom_map=[int(num) for num in input_molecule[6]],
-                             p_exponents=[float(num) for num in input_molecule[7]],
-                             c_coefficients=[float(num) for num in input_molecule[8]],
-                             p_c_coefficients=[float(num) for num in input_molecule[9]])
+    symbols = get_symbols_from_atomic_numbers(data['Atomic numbers'])
+    basis = basis_format(basis_set_name=basis_set,
+                         atomic_numbers=data['Atomic numbers'],
+                         atomic_symbols=symbols,
+                         shell_type=data['Shell types'],
+                         n_primitives=data['Number of primitives per shell'],
+                         atom_map=data['Shell to atom map'],
+                         p_exponents=data['Primitive exponents'],
+                         c_coefficients=data['Contraction coefficients'],
+                         p_c_coefficients=data['P(S=P) Contraction coefficients'])
 
-        norb = int(len(input_molecule[10]))
+    nbas = data['Number of basis functions']
 
-        def flatten_list(list_data):
-            lines = []
-            for line in list_data:
-                lines += line
-            return np.array(lines, dtype=float)
+    final_dict = {'basis': basis,
+                  'number_of_electrons': {'alpha': data['Number of alpha electrons'],
+                                          'beta': data['Number of beta electrons']}
+                  }
 
-        coefficients = {'alpha': flatten_list(input_molecule[11]).reshape(norb, -1).tolist()}
-        if len(input_molecule[12]) != 0:
-            coefficients['beta'] = flatten_list(input_molecule[12]).reshape(norb, -1).tolist()
+    if 'Alpha MO coefficients' in data:
+        final_dict['coefficients'] = {'alpha': np.array(data['Alpha MO coefficients']).reshape(-1, nbas).tolist()}
+        final_dict['mo_energies'] = {'alpha': data['Alpha Orbital Energies']}
 
-        return {'coordinates': coordinates,
-                'symbols': symbols,
-                'basis': basis,
-                'mo_coefficients': coefficients,
-                'alpha_occupancy': alpha_occupancy,
-                'beta_occupancy': beta_occupancy}
+    if 'Beta MO coefficients' in data:
+        final_dict['coefficients']['beta'] = np.array(data['Beta MO coefficients']).reshape(-1, nbas).tolist()
+        final_dict['mo_energies']['beta'] = data['Beta Orbital Energies']
+
+    # wf orbital configuration
+    alpha_occupancy = [1] * int(data['Number of alpha electrons'])
+    beta_occupancy = [1] * int(data['Number of beta electrons'])
+    if len(alpha_occupancy) != len(beta_occupancy):
+        for i in range(abs(len(alpha_occupancy) - len(beta_occupancy))):
+            beta_occupancy.append(0)
+
+    return {'coordinates': coordinates,
+            'symbols': symbols,
+            'basis': basis,
+            'mo_coefficients': final_dict['coefficients'],
+            'alpha_occupancy': alpha_occupancy,
+            'beta_occupancy': beta_occupancy}
 
 
 if __name__ == '__main__':
