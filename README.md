@@ -18,7 +18,7 @@ Installation instructions
 
 1b. Additional requirements for python module
   - Python 3.5+
-  - numpy
+  - numpy 1.x (not compatible with numpy 2.x!)
   - scipy
   - C compiler
 
@@ -32,6 +32,11 @@ Installation instructions
    ```shell
    cd python
    python setup.py install --user
+   ```
+
+b. Install from pip (pre-compiled versions available for python 3.6-3.10)
+   ```shell
+   pip install wfnsympy
    ```
 
 Simple python API 
