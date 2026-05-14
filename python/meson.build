@@ -10,21 +10,16 @@ py_dep = py.dependency()
 
 fc = meson.get_compiler('fortran')
 
-blas_dep = fc.find_library(
-    'openblas',
-    dirs: ['C:\msys64\mingw64\lib'],
-    required: true
-)
+blas_dep = fc.find_library('blas', required : false)
 
-lapack_dep = fc.find_library(
-    'lapack',
-    dirs: ['C:\msys64\mingw64\lib'],
-    required: true
-)
+if not blas_dep.found()
+    blas_dep = fc.find_library(
+        'openblas',
+        dirs: ['C:\msys64\mingw64\lib'],
+        required: true)
+endif
 
-#blas_dep = fc.find_library('openblas', required : true)
-#lapack_dep = fc.find_library('lapack', required : true)
-
+lapack_dep = fc.find_library('lapack', required : false)
 
 
 #locate libraries quadmath (needed for windows)
