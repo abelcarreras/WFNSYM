@@ -35,6 +35,7 @@ fortran_sources = [
 # fortran source files
 fortran_sources_2 = [
     'QSYMLIBmodule.c',
+    'src/VRoutines.F',
     'src/center_dens.F',
     'src/dens_basis_lib.F',
     'src/make_dens.F',
