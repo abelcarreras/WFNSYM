@@ -139,6 +139,8 @@ jobs:
             if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
           CIBW_BEFORE_BUILD_WINDOWS: |
+            C:\msys64\usr\bin\pacman -S --noconfirm mingw-w64-x86_64-openblas
+            python -m pip install --force-reinstall ninja
             gfortran ... --print-search-dirs
             gfortran -print-file-name=libopenblas.a
             file libblas.lib
@@ -149,10 +151,11 @@ jobs:
             #copy liblapack.lib C:\ProgramData\Chocolatey\lib\mingw\tools\install\mingw64\lib\gcc\x86_64-w64-mingw32\8.1.0\liblapack.a
             copy libblas.lib C:\mingw64\lib\libblas.a
             copy liblapack.lib C:\mingw64\lib\liblapack.a
-            
-            # pacman -S --noconfirm mingw-w64-x86_64-openblas
-            
-            # copy setup_win.cfg setup.cfg
+
+          CIBW_ENVIRONMENT_WINDOWS: >
+            LIBRARY_PATH=C:\msys64\mingw64\lib
+            PKG_CONFIG_PATH=C:\msys64\mingw64\lib\pkgconfig
+
           CIBW_SKIP: "*-musllinux_* *win32*"
 
       - uses: actions/upload-artifact@v4
