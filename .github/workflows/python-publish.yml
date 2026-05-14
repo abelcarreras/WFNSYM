@@ -118,6 +118,7 @@ jobs:
         run: |
           python -m cibuildwheel --output-dir wheelhouse
         env:
+          working-directory: ./python
           CIBW_BEFORE_BUILD: |
             pip install numpy meson meson-python charset-normalizer setuptools ninja
             rm -rf build/ wheelhouse/ dist/
