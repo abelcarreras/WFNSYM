@@ -140,22 +140,11 @@ jobs:
 
           CIBW_BEFORE_BUILD_WINDOWS: |
             C:\msys64\usr\bin\pacman -S --noconfirm mingw-w64-x86_64-openblas
-            copy C:\msys64\mingw64\lib\libopenblas.a C:\mingw64\lib\libblas.a
-            copy C:\msys64\mingw64\lib\libopenblas.a C:\mingw64\lib\liblapack.a
-            copy C:\msys64\mingw64\lib\libopenblas.a C:\mingw64\lib\libopenblas.a
-            copy C:\msys64\mingw64\lib\libopenblas.a C:\mingw64\lib\liblapack.a
+            # copy C:\msys64\mingw64\lib\libopenblas.a C:\mingw64\lib\libblas.a
+            # copy C:\msys64\mingw64\lib\libopenblas.a C:\mingw64\lib\liblapack.a
+            # copy C:\msys64\mingw64\lib\libopenblas.a C:\mingw64\lib\libopenblas.a
+            # copy C:\msys64\mingw64\lib\libopenblas.a C:\mingw64\lib\liblapack.a
             python -m pip install --force-reinstall ninja
-            gfortran ... --print-search-dirs
-            gfortran -print-file-name=libopenblas.a
-            file libblas.lib
-            file liblapack.lib
-            echo $MINGW_PREFIX
-            #python -m pip install --force-reinstall ninja
-            #copy libblas.lib C:\ProgramData\Chocolatey\lib\mingw\tools\install\mingw64\lib\gcc\x86_64-w64-mingw32\8.1.0\libblas.a
-            #copy liblapack.lib C:\ProgramData\Chocolatey\lib\mingw\tools\install\mingw64\lib\gcc\x86_64-w64-mingw32\8.1.0\liblapack.a
-            #copy libblas.lib C:\mingw64\lib\libblas.a
-            #copy liblapack.lib C:\mingw64\lib\liblapack.a
-
           CIBW_SKIP: "*-musllinux_* *win32*"
 
       - uses: actions/upload-artifact@v4

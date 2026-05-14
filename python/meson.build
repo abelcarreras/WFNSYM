@@ -81,7 +81,6 @@ inc_np = include_directories(incdir_numpy, incdir_f2py, 'include')
 
 wfnsymlib = py.extension_module('WFNSYMLIB',
                                 fortran_sources,
-                                # incdir_f2py / 'fortranobject.c',
                                 join_paths(incdir_f2py, 'fortranobject.c'),
                                 include_directories: inc_np,
                                 dependencies : [py_dep, quadmath_dep, blas_dep, lapack_dep],
@@ -94,7 +93,6 @@ wfnsymlib = py.extension_module('WFNSYMLIB',
 
 qsymlib = py.extension_module('QSYMLIB',
                                fortran_sources_2,
-                               # incdir_f2py / 'fortranobject.c',
                                join_paths(incdir_f2py, 'fortranobject.c'),
                                include_directories: inc_np,
                                dependencies : [py_dep, quadmath_dep, blas_dep, lapack_dep],
