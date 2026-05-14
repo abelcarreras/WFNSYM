@@ -26,7 +26,7 @@ jobs:
           find . -name "*.egg-info" -type d -exec rm -rf {} +
 
       - name: copy data to root (unix-like)
-        run: cp ../readme.md .
+        run: cp ../README.md .
         working-directory: ${{env.working-directory}}
 
       - name: Install dependencies
