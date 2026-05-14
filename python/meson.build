@@ -9,7 +9,7 @@ py_dep = py.dependency()
 # lapack_dep = dependency('lapack', required : true)
 
 fc = meson.get_compiler('fortran')
-blas_dep = fc.find_library('blas', required : true)
+blas_dep = fc.find_library('openblas', required : true)
 lapack_dep = fc.find_library('lapack', required : true)
 
 #locate libraries quadmath (needed for windows)
