@@ -208,6 +208,11 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: '3.x'
+      - name: copy data to root (unix-like)
+        run: |
+          cp -r ${{env.working-directory}}/* .
+        continue-on-error: true
+
       - name: Install dependencies
         run: |
           python -m pip install numpy setuptools
