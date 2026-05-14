@@ -142,6 +142,8 @@ jobs:
             C:\msys64\usr\bin\pacman -S --noconfirm mingw-w64-x86_64-openblas
             copy C:\msys64\mingw64\lib\libopenblas.a C:\mingw64\lib\libblas.a
             copy C:\msys64\mingw64\lib\libopenblas.a C:\mingw64\lib\liblapack.a
+            copy C:\msys64\mingw64\lib\libopenblas.a C:\mingw64\lib\libopenblas.a
+            copy C:\msys64\mingw64\lib\libopenblas.a C:\mingw64\lib\liblapack.a
             python -m pip install --force-reinstall ninja
             gfortran ... --print-search-dirs
             gfortran -print-file-name=libopenblas.a
