@@ -2,6 +2,8 @@ project('wfnsymlib', 'c', 'fortran', version: '0.1.0')
 
 py = import('python').find_installation(pure: false)
 py_dep = py.dependency()
+blas_dep = dependency('blas', required : true)
+lapack_dep = dependency('lapack', required : true)
 
 #locate libraries quadmath (needed for windows)
 quadmath_dep = meson.get_compiler('fortran').find_library('quadmath')
@@ -65,7 +67,7 @@ wfnsymlib = py.extension_module('WFNSYMLIB',
                                 # incdir_f2py / 'fortranobject.c',
                                 join_paths(incdir_f2py, 'fortranobject.c'),
                                 include_directories: inc_np,
-                                dependencies : [py_dep, quadmath_dep],
+                                dependencies : [py_dep, quadmath_dep, blas_dep, lapack_dep],
                                 fortran_args: fortran_flags,
                                 install : true,
                                 # link_args: ['-static-libgfortran', '-Wl,-rpath,@loader_path/../wfnsymlib.dylibs'],
@@ -78,7 +80,7 @@ qsymlib = py.extension_module('QSYMLIB',
                                # incdir_f2py / 'fortranobject.c',
                                join_paths(incdir_f2py, 'fortranobject.c'),
                                include_directories: inc_np,
-                               dependencies : [py_dep, quadmath_dep],
+                               dependencies : [py_dep, quadmath_dep, blas_dep, lapack_dep],
                                fortran_args: fortran_flags,
                                install : true,
                                # link_args: ['-static-libgfortran', '-Wl,-rpath,@loader_path/../wfnsymlib.dylibs'],
