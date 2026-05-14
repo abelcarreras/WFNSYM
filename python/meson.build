@@ -3,10 +3,14 @@ project('wfnsymlib', 'c', 'fortran', version: '0.1.0')
 py = import('python').find_installation(pure: false)
 py_dep = py.dependency()
 
-cc = meson.get_compiler('c')
+# cc = meson.get_compiler('c')
 # blas_dep = cc.find_library('openblas', required : true)
-blas_dep = dependency('blas', required : true)
-lapack_dep = dependency('lapack', required : true)
+# blas_dep = dependency('blas', required : true)
+# lapack_dep = dependency('lapack', required : true)
+
+fc = meson.get_compiler('fortran')
+blas_dep = fc.find_library('blas', required : true)
+lapack_dep = fc.find_library('lapack', required : true)
 
 #locate libraries quadmath (needed for windows)
 quadmath_dep = meson.get_compiler('fortran').find_library('quadmath')
