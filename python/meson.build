@@ -58,7 +58,7 @@ incdir_f2py = run_command(py,
     check : true
 ).stdout().strip()
 
-inc_np = include_directories(incdir_numpy, incdir_f2py)
+inc_np = include_directories(incdir_numpy, incdir_f2py, '../include')
 
 wfnsymlib = py.extension_module('WFNSYMLIB',
                                 fortran_sources,
