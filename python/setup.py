@@ -1,9 +1,27 @@
-from numpy.distutils.core import setup, Extension
+from setuptools import setup, Extension
+from setuptools.command.build_ext import build_ext
+from setuptools.command.install import install
 from distutils.dir_util import copy_tree
 from distutils.errors import DistutilsFileError
-import os, sys
-from shutil import copyfile
+import sys, os
+import subprocess
+import pathlib
+import shutil
 
+try:
+    from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
+except ModuleNotFoundError:
+    _bdist_wheel = object
+
+ext_wfn = Extension(
+    "wfnsympy.WFNSYMLIB",   # must be inside your package namespace
+    sources=["src/WFNSYMLIBmodule.c"],  # your actual sources
+)
+
+ext_qsym = Extension(
+    "wfnsympy.QSYMLIB",   # must be inside your package namespace
+    sources=["src/QSYMLIBmodule.c"],  # your actual sources
+)
 
 def get_version_number():
     main_ns = {}
@@ -12,74 +30,104 @@ def get_version_number():
             exec(line, main_ns)
             return main_ns['__version__']
 
-
-if bool('TRAVIS_WFNSYM' in os.environ):
-    print('Testing in travis')
+# Make python package
+try:
     copy_tree('../src', './src', update=True)
-    copy_tree('../include', './include', update=True)
-    copyfile(os.path.abspath('../README.md'), os.path.abspath('./README.md'))
+    shutil.copy('../README.md', '.')
+except DistutilsFileError:
+    pass
 
-if os.path.isfile('../README.md') and not os.path.isfile('./README.md'):
-    copyfile(os.path.abspath('../README.md'), os.path.abspath('./README.md'))
+s_dir = 'src/'
 
-if os.path.isdir('./src') and os.path.isdir('./include'):
-    print('exists')
-    s_dir = './src/'
-    i_dir = './include/'
-else:
-    print('not exists')
-    s_dir = '../src/'
-    i_dir = '../include/'
 
-wfnsymlib = Extension('wfnsympy.WFNSYMLIB',
-                      # extra_compile_args=['-ffixed-form', '-ffixed-line-length-none'],
-                      # include_dirs=include_dirs_numpy,
-                      extra_f77_compile_args=['-ffixed-line-length-0'],
-                      include_dirs=[i_dir],
-                      libraries=['lapack', 'blas'],
-                      sources=['WFNSYMLIB.pyf',
-                               s_dir + 'VRoutines.F',
-                               s_dir + 'aos_product.F',
-                               s_dir + 'get_basis_lib.F',
-                               s_dir + 'get_dim.F',
-                               s_dir + 'get_mos.F',
-                               s_dir + 'group_dim.F',
-                               s_dir + 'group_table.F',
-                               s_dir + 'make_molden.F',
-                               s_dir + 'make_s.F',
-                               s_dir + 'make_uhfno.F',
-                               s_dir + 'print_routines.F',
-                               s_dir + 'lib_main.F',
-                               s_dir + 'overlap.F',
-                               s_dir + 'read_routines.F',
-                               s_dir + 'sym_routines.F'])
+class MesonBuildExt(build_ext):
+    def run(self):
 
-qsymlib = Extension('wfnsympy.QSYMLIB',
-                    extra_f77_compile_args=['-ffixed-line-length-0'],
-                    include_dirs=[i_dir],
-                    libraries=['lapack', 'blas'],
-                    sources=['QSYMLIB.pyf',
-                             s_dir + 'center_dens.F',
-                             s_dir + 'dens_basis_lib.F',
-                             s_dir + 'make_dens.F',
-                             s_dir + 'group_dim.F',
-                             s_dir + 'norma.F',
-                             s_dir + 'overlap.F',
-                             s_dir + 'denslib.F',
-                             s_dir + 'self_similarity.F',
-                             s_dir + 'sym_transform.F',
-                             s_dir + 'sym_overlap.F',
-                             s_dir + 'sym_routines.F',
-                             s_dir + 'VRoutines.F'])
+        # make compilation dir if needed
+        if not os.path.exists(self.build_temp):
+            os.makedirs(self.build_temp)
+
+        print('self.build_lib:', self.build_lib)
+
+        # define module dir to place fortran extension
+        workdir = os.path.dirname(os.path.abspath(__file__))
+        # workdir = self.build_lib
+        install_dir = pathlib.Path(workdir, 'wfnsympy')
+
+        # build with meson
+        subprocess.check_call(['meson', 'setup', self.build_temp, '--prefix', install_dir])
+        subprocess.check_call(['meson', 'compile', '-C', self.build_temp])
+        if '--inplace' in sys.argv:
+            subprocess.check_call(['meson', 'install', '-C', self.build_temp])
+
+
+class InstallWithBuildExt(install):
+    def run(self):
+
+        self.build_temp = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'build/temp')
+
+        if not os.path.exists(self.build_temp):
+            os.makedirs(self.build_temp)
+
+        # define module dir to install fortran extension
+        install_dir = pathlib.Path(self.install_lib, 'wfnsympy')
+        install_dir = os.path.abspath(install_dir)
+
+        # build with meson and install
+        subprocess.check_call(['meson', 'setup', self.build_temp, '--prefix', str(install_dir)])
+        subprocess.check_call(['meson', 'compile', '-C', self.build_temp])
+        subprocess.check_call(['meson', 'install', '-C', self.build_temp])
+
+        # install
+        import distutils.command.install as orig
+        orig.install.run(self)
+
+
+class MesonBdistWheel(_bdist_wheel):
+    def run(self):
+
+        self.build_temp = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'build/temp')
+
+        # create compile directory (overwrite if exists)
+        if os.path.exists(self.dist_dir):
+            shutil.rmtree(self.dist_dir)
+        os.makedirs(self.dist_dir)
+
+        # define project root dir
+        workdir = os.path.dirname(os.path.abspath(__file__))
+
+        # define distribution dir
+        dist_dir = pathlib.Path(workdir, self.dist_dir)
+        dist_dir = os.path.abspath(dist_dir)
+
+        # build with meson
+        subprocess.check_call(['meson', 'setup', self.build_temp, '--prefix', dist_dir])
+        subprocess.check_call(['meson', 'compile', '-C', self.build_temp])
+
+        self.root_is_pure = False
+        super().run()
+    def has_ext_modules(self):   # <-- extra insurance
+        return True
+
+    def finalize_options(self):
+        super().finalize_options()
+        self.root_is_pure = False
 
 setup(name='wfnsympy',
       version=get_version_number(),
-      description='wfnsympy',
-      # long_description=open('README.md').read(),
-      # long_description_content_type='text/markdown',
+      description='wfnsympy module',
+      long_description=open('README.md').read(),
+      long_description_content_type='text/markdown',
       author='Abel Carreras',
       author_email='abelcarreras83@gmail.com',
-      install_requires=['numpy', 'scipy'],
       packages=['wfnsympy'],
-      include_package_data=True,
-      ext_modules=[wfnsymlib, qsymlib])
+      ext_modules=[ext_wfn, ext_qsym],
+      cmdclass={'build_ext': MesonBuildExt,
+                'install': InstallWithBuildExt,
+                'bdist_wheel': MesonBdistWheel,
+                },
+      url='https://github.com/abelcarreras/symgroup',
+      classifiers=[
+          "Programming Language :: Python",
+          "License :: OSI Approved :: MIT License"]
+      )

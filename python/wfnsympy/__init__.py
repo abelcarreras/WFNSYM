@@ -331,6 +331,7 @@ class WfnSympy:
         self._csm_dens = None
         self._csm_dens_coef = None
         self._self_similarity = None
+        self._symbols = symbols
 
         type_list_inverse = {}
         for item in shell_type_list.items():
@@ -416,10 +417,6 @@ class WfnSympy:
                 self._beta_occupancy.append(0)
         else:
             raise Exception('Wrong length Beta Occupancies')
-
-
-        # Transform symbols type to correct Fortran char*2 type
-        self._symbols = np.array([list('{:<2}'.format(char)) for char in symbols], dtype='S')
 
         exp_group = np.array(np.split(np.array(p_exponents), np.cumsum(self._n_primitives))[:-1],dtype=object)
 
