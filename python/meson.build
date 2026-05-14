@@ -10,13 +10,13 @@ py_dep = py.dependency()
 
 fc = meson.get_compiler('fortran')
 
-blas_dep = compiler.find_library(
+blas_dep = fc.find_library(
     'openblas',
     dirs: ['C:\msys64\mingw64\lib'],
     required: true
 )
 
-lapack_dep = compiler.find_library(
+lapack_dep = fc.find_library(
     'lapack',
     dirs: ['C:\msys64\mingw64\lib'],
     required: true
