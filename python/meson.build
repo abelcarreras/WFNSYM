@@ -5,7 +5,7 @@ py_dep = py.dependency()
 
 cc = meson.get_compiler('c')
 # blas_dep = cc.find_library('openblas', required : true)
-# blas_dep = dependency('blas', required : true)
+blas_dep = dependency('blas', required : true)
 lapack_dep = dependency('lapack', required : true)
 
 #locate libraries quadmath (needed for windows)
