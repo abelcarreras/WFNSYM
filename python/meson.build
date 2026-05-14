@@ -11,7 +11,6 @@ lapack_dep = dependency('lapack', required : true)
 #locate libraries quadmath (needed for windows)
 quadmath_dep = meson.get_compiler('fortran').find_library('quadmath')
 
-
 # fortran source files
 fortran_sources = [
     'WFNSYMLIBmodule.c',
@@ -64,7 +63,7 @@ incdir_f2py = run_command(py,
     check : true
 ).stdout().strip()
 
-inc_np = include_directories(incdir_numpy, incdir_f2py, '../include')
+inc_np = include_directories(incdir_numpy, incdir_f2py, 'include')
 
 wfnsymlib = py.extension_module('WFNSYMLIB',
                                 fortran_sources,
