@@ -144,7 +144,7 @@ jobs:
               pacman -Syu --noconfirm
               pacman -S --noconfirm mingw-w64-x86_64-openblas
             "
-            copy C:\tools\msys64\mingw64\lib\libopenblas.a C:\mingw64\lib\libblas.a
+            copy C:\tools\msys64\mingw64\lib\libopenblas.dll.a C:\mingw64\lib\libblas.a
             
             gfortran ... --print-search-dirs
             gfortran -print-file-name=libopenblas.a
