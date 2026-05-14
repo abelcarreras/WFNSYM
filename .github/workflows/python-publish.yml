@@ -64,12 +64,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       working-directory: ./python
-    #needs: [ test_code ]
+    needs: [ test_code ]
     if: github.ref == 'refs/heads/master' ||  github.ref == 'refs/heads/migration_meson'
     strategy:
       matrix:
-        #os: [windows-2022, ubuntu-latest]
-        os: [windows-2022]
+        os: [windows-2022, ubuntu-latest]
+        #os: [windows-2022]
 
     steps:
       - uses: actions/checkout@v4
@@ -86,22 +86,6 @@ jobs:
         run: |
           ls -la
           cp -r ${{env.working-directory}}/* .
-        continue-on-error: true
-
-      - uses: suisei-cn/actions-download-file@v1
-        id: downloadfile1
-        name: Download lapack for win
-        with:
-          # url: "https://icl.cs.utk.edu/lapack-for-windows/libraries/VisualStudio/3.7.0/Dynamic-MINGW/Win64/libblas.lib"
-          url: "https://github.com/abelcarreras/abelcarreras.github.io/raw/master/libraries/windows/libblas.lib"
-        continue-on-error: true
-
-      - uses: suisei-cn/actions-download-file@v1
-        id: downloadfile2
-        name: Download blas for win
-        with:
-          # url: "https://icl.cs.utk.edu/lapack-for-windows/libraries/VisualStudio/3.7.0/Dynamic-MINGW/Win64/liblapack.lib"
-          url: "https://github.com/abelcarreras/abelcarreras.github.io/raw/master/libraries/windows/liblapack.lib"
         continue-on-error: true
 
       - name: copy data to root (windows)
@@ -140,10 +124,6 @@ jobs:
 
           CIBW_BEFORE_BUILD_WINDOWS: |
             C:\msys64\usr\bin\pacman -S --noconfirm mingw-w64-x86_64-openblas
-            # copy C:\msys64\mingw64\lib\libopenblas.a C:\mingw64\lib\libblas.a
-            # copy C:\msys64\mingw64\lib\libopenblas.a C:\mingw64\lib\liblapack.a
-            # copy C:\msys64\mingw64\lib\libopenblas.a C:\mingw64\lib\libopenblas.a
-            # copy C:\msys64\mingw64\lib\libopenblas.a C:\mingw64\lib\liblapack.a
             python -m pip install --force-reinstall ninja
           CIBW_SKIP: "*-musllinux_* *win32*"
 
@@ -158,11 +138,10 @@ jobs:
     env:
       working-directory: ./python
     needs: [ test_code ]
-    if: github.ref == 'refs/heads/master' # ||  github.ref == 'refs/heads/migration_meson'
+    if: github.ref == 'refs/heads/master' ||  github.ref == 'refs/heads/migration_meson'
     strategy:
       matrix:
         os: [macos-14]
-        # os: [ubuntu-latest]
 
     steps:
       - uses: actions/checkout@v4
